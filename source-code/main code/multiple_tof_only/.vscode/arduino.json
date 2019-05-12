@@ -1,7 +1,0 @@
-{
-    "board": "arduino:avr:mega",
-    "configuration": "cpu=atmega2560",
-    "port": "/dev/cu.usbmodem14101",
-    "programmer": "ArduinoISP",
-    "sketch": "multiple_tof_only.ino"
-}

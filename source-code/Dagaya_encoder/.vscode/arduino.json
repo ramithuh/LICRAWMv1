@@ -1,7 +1,0 @@
-{
-    "sketch": "Dagaya_encoder.ino",
-    "programmer": "Arduino as ISP",
-    "board": "arduino:avr:mega",
-    "configuration": "cpu=atmega2560",
-    "port": "/dev/cu.usbmodem14201"
-}
