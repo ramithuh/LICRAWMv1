@@ -38,9 +38,16 @@ void print_tof_reading(int x=0){
   
   //Serial.print(Sensor1.readRangeContinuousMillimeters());
   //Serial.print(",  ");
-  Serial2.print(Sensor3.readRangeContinuousMillimeters());
-  Serial2.print(",  ");
-  Serial2.print(Sensor4.readRangeContinuousMillimeters());
+  Serial2.print("ToF3:");
+  uint16_t r=Sensor3.readRangeContinuousMillimeters();
+  Serial2.print(r);
+  if (r==65535){ Serial2.print(" Error: ToF3 -> TIMEOUT"); }
+
+
+  Serial2.print(", ToF4:");
+  r=Sensor4.readRangeContinuousMillimeters();
+  Serial2.print(r);
+  if (r==65535) { Serial2.print(" Error: ToF4 -> TIMEOUT"); }
   Serial2.print(",  \n");
   //Serial.print(Sensor4.readRangeContinuousMillimeters());
   //Serial.print(",  ");
@@ -50,4 +57,16 @@ void print_tof_reading(int x=0){
   
   delay(x);
   
+}
+
+void print_gyro_reading(int x=0){
+
+    Serial2.print("angleX : ");
+    Serial2.print(mpu6050.getAngleX());
+    Serial2.print(" angleY : ");
+    Serial2.print(mpu6050.getAngleY());
+    Serial2.print(" angleZ : ");
+    Serial2.println(mpu6050.getAngleZ());
+
+    delay(x);
 }
