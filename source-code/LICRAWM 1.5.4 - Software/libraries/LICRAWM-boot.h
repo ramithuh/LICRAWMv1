@@ -15,6 +15,11 @@ void boot(){
         delay(100);
     }
 
+    Serial2.println("=============================================================");
+    Serial2.println("       X      Started booting  -  LICRAWM 1.5.4   X          ");
+    Serial2.println("=============================================================");                              
+                                 
+
     _LED_all_off();
     
 }
@@ -23,7 +28,7 @@ void _reset_board(){
     pinMode(RESET_PIN, OUTPUT); 
 }
 
-void boot_tof(){
+void boot_tof(){  //under construction
   pinMode(XSHUT_pin1, OUTPUT);
   pinMode(XSHUT_pin2, OUTPUT);
   pinMode(XSHUT_pin3, OUTPUT);
@@ -47,7 +52,7 @@ void boot_tof(){
   delay(10);
   Sensor3.setAddress(Sensor3_newAddress);
   
-  LED2.on(); //addresses set!!
+ // LED2.on(); //addresses set!!
 
   /*pinMode(XSHUT_pin1, INPUT);
   delay(10);
@@ -70,4 +75,43 @@ void boot_tof(){
 
     Sensor3.startContinuous();
     Sensor4.startContinuous();
+
+    Serial2.println("=============================================================");
+    Serial2.println("       \\      Successfully Booted ToFs     /                 ");
+    Serial2.println("=============================================================");    
 }
+
+void boot_gyro(){
+    mpu6050.begin();
+    mpu6050.calcGyroOffsets(true);
+
+    Serial2.println("=============================================================");
+    Serial2.println("       \\      Successfully Booted GYRO      /                ");
+    Serial2.println("=============================================================");    
+}
+
+void serial_input_check(){
+    if (Serial2.available() > 0) {
+    String x=Serial2.readString() ;
+    if (x.indexOf("Reset") > -1) {
+      Serial2.println("=====================================================");
+      Serial2.println("      **     Restarting  LICRAWM 1.5.4   **          ");
+      Serial2.println("=====================================================");                              
+                                 
+
+      delay(1000);
+      _reset_board();
+    }
+  }
+
+}
+
+
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
