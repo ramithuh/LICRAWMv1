@@ -1,3 +1,4 @@
+
 #include "libraries/LICRAWM-io.h"
 #include <Wire.h>
 #include <VL53L0X.h>
@@ -19,8 +20,10 @@ MPU6050 mpu6050(Wire);
 #include "libraries/LICRAWM-functions.h"
 #include "libraries/LICRAWM-boot.h"
 
+
 void setup() {
   Serial2.begin(9600);
+  Serial3.begin(9600);
   boot();
   Wire.begin();
   LED2.on();
@@ -34,7 +37,8 @@ void setup() {
 
 void loop(){
 
-  serial_input_check(); 
+  bluetooth_input_check(); 
+  openmv_digital_decode();
  
   print_tof_reading();
 
