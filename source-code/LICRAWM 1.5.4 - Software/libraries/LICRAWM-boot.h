@@ -4,6 +4,12 @@ void boot(){
     pinMode(RESET_PIN, INPUT);    // Just to be clear, as default is INPUT. Not really needed.
     digitalWrite(RESET_PIN, LOW); // Prime it, but does not actually set output. 
 
+
+    pinMode(openmv_p7, INPUT_PULLUP);
+    pinMode(openmv_p8, INPUT_PULLUP);
+    pinMode(openmv_p9, INPUT_PULLUP);
+ 
+
     _LED_all_off();         //turn off all LEDs
 
     for(int i=0;i<10;i++){ //LED pattern to show that it's booting
@@ -77,7 +83,7 @@ void boot_tof(){  //under construction
     Sensor4.startContinuous();
 
     Serial2.println("=============================================================");
-    Serial2.println("       \\      Successfully Booted ToFs     /                 ");
+    Serial2.println("       \\      Successfully Booted ToFs     /                ");
     Serial2.println("=============================================================");    
 }
 
@@ -90,8 +96,8 @@ void boot_gyro(){
     Serial2.println("=============================================================");    
 }
 
-void serial_input_check(){
-    if (Serial2.available() > 0) {
+void bluetooth_input_check(){
+  if (Serial2.available() > 0) {
     String x=Serial2.readString() ;
     if (x.indexOf("Reset") > -1) {
       Serial2.println("=====================================================");
@@ -101,15 +107,51 @@ void serial_input_check(){
 
       delay(1000);
       _reset_board();
+    }else if (x.indexOf("greenon") > -1) {
+        LED3.on();
+    }else if (x.indexOf("greenoff") > -1) {
+        LED3.off();
+    }else if (x.indexOf("blueon") > -1) {
+        LED5.on();
+    }else if (x.indexOf("blueoff") > -1) {
+        LED5.off();
+    }else if (x.indexOf("alloff") > -1) {
+       _LED_all_off();
     }
   }
-
 }
 
 
+
+void openmv_serial_check(){
+  if (Serial3.available() > 0) { //something sent by OpenMV
+    String x=Serial3.readString();    
+      Serial2.print("== + ");   //write it to bluetooth serial
+      Serial2.print(x);
+      Serial2.println(" +  ==");                  
+
+  }
+}                                            
                                                         
-                                                        
-                                                        
+void openmv_digital_decode(){
+  int p7=digitalRead(openmv_p7);
+  int p8=digitalRead(openmv_p8);
+  int p9=digitalRead(openmv_p9);
+
+  String out="";
+  if(p7==0 && p8==0 && p9==1)out="red";
+  if(p7==0 && p8==1 && p9==0)out="green";
+  if(p7==1 && p8==0 && p9==0)out= "blue";
+
+  if(out!=""){
+      Serial2.print("== + ");   //write it to bluetooth serial
+      Serial2.print(out);
+      Serial2.print(" +  == :");    
+      Serial2.println(String(p7)+String(p8)+String(p9));
+
+  }
+
+}                                                     
                                                         
                                                         
                                                         
