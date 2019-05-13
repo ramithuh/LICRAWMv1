@@ -1,5 +1,6 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
 
+
 #define LED_1 23
 #define LED_2 25
 #define LED_3 27
@@ -10,6 +11,10 @@
 #define S_2 22
 #define S_3 24
 #define S_4 26
+
+#define openmv_p7 30
+#define openmv_p8 32
+#define openmv_p9 34
 
 #define XSHUT_pin1 45           //Sensor #1's 
 #define XSHUT_pin2 47           //Sensor #2's 
