@@ -45,15 +45,17 @@ void get_tof_reading(int miliseconds=0){
     r3=Sensor3.readRangeContinuousMillimeters();  //this is faster than single read
     r4=Sensor4.readRangeContinuousMillimeters();
   }
+
+
   if(DEBUG_TOF==true){
   //Serial.print(Sensor1.readRangeContinuousMillimeters());
   //Serial.print(",  ");
-        Serial2.print(F("ToF3:"));
+        Serial2.print(F("T3:"));
         Serial2.print(r3);
         if (r3==65535){ Serial2.print(F(" Error: ToF3 -> TIMEOUT")); }
 
 
-        Serial2.print(F(":ToF4:"));
+        Serial2.print(F(":T4:"));
         Serial2.print(r4);
         if (r4==65535) { Serial2.print(F(" Error: ToF4 -> TIMEOUT")); }
         Serial2.print(F("\n"));
@@ -62,7 +64,14 @@ void get_tof_reading(int miliseconds=0){
         //Serial.print(",  ");
         //Serial.print(Sensor5.readRangeContinuousMillimeters());
         //Serial.print(" \n  ");
+
+
         delay(miliseconds);
+  }else if(!DEBUG_GYRO && !DEBUG_TOF ){
+        out+="T3:";
+        out+=r3;
+        out+=":T4:";
+        out+=r4;
   }
   
 }
@@ -78,14 +87,19 @@ void get_gyro_reading(int miliseconds=0){
         z=mpu6050.getAngleZ();
     }
 
+    
     if(DEBUG_GYRO==true){      /* displays only if needed */
-        Serial2.print(F("angleX :"));
+        Serial2.print(F("angleX:"));
         Serial2.print(x);
-        Serial2.print(F(":angleY :"));
+        Serial2.print(F(":Y:"));
         Serial2.print(y);
-        Serial2.print(F(":angleZ :"));
+        Serial2.print(F(":Z:"));
         Serial2.println(z);
 
         delay(miliseconds);
+    }else if(!DEBUG_GYRO && !DEBUG_TOF){
+        out+=":Z:";
+        out+=z;
+        
     }
 }
