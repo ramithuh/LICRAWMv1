@@ -4,10 +4,12 @@
 bool DEBUG_TOF=1;
 bool DEBUG_GYRO=1;
 bool DEBUG_BLUETOOTH=1;
-bool DEBUG_SPEED=1;
+bool DEBUG_SPEED=0;
 
 bool UPDATE_GYRO=1;
 bool UPDATE_TOF=1;
+
+#define WRITE_EVERY_MS 20
 
 #define LED_1 23
 #define LED_2 25
