@@ -88,6 +88,8 @@ void boot_tof(){  //under construction
 }
 
 void boot_gyro(){
+
+
     mpu6050.begin();
     mpu6050.calcGyroOffsets(true);
 
@@ -97,26 +99,46 @@ void boot_gyro(){
 }
 
 void bluetooth_input_check(){
-  if (Serial2.available() > 0) {
-    String x=Serial2.readString() ;
-    if (x.indexOf("Reset") > -1) {
-      Serial2.println("=====================================================");
-      Serial2.println("      **     Restarting  LICRAWM 1.5.4   **          ");
-      Serial2.println("=====================================================");                              
-                                 
+  if(DEBUG_BLUETOOTH==true){
+ 
+      if (Serial2.available()) {
+        char x=Serial2.read();
+        
+        if (x=='R') {
+          Serial2.println("=====================================================");
+          Serial2.println("      **     Restarting  LICRAWM 1.5.4   **          ");
+          Serial2.println("=====================================================");                                                        
+          delay(1000);
+          _reset_board();
 
-      delay(1000);
-      _reset_board();
-    }else if (x.indexOf("greenon") > -1) {
-        LED3.on();
-    }else if (x.indexOf("greenoff") > -1) {
-        LED3.off();
-    }else if (x.indexOf("blueon") > -1) {
-        LED5.on();
-    }else if (x.indexOf("blueoff") > -1) {
-        LED5.off();
-    }else if (x.indexOf("alloff") > -1) {
-       _LED_all_off();
+        }else if (x=='g') {         //Toggle Show Gyro Reading 
+            DEBUG_GYRO=!DEBUG_GYRO;
+            LED3.toggle();
+        }else if (x=='t') {        //Toggle Show ToF Readings 
+            DEBUG_TOF=!DEBUG_TOF;
+            LED5.toggle();
+        }else if (x=='s') {        //Toggle Show Loop speed  
+            DEBUG_SPEED=!DEBUG_SPEED;
+            LED1.toggle();
+           
+        }else if (x=='b') {  //Toggle Blue LED
+            LED5.toggle();
+        }else if (x=='r') {  //Toggle Red LED
+            LED1.toggle();
+        }else if (x=='o') {  //Debugging Disabled
+            DEBUG_TOF=0;
+            DEBUG_GYRO=0;
+            DEBUG_SPEED=0;
+            _LED_all_off();
+
+        }else if (x=='/') {         //Disable Bluetooth Reading
+          DEBUG_BLUETOOTH=0;
+        }else if(x=='T'){
+          UPDATE_TOF=!UPDATE_TOF;   //Disable ToF 
+        }else if(x=='G'){
+          UPDATE_GYRO=!UPDATE_GYRO; //Disable Gyro
+        }
+        
     }
   }
 }
