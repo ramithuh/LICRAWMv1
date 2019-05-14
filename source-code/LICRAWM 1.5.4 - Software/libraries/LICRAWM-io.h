@@ -1,5 +1,13 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
+//#define DEBUG true
 
+bool DEBUG_TOF=1;
+bool DEBUG_GYRO=1;
+bool DEBUG_BLUETOOTH=1;
+bool DEBUG_SPEED=1;
+
+bool UPDATE_GYRO=1;
+bool UPDATE_TOF=1;
 
 #define LED_1 23
 #define LED_2 25
@@ -48,7 +56,9 @@ class _led{
             digitalWrite(_pin, LOW);   // turn the LED off (LOW is the voltage level)
             delay(miliseconds);
         }
-
+        void toggle(){
+            digitalWrite(_pin, !digitalRead(_pin));
+        }
         void blink(int miliseconds){  //blink the LED
             digitalWrite(_pin, HIGH);
             delay(miliseconds);
