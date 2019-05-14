@@ -18,11 +18,17 @@ VL53L0X Sensor3;
 VL53L0X Sensor4;
 MPU6050 mpu6050(Wire);
 
+
+unsigned long O_Serial=micros();
+
+String out;
 #include "libraries/LICRAWM-functions.h"
 #include "libraries/LICRAWM-boot.h"
 
 
 void setup() {
+
+
   Serial2.begin(230400);
   //Serial2.setTimeout(100);
   Serial3.begin(9600);
@@ -39,16 +45,17 @@ void setup() {
 
 void loop(){
 
-  unsigned long start = micros();
+  out="";
 
-    
+  unsigned long start = micros();
+  
     //TraceFunc();
-    bluetooth_input_check(); 
+  _input_check(); 
     //openmv_digital_decode();
   
-    get_tof_reading();
+  get_tof_reading();
    
-    get_gyro_reading();
+  get_gyro_reading();
 
   unsigned long end = micros();
   unsigned long delta = end - start;
@@ -57,6 +64,9 @@ void loop(){
     Serial2.print("\n -> Loop ran in ");
     Serial2.print(delta);
     Serial2.print("ns \n");
+  }else if(!DEBUG_GYRO && !DEBUG_TOF && (micros()-O_Serial)/1000>WRITE_EVERY_MS){
+    Serial2.println(out);
+    O_Serial=micros();
   }
 
 }
