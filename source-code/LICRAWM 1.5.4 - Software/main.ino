@@ -14,8 +14,10 @@ _switch S2(S_2);
 _switch S3(S_3);
 _switch S4(S_4);
 
+VL53L0X Sensor2;
 VL53L0X Sensor3;
 VL53L0X Sensor4;
+VL53L0X Sensor5;
 MPU6050 mpu6050(Wire);
 
 

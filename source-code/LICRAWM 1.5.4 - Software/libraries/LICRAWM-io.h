@@ -1,8 +1,8 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
 //#define DEBUG true
 
-bool DEBUG_TOF=1;
-bool DEBUG_GYRO=1;
+bool DEBUG_TOF=0;
+bool DEBUG_GYRO=0;
 bool DEBUG_BLUETOOTH=1;
 bool DEBUG_SPEED=0;
 

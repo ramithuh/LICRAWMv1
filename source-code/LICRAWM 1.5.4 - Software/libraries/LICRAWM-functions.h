@@ -38,26 +38,38 @@ void _LED_all_on(int miliseconds=0){
 void get_tof_reading(int miliseconds=0){
    //uint16_t r3=Sensor3.readRangeSingleMillimeters();
    //uint16_t r4=Sensor4.readRangeSingleMillimeters();
-   uint16_t r3;
-   uint16_t r4;
+   uint16_t r1,r2,r3,r4,r5;
+
 
   if(UPDATE_TOF){
+    r2=Sensor2.readRangeContinuousMillimeters();
     r3=Sensor3.readRangeContinuousMillimeters();  //this is faster than single read
     r4=Sensor4.readRangeContinuousMillimeters();
+    r5=Sensor5.readRangeContinuousMillimeters();
+
   }
 
 
   if(DEBUG_TOF==true){
   //Serial.print(Sensor1.readRangeContinuousMillimeters());
   //Serial.print(",  ");
-        Serial2.print(F("T3:"));
+
+        Serial2.print(F("T2:"));
+        Serial2.print(r2);
+        if (r2==65535){ Serial2.print(F(" Error: ToF2 -> TIMEOUT")); }
+
+        Serial2.print(F(":T3:"));
         Serial2.print(r3);
         if (r3==65535){ Serial2.print(F(" Error: ToF3 -> TIMEOUT")); }
-
 
         Serial2.print(F(":T4:"));
         Serial2.print(r4);
         if (r4==65535) { Serial2.print(F(" Error: ToF4 -> TIMEOUT")); }
+
+        Serial2.print(F(":T5:"));
+        Serial2.print(r5);
+        if (r5==65535){ Serial2.print(F(" Error: ToF5 -> TIMEOUT")); }
+
         Serial2.print(F("\n"));
 
         //Serial.print(Sensor4.readRangeContinuousMillimeters());
@@ -68,10 +80,14 @@ void get_tof_reading(int miliseconds=0){
 
         delay(miliseconds);
   }else if(!DEBUG_GYRO && !DEBUG_TOF ){
-        out+="T3:";
+        out+="T2:";
+        out+=r2;
+        out+=":T3:";
         out+=r3;
         out+=":T4:";
         out+=r4;
+        out+=":T5:";
+        out+=r5;
   }
   
 }
@@ -100,6 +116,10 @@ void get_gyro_reading(int miliseconds=0){
     }else if(!DEBUG_GYRO && !DEBUG_TOF){
         out+=":Z:";
         out+=z;
-        
+        out+=":Y:";
+        out+=y;
+        out+=":X:";
+        out+=x;
+    
     }
 }

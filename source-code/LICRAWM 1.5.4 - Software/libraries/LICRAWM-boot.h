@@ -42,14 +42,11 @@ void boot_tof(){  //under construction
   pinMode(XSHUT_pin5, OUTPUT);
   
 
- /* pinMode(XSHUT_pin5,INPUT);
+
+  pinMode(XSHUT_pin5,INPUT);
   delay(10);
   Sensor5.setAddress(Sensor5_newAddress);
- 
-  pinMode(XSHUT_pin4,INPUT);
-  delay(10);
-  Sensor4.setAddress(Sensor4_newAddress);
-  */
+
   pinMode(XSHUT_pin4,INPUT);
   delay(10);
   Sensor4.setAddress(Sensor4_newAddress);
@@ -57,6 +54,10 @@ void boot_tof(){  //under construction
   pinMode(XSHUT_pin3,INPUT);
   delay(10);
   Sensor3.setAddress(Sensor3_newAddress);
+
+  pinMode(XSHUT_pin2,INPUT);
+  delay(10);
+  Sensor2.setAddress(Sensor2_newAddress);
   
  // LED2.on(); //addresses set!!
 
@@ -66,21 +67,29 @@ void boot_tof(){  //under construction
  
   //Sensor1.init();
   //Serial.print("Sensor 1 ok");
+  Sensor2.init();
+  Serial2.print("Sensor 2 ok\n");
   Sensor3.init();
-  Serial.print("Sensor 3 ok");
+  Serial2.print("Sensor 3 ok\n");
   Sensor4.init();
-  Serial.print("Sensor 4 ok\n");
+  Serial2.print("Sensor 4 ok\n");
+  Sensor5.init();
+  Serial2.print("Sensor 5 ok\n");
 /*   Sensor4.init();
   Serial.print("Sensor 4 ok");
   Sensor5.init();
   Serial.print("Sensor 5 ok");
     */
 
+    Sensor2.setTimeout(500);
     Sensor3.setTimeout(500);
     Sensor4.setTimeout(500);
+    Sensor5.setTimeout(500);
 
+    Sensor2.startContinuous();
     Sensor3.startContinuous();
     Sensor4.startContinuous();
+    Sensor5.startContinuous();
 
     Serial2.println("=============================================================");
     Serial2.println("       \\      Successfully Booted ToFs     /                ");
@@ -98,7 +107,25 @@ void boot_gyro(){
     Serial2.println("=============================================================");    
 }
 
-void bluetooth_input_check(){
+void _input_check(){
+
+  /*
+  if(S4.on()){
+    DEBUG_TOF=0;
+    DEBUG_GYRO=0;
+    DEBUG_SPEED=0;
+    _LED_all_off();
+    LED4.on();
+    
+  }else{
+    DEBUG_GYRO=1;
+    LED3.on();
+    DEBUG_TOF=1;
+    LED4.off();
+    LED5.on();
+
+  }*/
+
   if(DEBUG_BLUETOOTH==true){
  
       if (Serial2.available()) {
@@ -130,6 +157,7 @@ void bluetooth_input_check(){
             DEBUG_GYRO=0;
             DEBUG_SPEED=0;
             _LED_all_off();
+            LED4.on();
 
         }else if (x=='/') {         //Disable Bluetooth Reading
           DEBUG_BLUETOOTH=0;
