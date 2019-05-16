@@ -6,8 +6,7 @@
  * This example works with the Wiring / Arduino program that follows below.
  */
 
-float angle  =0;
-float p_angle=0;
+float angle=0;
 import processing.serial.*;
 PShape robot;
 PShape robot2;
@@ -15,12 +14,10 @@ Serial myPort;  // Create object from Serial class
 String val;      // Data received from the serial port
 
 
-
 int sizex=700;
 int sizey=700;
 void setup() 
 {
-  frameRate(100);
   size(700, 700);
  
   // I know that the first port in the serial list on my mac
@@ -33,35 +30,38 @@ void setup()
   
 
   robot = loadShape("robot.svg");
+  robot2 = loadShape("robot.svg");
 
-
+ 
+  robot.rotate(3.1428571429);  
 }
 
-void draw(){
-   println(frameRate);
+void draw()
+{
   rectMode(CENTER);
-  translate(width/2, height/2);
   rotate(radians(angle));
+  translate(width/2, height/2);
+  rect(0, 0, 200, 200);
+  angle+=1;
+  
   
   background(225);
-  
-  
-  frame.setTitle(mouseX + ", " + mouseY);
-  float posx= -robot.width/2;
-  float posy= robot.height/2;
-  
-
+  strokeWeight(2);
+  stroke(255,0,0);
+   frame.setTitle(mouseX + ", " + mouseY);
+  int posx=0;
+  //sizex-(sizex-200)/2;
+  int posy=0;
+  //(sizey-200)/2;
   shape(robot, posx, posy);  
   
-  rect(posx,posy,5,5); //left bottom
-  rect(posx+robot.width,posy,5,5); //left right
-  rect(posx,posy-robot.height,5,5);
-  rect(posx+robot.width,posy-robot.height,5,5);
-   
-  strokeWeight(4);
-  stroke(255,0,0);
+  rect(posx,posy,5,5);
+  rect((sizex-200)/2,posy,5,5);
   
-  if (myPort.available() > 0) {  // If data is available,
+ 
+
+  
+  if ( myPort.available() > 0) {  // If data is available,
     val = myPort.readStringUntil(10);        // read it and store it in val
     myPort.clear();
     try{
@@ -70,26 +70,18 @@ void draw(){
     
     
     if(c.length()<=18 && c.length()>13 && c.charAt(0)=='T'){ //got ToF line info list
-      //print(c); 
+      print(c); 
       String[] list = split(c,":"); //split by :
-      
-      line(posx+robot.width+float(list[3]),posy-100,posx+robot.width+float(list[3]),posy-80);
-      line(posx-float(list[1]),posy-100,posx-float(list[1]),posy-80);
-    }else if(c.length()>35 && c.charAt(0)=='a'){ //got ToF line info list
-      //print(c); 
-      String[] list = split(c,":"); //split by :
-
-      angle=float(list[5]);
-   
+      println(list[3]);
+      line(posx+int(list[1]),posy+75, posx+int(list[1]), posy+105);
+      line((sizex-200)/2-float(list[3]),posy+75,(sizex-200)/2-float(list[3]), posy+105);
     }
   
 
-    }catch (NullPointerException e) {
-    }
+      }catch (NullPointerException e) {
+      }
 
   }
   
-   
-
 
 }
