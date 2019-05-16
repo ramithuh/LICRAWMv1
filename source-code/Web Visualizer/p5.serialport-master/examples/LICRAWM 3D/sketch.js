@@ -22,10 +22,9 @@ function setup() {
   createCanvas(windowWidth, windowHeight,WEBGL);
   
 
-  robot = loadImage('robot-2.png'); 
+  robot = loadImage('robot-tex.jpg'); 
   rectMode(CENTER);
   angleMode(DEGREES);
-
  // Instantiate our SerialPort object
   serial = new p5.SerialPort();
 
@@ -144,17 +143,15 @@ function gotRawData(thedata) {
 // serial.write(somevar) writes out the value of somevar to the serial device
 
 function draw() {
+  let locX = mouseX - height / 2;
+  let locY = mouseY - width / 2;
+
+  ambientLight(50);
+  directionalLight(255, 0, 0, 0.25, 0.25, 0);
+  pointLight(0, 0, 255, locX, locY, 250);
   background(0);
 
-
  
-  translate(width/height, height/width);
-  rotate(az);
-  rotateX(-ay);
-  rotateY(-ax);
-  rect(0, 0, 15 , 15);
-
-
   for (var x = 0; x < width; x +=50) {
 		for (var y = 0; y < height; y += 50) {
 			stroke(204, 102, 0);
@@ -165,14 +162,30 @@ function draw() {
       line(-width, -y, width, -y);
 		}
   }
- 
 
+
+ 
+  translate(width/height, height/width);
+  rotate(-az);
+
+  rotateX(ax);
+  rotateY(-ay);
+
+  //rotateY(-ax);
+  push();
+ // specularMaterial(0);
+  texture(robot);
+  //specularMaterial(250);
+  box(200,180,10);
+  pop();
+
+  
   var posx1=- robot.width/2;
   var posx2=  robot.width/2
   var posy1= -robot.height/2;
   var posy2=  robot.height/2
 
-  image(robot, posx1 , posy1);  //robot image
+ // image(robot, posx1 , posy1);  //robot image
     /*
 
 
