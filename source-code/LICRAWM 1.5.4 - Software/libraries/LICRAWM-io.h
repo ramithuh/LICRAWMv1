@@ -38,6 +38,10 @@ bool UPDATE_TOF=1;
 #define Sensor4_newAddress 45
 #define Sensor5_newAddress 46
 
+#define pivot_servo_pin 6       //pins for the arm
+#define tilt_servo_pin 7
+#define gripper_servo_pin 8
+#define coin_servo_pin 9        //pin for the coin collecting servo
 
 class _led{
     private:

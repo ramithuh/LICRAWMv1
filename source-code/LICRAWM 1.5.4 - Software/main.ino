@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <VL53L0X.h>
 #include <MPU6050_tockn.h>
+#include <Servo.h>
 
 
 _led LED5(LED_5);
@@ -20,6 +21,10 @@ VL53L0X Sensor4;
 VL53L0X Sensor5;
 MPU6050 mpu6050(Wire);
 
+Servo pivot_servo;
+Servo tilt_servo;
+Servo grip_servo;
+Servo coin_servo;
 
 unsigned long O_Serial=micros();
 
@@ -42,6 +47,16 @@ void setup() {
   LED3.on(); //booting gyro done!
   boot_tof();
   LED5.on(); //booting tof done!
+
+  //setting up servos
+  pivot_servo.attach(pivot_servo_pin);
+  tilt_servo.attach(tilt_servo_pin);
+  grip_servo.attach(gripper_servo_pin);
+  coin_servo.attach(coin_servo_pin);
+
+  //setting initial positions of servos
+  arm_position(1000,1200,2400,1000);
+  coin_servo.writeMicroseconds(0);        //change the duty cycle accordingly
 
 }
 
