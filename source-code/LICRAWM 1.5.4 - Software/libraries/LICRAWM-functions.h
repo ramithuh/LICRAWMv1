@@ -113,7 +113,6 @@ void get_gyro_reading(int miliseconds=0){
     
     }
 }
-<<<<<<< HEAD
 void get_encoder_reading(){
   if(DEBUG_ENCODERS){
         Serial2.print("M1 Count: "); //(motor B)
@@ -161,7 +160,6 @@ void leftEncoderEvent() {
     }
   }
 }
-=======
 
 void arm_position(int pivot=0,int tilt=0,int grip=0,int miliseconds=0){
     pivot_servo.writeMicroseconds(pivot);
@@ -180,4 +178,3 @@ void transfer_water(int water_transfer_time=0){
     //bring the arm to its initial position
     arm_position(1000,1200,2400,1000);
 }
->>>>>>> f737ef883783dc8873187dd196ddfaa530092c26

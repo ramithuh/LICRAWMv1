@@ -45,7 +45,6 @@ bool VISUALIZE =1;
 #define Sensor4_newAddress 45
 #define Sensor5_newAddress 46
 
-<<<<<<< HEAD
 #define M1_ENCODER_A 2  //encoder pins MOTORB
 #define M1_ENCODER_B 3
 
@@ -56,12 +55,10 @@ bool VISUALIZE =1;
 volatile long M2count  = 0; //motor encoder counts
 volatile long M1count = 0; //motor encoder counts
 
-=======
 #define pivot_servo_pin 6       //pins for the arm
 #define tilt_servo_pin 7
 #define gripper_servo_pin 8
 #define coin_servo_pin 9        //pin for the coin collecting servo
->>>>>>> f737ef883783dc8873187dd196ddfaa530092c26
 
 class _led{
     private:
