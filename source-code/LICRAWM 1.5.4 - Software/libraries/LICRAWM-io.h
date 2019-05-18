@@ -9,6 +9,18 @@ bool DEBUG_SPEED=0;
 bool UPDATE_GYRO=1;
 bool UPDATE_TOF=1;
 
+bool FOLLOW_LINE=1;
+
+int no_of_sensors = 0;            //number of sensors used in the line sensor array
+int KP = 0;                       //set Kp accordingly
+int KI = 0;                       //set Ki accordingly
+int KD = 0;                       //set Kd accordingly
+int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
+
+//default motor speeds
+int left_motor = 130;
+int right_motor = 130;
+
 #define WRITE_EVERY_MS 20
 
 #define LED_1 23
@@ -42,6 +54,7 @@ bool UPDATE_TOF=1;
 #define tilt_servo_pin 7
 #define gripper_servo_pin 8
 #define coin_servo_pin 9        //pin for the coin collecting servo
+
 
 class _led{
     private:
