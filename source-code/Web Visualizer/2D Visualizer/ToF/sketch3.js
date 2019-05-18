@@ -10,34 +10,21 @@
 
 
 
-let xOffset = 0.0;
-let yOffset = 0.0;
-let bx=0;
-let by=0;
-var wheel_factor=0.01;
 
-let pg;
+
 var serial;             // Declare a "SerialPort" object
 var latestData = "Waiting for data.."; 
 var infoData = "..";
-let robot;
-var cols, rows;
-var offset=37.5 + 14;
-var GridSize=20;
-var Zoom=0.2;
+
+
 var Enable_Rotation=true;
 
 var m1_encoder_count=0;
-var m1_pre=0;
+
 
 var m2_encoder_count=0;
-var m2_pre=0;
 
-var ShowMazeSquare=false;
-var OrientationOffSet=0;
-var Fix_Grid=false;
-var Enable_Pan_Zoom=false;
-var Command='b';
+
 
 var angle = 0;
 
@@ -47,73 +34,15 @@ var TOF3=0;
 var TOF4=0;
 var TOF5=0;
 
-var SelectedAngle=['90clock', '45clock'];
-var red=true;
-var blue=true;
-var green;
 
-var gui;
-var menu;
-var area ;
-var console_area;
-var Info_area;
 
-var consoleLog=[];
-var visualizationLog=[];
-var infoLog=[];
-var consoleBuffer=0;
 
 function setup() {
   green=false;
   //pixelDensity(4);
-  createCanvas(windowWidth, windowHeight);
+  canvas= createCanvas(10, 10);
 
-  console_area= createElement('textarea', 'Console ');
-  console_area.attribute("rows","33");
-  console_area.attribute("cols","76");
-  console_area.attribute("readonly",true);
-
-  area= createElement('textarea', 'Visualization Log');
-  area.attribute("rows","33");
-  area.attribute("cols","76");
-  area.attribute("readonly",true);
-
-
-  Info_area= createElement('textarea', 'Info Log');
-  Info_area.attribute("rows","33");
-  Info_area.attribute("cols","60");
-  Info_area.attribute("readonly",true);
-
- 
-  robot = loadImage('pcb2.png'); 
-  robot2 = loadImage('robot-move-encoder.png'); 
-
-  
-  rectMode(CENTER);
-  angleMode(DEGREES);
-
-
-  
-  gui = createGui('LICRAWM Path Visualizer');
-  gui.addButton("ResetBoard", function() {
-    ResetBoard();
-  });
-  sliderRange(0, 90, 1);
-  gui.addGlobals('GridSize');
-
-  
-  gui.addButton("Move Forward", function() {
-    MoveForward();
-  });
-
-  gui.addGlobals('SelectedAngle');
-  gui.addButton("Select Angle", function() {
-    SelectAngle();
-  });
-  gui.addGlobals('Command');
-  gui.addButton("Serial Send", function() {
-    SendCommand();
-  });
+  canvas.parent('sketch-holder');
 
 
   // Instantiate our SerialPort object
@@ -161,7 +90,7 @@ function setup() {
   // OR
   //serial.onRawData(gotRawData); */
   
-  
+
 }
 
 
@@ -219,22 +148,11 @@ function gotData() {
  
 
   var currentString = serial.readLine();  // read the incoming string
- if(visualizationLog.length>40){
-    visualizationLog.pop();
-  } 
-  
-  if(consoleLog.length>50){
-    consoleLog.pop();
-  }
-  if(infoLog.length>150){
-    infoLog.pop();
-  }
  
 
   trim(currentString);                    // remove any trailing whitespace
   if (currentString) {
-    consoleLog.unshift(currentString);
-    consoleLog.unshift('\n');
+
   
   }else{
     return;
@@ -243,11 +161,6 @@ function gotData() {
   //make sure valid serial read
   if(currentString[0]=='T'){
   
-
-    visualizationLog.unshift(currentString);
-    visualizationLog.unshift('\n');
-
-
     
     green=true;
 
@@ -259,17 +172,10 @@ function gotData() {
     TOF5 =parseInt(latestData[7]);
     angle=parseFloat(latestData[9]);
     
+    m1_encoder_count=parseInt(latestData[15]);
     m2_encoder_count=parseInt(latestData[17]);
-    infoLog.unshift(m1_encoder_count);
-    infoLog.unshift('\n');
-
   
-    //m2_encoder_count=parseInt(latestData[15]);
-   
-    by-=(m2_encoder_count-m1_pre)*cos(angle)*5;
-    bx+=(m2_encoder_count-m1_pre)*sin(angle)*5;
-    m1_pre=m2_encoder_count;
-  
+ 
   }
 }
 
@@ -292,105 +198,13 @@ function gotRawData(thedata) {
 // serial.clear() clears the underlying serial buffer
 // serial.available() returns the number of bytes available in the buffer
 // serial.write(somevar) writes out the value of somevar to the serial device
-function draw_grid(){
-
-  for (var x = 0; x < width; x +=GridSize) {
-		for (var y = 0; y < height; y += GridSize) {
-			stroke(195);
-      strokeWeight(0.04);
-      /*
-      line(-x, -height, -x, height);
-      line(x, -height, x, height);
-      line(-width, y, width, y);
-      line(-width, -y, width, -y);*/
-      line(x, 0, x, height);
-			line(0, y, width, y);
-		}
-  }
-}
-
-function draw_grid2(){
- 
-  for (var i = 0; i < 2*height ; i += GridSize) {
-    for (var j = 0; j < 2*width ; j += GridSize) { 
- 
-        noFill();
-        stroke(225);
-        rect(i, j, GridSize, GridSize);
-    }
-  }
 
 
-}
+
 
 function draw() {
 
-  
-  push();
-  translate(width/2, height/2);
-  stroke(255,0,0);
-  strokeWeight(3);
-  line(-6,-6,6,6);
-  line(-6,6,6,-6);
-  pop();
-  
-
-
-  console_area.elt.value=consoleLog.join("");
-  area.elt.value =visualizationLog.join("");
-  Info_area.elt.value =infoLog.join("");
-
-  var posx1= (-robot2.width/2)*Zoom;           //robot coords
-  var posy1= (-robot2.height/2-offset)*Zoom;  //robot coords
- 
-  push();
-    translate(bx, by);
-    translate(width/2, height/2);
-    rotate(angle);
-    stroke(255,0,0);
-    rect(0,0,1,1);
-    image(robot2, posx1, posy1, 200*Zoom ,180*Zoom);  //robot image
-  pop();
-
- draw_grid2();
-
-
-
 }
 
 
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
-function ResetBoard() {
-  serial.write('R');
-}
-
-function MoveForward() {
-  m1_encoder_count+=10;
-
-  by-=(m1_encoder_count-m1_pre)*cos(angle);
-  bx+=(m1_encoder_count-m1_pre)*sin(angle);
-  m1_pre=m1_encoder_count;
-    
-  //redraw();
-}
-
-function SendCommand() {
-  serial.write(Command);
-}
-function SelectAngle() {
-
-  switch(SelectedAngle){
-    case '90clock':
-      angle+=90;
-      //redraw();
-      break;
-    case '45clock':
-      angle+=45;
-     // redraw();
-      break;
-  }
-}
 

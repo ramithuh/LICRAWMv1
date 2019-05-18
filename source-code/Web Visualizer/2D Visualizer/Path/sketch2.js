@@ -9,24 +9,35 @@
  *  **/
 
 
+
 let xOffset = 0.0;
 let yOffset = 0.0;
 let bx=0;
 let by=0;
+let px=0;
+let py=0;
+var wheel_factor=0.01;
 
-
-
+let pg;
 var serial;             // Declare a "SerialPort" object
 var latestData = "Waiting for data.."; 
 var infoData = "..";
 let robot;
 var cols, rows;
 var offset=37.5 + 14;
-var GridSize=50;
-var Zoom=1;
+
+
+
+var GridSize=200;
+var Zoom=0.4;
 var Enable_Rotation=true;
 
-let arduino_mega;
+var m1_encoder_count=0;
+var m1_pre=0;
+
+var m2_encoder_count=0;
+var m2_pre=0;
+
 var ShowMazeSquare=false;
 var OrientationOffSet=0;
 var Fix_Grid=false;
@@ -41,7 +52,7 @@ var TOF3=0;
 var TOF4=0;
 var TOF5=0;
 
-var SelectLED=['Blue', 'Red','Green(Turns on/off Gyro)'];
+var SelectedAngle=['90clock', '45clock'];
 var red=true;
 var blue=true;
 var green;
@@ -55,12 +66,16 @@ var Info_area;
 var consoleLog=[];
 var visualizationLog=[];
 var infoLog=[];
+var posHistory=[];
 var consoleBuffer=0;
 
 function setup() {
   green=false;
   //pixelDensity(4);
-  createCanvas(windowWidth, windowHeight);
+  canvas= createCanvas(windowWidth, windowHeight);
+
+  canvas.parent('sketch-holder');
+
 
   console_area= createElement('textarea', 'Console ');
   console_area.attribute("rows","33");
@@ -79,39 +94,37 @@ function setup() {
   Info_area.attribute("readonly",true);
 
  
-  robot = loadImage('pcb-small.png'); 
-  robot2 = loadImage('pcb3.png'); 
-  //robot = loadImage('robot-2.png'); 
-  arduino_mega = loadImage('arduino_mega.png');
-  //arduino_mega2 = loadImage('arduino_mega_small.png');
+  robot = loadImage('pcb2.png'); 
+  robot2 = loadImage('robot-move-encoder.png'); 
+
+  
   rectMode(CENTER);
   angleMode(DEGREES);
 
 
   
-  gui = createGui('LICRAWM 2D Visualizer');
+  gui = createGui('LICRAWM Path Visualizer');
   gui.addButton("ResetBoard", function() {
     ResetBoard();
   });
   sliderRange(0, 90, 1);
   gui.addGlobals('GridSize');
-  sliderRange(0, 360, 5);
-  gui.addGlobals('OrientationOffSet');
-  sliderRange(0.3, 3, 0.01);
+  sliderRange(0.2, 3, 0.01);
   gui.addGlobals('Zoom');
-  gui.addGlobals('Fix_Grid','Enable_Rotation','ShowMazeSquare','Enable_Pan_Zoom');
-  
-  gui.addButton("Reset Window", function() {
-    ResetWindow();
+  gui.addGlobals('Enable_Pan_Zoom');
+  gui.addButton("Move Forward", function() {
+    MoveForward();
   });
 
-  gui.addGlobals('SelectLED');
-  gui.addButton("Toggle LED", function() {
-    ToggleLED();
+  gui.addGlobals('SelectedAngle');
+  gui.addButton("Select Angle", function() {
+    SelectAngle();
   });
-  gui.addGlobals('Command');
-  gui.addButton("Serial Send", function() {
-    SendCommand();
+  gui.addButton("Reset Position", function() {
+    Reset_Pos();
+  });
+  gui.addButton("Clear Path", function() {
+    Clear_path();
   });
 
 
@@ -160,6 +173,10 @@ function setup() {
   // OR
   //serial.onRawData(gotRawData); */
   
+   posHistory.push(createVector(0,0)); //dummy value
+
+ 
+
 }
 
 
@@ -238,18 +255,13 @@ function gotData() {
     return;
   }
 
-  //console.log(currentString);             // println the string
-  if(currentString[0]=='=' || currentString[0]=='|' || currentString=="-" || currentString==">"){
-    infoLog.unshift(currentString);
-    infoLog.unshift('\n');
-  }
-
   //make sure valid serial read
   if(currentString[0]=='T'){
   
 
-    visualizationLog.unshift(currentString);
-    visualizationLog.unshift('\n');
+ 
+
+
     
     green=true;
 
@@ -260,6 +272,20 @@ function gotData() {
     TOF4 =parseInt(latestData[5]);
     TOF5 =parseInt(latestData[7]);
     angle=parseFloat(latestData[9]);
+    
+    m1_encoder_count=parseInt(latestData[15]);
+    m2_encoder_count=parseInt(latestData[17]);
+  
+    visualizationLog.unshift(latestData.slice(14,18));
+    visualizationLog.unshift('\n');
+  
+    //m2_encoder_count=parseInt(latestData[15]);
+   
+    by-=(m2_encoder_count-m1_pre)*cos(angle)*5;
+    bx+=(m2_encoder_count-m1_pre)*sin(angle)*5;
+    m1_pre=m2_encoder_count;
+
+  
   }
 }
 
@@ -282,169 +308,145 @@ function gotRawData(thedata) {
 // serial.clear() clears the underlying serial buffer
 // serial.available() returns the number of bytes available in the buffer
 // serial.write(somevar) writes out the value of somevar to the serial device
-function draw_grid(){
-  for (var x = 0; x < width; x +=GridSize*Zoom) {
-		for (var y = 0; y < height; y += GridSize*Zoom) {
-			stroke(204, 102, 0);
-			strokeWeight(0.04);
-      line(-x, -height, -x, height);
-      line(x, -height, x, height);
-      line(-width, y, width, y);
-      line(-width, -y, width, -y);
-		}
+
+
+function draw_grid2(){
+  var x=(width/2)%(GridSize*Zoom);
+  var y= (height/2)%(GridSize*Zoom);
+  
+  for (var i = -width/2+2*x; i < 3*height ; i += GridSize*Zoom) {
+    for (var j =  -height/2+2*y; j < 3*width; j += GridSize*Zoom) { 
+        stroke(230);
+        rect(i, j, GridSize*Zoom, GridSize*Zoom);
+    }
   }
 }
+function draw_maze(){
+  var x=(width/2)%(360*Zoom);
+  var y= (height/2)%(360*Zoom);
+
+
+  for (var i = -width/2+2*x; i < 3*height ; i += 360*Zoom) {
+    for (var j = -height/2+2*y; j < 3*width; j += 360*Zoom) { 
+        noFill();
+        stroke(230,0,0,50);
+        rect(i, j, 360*Zoom, 360*Zoom);
+    }
+  }
+}
+
 function draw() {
-  background(220);
+  console_area.elt.value=consoleLog.join("");  //// UPDATE TEXT AREA
+  area.elt.value =visualizationLog.join("");   //// UPDATE TEXT AREA
+  Info_area.elt.value =infoLog.join("");       //// UPDATE TEXT AREA
 
-  console_area.elt.value=consoleLog.join("");
-  area.elt.value =visualizationLog.join("");
-  Info_area.elt.value =infoLog.join("");
 
-  
+  translate(px,py)
+  fill(255);
+  draw_grid2(); 
+  draw_maze();
+
+
   push();
-  let fps = frameRate();
-  fill(100);
-  stroke(1);
-  text("FPS: " + fps.toFixed(2),  9*width/10, 9*height/10);
+      translate(-px,-py)
+      let fps = frameRate();
+      fill(100);
+      stroke(1);
+      text("FPS: " + fps.toFixed(2),  9*width/10, 9*height/10);
   pop();
 
-  translate(bx,by); // pan on mouse drag
+  //scale(Zoom);
 
-  var posx1=- robot.width/2;           //robot coords
-  var posx2=  robot.width/2;           //robot coords
-  var posy1= -robot.height/2+offset;  //robot coords
-  var posy2=  robot.height/2+offset;  //robot coords
- 
-  translate(width/2, height/2);  //needed for rotation about robo axis(wheels)
-
-
-  if(ShowMazeSquare){
-    fill(255);
-    rect(0, 0, 360*Zoom , 360*Zoom);    //36cm 36cm square
+  for(var i=0;i < posHistory.length;i++){ //trails print
+    fill(0,0,255);
+    rect(posHistory[i].x+width/2,posHistory[i].y+height/2,20*Zoom,20*Zoom);
   }
+
+
+  push();                 //cross mark
+     translate(width/2, height/2);
+     stroke(255,0,0);
+     strokeWeight(3);
+     line(-6,-6,6,6);
+     line(-6,6,6,-6);
+  pop();
   
+
+
+  var posx1= (-robot2.width/2);           //robot coords
+  var posy1= (-robot2.height/2-offset);  //robot coords
  
-  if(Fix_Grid){ draw_grid();}
-  if(Enable_Rotation)rotate(angle);
-  rotate(OrientationOffSet);
-  if(!Fix_Grid){ draw_grid();}
- 
-  scale(Zoom); //zoom factor
+  push();
+    translate(bx, by);
+    /*****/
+    if(posHistory[posHistory.length-1].x!=bx || posHistory[posHistory.length-1].y!=by){
+      var v=createVector(bx,by);
+      posHistory.push(v);
+   }
+    /*****/
+    translate(width/2, height/2);
+    scale(Zoom);
 
-  
-
- if(mouseX > bx+width/2+(posx1)*Zoom && mouseX < bx+width/2+(posx1+200)*Zoom && mouseY > by+height/2 + (posy1)*Zoom && mouseY < by+height/2 +(posy2)*Zoom){
-  stroke(0);
-  strokeWeight(2)
-  fill(244, 122, 158);
-  rect(0,-posy1+13,200,180); 
- }
-  
-  image(robot2, posx1 , posy1,200,180);  //robot image
-  image(arduino_mega, -26.5 , posy1-5,53,108);//arduino mega pic
-  rect(0, 0, 2 , 2);
-  
-  if(red){fill(225,0,0);strokeWeight(0.8); stroke(255); ellipse(posx1 + 30, posy1 +   7, 7, 7);}
-  if(blue){fill(0,0,255);strokeWeight(0.8);  stroke(255); ellipse(posx1 + 52, posy1 + 7, 7, 7);}
-  if(green){fill(0,255,0);strokeWeight(0.8);  stroke(255); ellipse(posx1 + 41, posy1 + 7, 7, 7);}
-
-  
-  
-
-  fill(0);
-  text(latestData, posx2, posy2);
-  text(infoData, -width/4, posy2+150);
-  fill(100, 102, 153, 51);
-  text("RotZ: " + angle, -10, posy2+15);  //rotation text
-
-
-
-
-  stroke(255,0,0);
-  strokeWeight(4)
- // line(posx1 ,50, posx1   ,300);   //ToF3
-  line(-10,posy2, 10  ,posy2);   //ToF5
-  line(posx1- TOF2,posy2-65,  posx1 -TOF2  ,posy2-45);   //TOF2
-  line(posx1- TOF3,posy2-100, posx1 -TOF3  ,posy2-80);   //TOF3
-  line(posx2+ TOF4,posy2-100, posx2 +TOF4  ,posy2-80);   //ToF4
-  line(posx2+ TOF5,posy2-65,  posx2 +TOF5  ,posy2-45);   //ToF5
-
-  fill(0);
-  strokeWeight(1)
-  text( "0mm", -13, posy2+20);
-  text(TOF2 + "mm", posx1- TOF2 - 40, posy2- 50 );
-  text(TOF3 + "mm", posx1- TOF3 - 40, posy2- 85 );
-  text(TOF4 + "mm", posx2+ TOF4 + 5, posy2- 85 );
-  text(TOF5 + "mm", posx2+ TOF5 + 5, posy2- 50 );
-  
-
-
+    rotate(angle);
+    stroke(255,0,0);
+    rect(0,0,2,2);
+    image(robot2, posx1, posy1, 200 ,180);  //robot image
+  pop();
 
 }
-function mousePressed(){
-  
-  xOffset = mouseX - bx;
-  yOffset = mouseY - by;
-}
-function mouseDragged() {
-  if(Enable_Pan_Zoom)
-  if(mouseX>windowWidth/5){
-    bx = mouseX - xOffset;
-    by = mouseY - yOffset;
-  }
-}
 
-function mouseWheel(event) {
-
-
-  print(event.delta);
-  //move the square according to the vertical scroll amount
-  //if(event.delta>0){
-    if(mouseY < windowHeight*2/3 && Enable_Pan_Zoom){
-      Zoom+=event.delta*0.01;
-    }
-  //}
-  //uncomment to block page scrolling
-  //return false;
-  return false;
-}
 
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 function ResetBoard() {
-
   serial.write('R');
-
 }
 
-function ResetWindow() {
+function MoveForward() {
+  m1_encoder_count+=10;
 
-  Zoom=1;
+  by-=(m1_encoder_count-m1_pre)*cos(angle);
+  bx+=(m1_encoder_count-m1_pre)*sin(angle);
+  m1_pre=m1_encoder_count;
+    
+  //redraw();
+}
+
+function Reset_Pos() {
   bx=0;
   by=0;
+  angle=0;
+}
+function Clear_path() {
+  posHistory=[];
+  posHistory.push(createVector(0,0));
+}
+function SelectAngle() {
 
+  switch(SelectedAngle){
+    case '90clock':
+      angle+=90;
+      //redraw();
+      break;
+    case '45clock':
+      angle+=45;
+     // redraw();
+      break;
+  }
 }
 
-function SendCommand() {
-  serial.write(Command);
+function mousePressed(){
+  
+  xOffset = mouseX - px;
+  yOffset = mouseY - py;
 }
-function ToggleLED() {
-
-  switch(SelectLED){
-    case 'Blue':
-      serial.write('b');
-      blue=!blue
-      break;
-    case 'Red':
-      serial.write('r');
-      red=!red;
-      break;
-    case 'Green(Turns on/off Gyro)':
-      serial.write('g');
-      break;
+function mouseDragged() {
+  if(Enable_Pan_Zoom)
+  if(mouseX>windowWidth/5){
+    px = mouseX - xOffset;
+    py = mouseY - yOffset;
   }
 }
 
