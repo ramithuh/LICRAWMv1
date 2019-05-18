@@ -1,3 +1,4 @@
+
 void boot(){
 
     //essential at start to make use of Software Reset
@@ -22,7 +23,7 @@ void boot(){
     }
 
     Serial2.println("=============================================================");
-    Serial2.println("       X      Started booting  -  LICRAWM 1.5.4   X          ");
+    Serial2.println("|       X      Started booting  -  LICRAWM 1.5.4   X        |");
     Serial2.println("=============================================================");                              
                                  
 
@@ -68,13 +69,13 @@ void boot_tof(){  //under construction
   //Sensor1.init();
   //Serial.print("Sensor 1 ok");
   Sensor2.init();
-  Serial2.print("Sensor 2 ok\n");
+  Serial2.print("> Sensor 2 ok\n");
   Sensor3.init();
-  Serial2.print("Sensor 3 ok\n");
+  Serial2.print("> Sensor 3 ok\n");
   Sensor4.init();
-  Serial2.print("Sensor 4 ok\n");
+  Serial2.print("> Sensor 4 ok\n");
   Sensor5.init();
-  Serial2.print("Sensor 5 ok\n");
+  Serial2.print("> Sensor 5 ok\n");
 /*   Sensor4.init();
   Serial.print("Sensor 4 ok");
   Sensor5.init();
@@ -86,13 +87,39 @@ void boot_tof(){  //under construction
     Sensor4.setTimeout(500);
     Sensor5.setTimeout(500);
 
+    Sensor4.setMeasurementTimingBudget(35000);
+    Sensor5.setMeasurementTimingBudget(35000);
+    Sensor2.setMeasurementTimingBudget(35000);
+    Sensor3.setMeasurementTimingBudget(35000);
+
+    Sensor4.setSignalRateLimit(3);
+  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    Sensor4.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
+    Sensor4.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 8);
+
+    Sensor5.setSignalRateLimit(3);
+  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    Sensor5.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
+    Sensor5.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 8);
+
+    Sensor2.setSignalRateLimit(3);
+  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    Sensor2.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
+    Sensor2.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange,8);
+    
+    Sensor3.setSignalRateLimit(4);
+  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    Sensor3.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
+    Sensor3.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 8);
+
+
     Sensor2.startContinuous();
     Sensor3.startContinuous();
     Sensor4.startContinuous();
     Sensor5.startContinuous();
 
     Serial2.println("=============================================================");
-    Serial2.println("       \\      Successfully Booted ToFs     /                ");
+    Serial2.println("|      \\      Successfully Booted ToFs     /                |");
     Serial2.println("=============================================================");    
 }
 
@@ -103,8 +130,39 @@ void boot_gyro(){
     mpu6050.calcGyroOffsets(true);
 
     Serial2.println("=============================================================");
-    Serial2.println("       \\      Successfully Booted GYRO      /                ");
+    Serial2.println("|      \\      Successfully Booted GYRO      /               |");
     Serial2.println("=============================================================");    
+}
+
+void boot_encoders(){
+  pinMode(M1_ENCODER_A, INPUT);
+  pinMode(M1_ENCODER_B, INPUT);
+  pinMode(M2_ENCODER_A, INPUT); 
+  pinMode(M2_ENCODER_B, INPUT);
+  
+  attachInterrupt(digitalPinToInterrupt(2),  rightEncoderEvent, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(18), leftEncoderEvent, CHANGE);
+}
+
+void boot_motors(){
+    md.init();
+}
+void block_speed_print(bool m1){
+  if(m1){
+      Serial2.println("=====================================================");
+      Serial2.print("||||||||||||    New M1 Speed  =  ");
+      Serial2.print(m1_global_speed);
+      Serial2.println("   ||||||||||||");
+      Serial2.println("=====================================================");
+  }else{
+      Serial2.println("=====================================================");
+      Serial2.print("||||||||||||    New M2 Speed  =  ");
+      
+      Serial2.print(m2_global_speed);
+      Serial2.println("   ||||||||||||");
+      Serial2.println("=====================================================");
+  }
+
 }
 
 void _input_check(){
@@ -130,10 +188,15 @@ void _input_check(){
  
       if (Serial2.available()) {
         char x=Serial2.read();
+
+        LED1.blink(50);
+        LED1.blink(50);
+        LED1.blink(50);
+        LED1.blink(50);
         
         if (x=='R') {
           Serial2.println("=====================================================");
-          Serial2.println("      **     Restarting  LICRAWM 1.5.4   **          ");
+          Serial2.println("|     **     Restarting  LICRAWM 1.5.4   **         |");
           Serial2.println("=====================================================");                                                        
           delay(1000);
           _reset_board();
@@ -152,12 +215,16 @@ void _input_check(){
             LED5.toggle();
         }else if (x=='r') {  //Toggle Red LED
             LED1.toggle();
-        }else if (x=='o') {  //Debugging Disabled
+        }else if (x=='o') {  //Debugging off AND VISUALIZE!
             DEBUG_TOF=0;
             DEBUG_GYRO=0;
             DEBUG_SPEED=0;
+            DEBUG_ENCODERS=0;
+            VISUALIZE=1;
             _LED_all_off();
             LED4.on();
+        }else if(x=='v'){
+          VISUALIZE=!VISUALIZE;
 
         }else if (x=='/') {         //Disable Bluetooth Reading
           DEBUG_BLUETOOTH=0;
@@ -165,6 +232,25 @@ void _input_check(){
           UPDATE_TOF=!UPDATE_TOF;   //Disable ToF 
         }else if(x=='G'){
           UPDATE_GYRO=!UPDATE_GYRO; //Disable Gyro
+        }else if(x=='1'){
+            Serial2.println("=====================================================");
+            Serial2.println("============     M1 Speed Edit Mode    ==============");
+            Serial2.println("=====================================================");
+            m1_mode=true;
+            m2_mode=false;
+        }else if(x=='2'){
+            Serial2.println("=====================================================");
+            Serial2.println("============     M2 Speed Edit Mode    ==============");
+            Serial2.println("=====================================================");
+            m1_mode=false;
+            m2_mode=true;
+        }else if(x=='+'){
+            if(m1_mode){m1_global_speed+=10; block_speed_print(1);}
+            if(m2_mode){m2_global_speed+=10; block_speed_print(0);}
+
+        }else if(x=='-'){
+            if(m1_mode){m1_global_speed-=10;block_speed_print(1);}
+            if(m2_mode){m2_global_speed-=10;block_speed_print(0);}
         }
         
     }

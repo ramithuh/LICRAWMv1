@@ -36,8 +36,6 @@ void _LED_all_on(int miliseconds=0){
 
 
 void get_tof_reading(int miliseconds=0){
-   //uint16_t r3=Sensor3.readRangeSingleMillimeters();
-   //uint16_t r4=Sensor4.readRangeSingleMillimeters();
    uint16_t r1,r2,r3,r4,r5;
 
 
@@ -46,13 +44,10 @@ void get_tof_reading(int miliseconds=0){
     r3=Sensor3.readRangeContinuousMillimeters();  //this is faster than single read
     r4=Sensor4.readRangeContinuousMillimeters();
     r5=Sensor5.readRangeContinuousMillimeters();
-
   }
 
 
   if(DEBUG_TOF==true){
-  //Serial.print(Sensor1.readRangeContinuousMillimeters());
-  //Serial.print(",  ");
 
         Serial2.print(F("T2:"));
         Serial2.print(r2);
@@ -72,14 +67,9 @@ void get_tof_reading(int miliseconds=0){
 
         Serial2.print(F("\n"));
 
-        //Serial.print(Sensor4.readRangeContinuousMillimeters());
-        //Serial.print(",  ");
-        //Serial.print(Sensor5.readRangeContinuousMillimeters());
-        //Serial.print(" \n  ");
-
-
         delay(miliseconds);
-  }else if(!DEBUG_GYRO && !DEBUG_TOF ){
+
+  }else if(VISUALIZE){
         out+="T2:";
         out+=r2;
         out+=":T3:";
@@ -111,9 +101,9 @@ void get_gyro_reading(int miliseconds=0){
         Serial2.print(y);
         Serial2.print(F(":Z:"));
         Serial2.println(z);
-
         delay(miliseconds);
-    }else if(!DEBUG_GYRO && !DEBUG_TOF){
+    }
+    if(VISUALIZE){
         out+=":Z:";
         out+=z;
         out+=":Y:";
@@ -122,4 +112,51 @@ void get_gyro_reading(int miliseconds=0){
         out+=x;
     
     }
+}
+void get_encoder_reading(){
+  if(DEBUG_ENCODERS){
+        Serial2.print("M1 Count: "); //(motor B)
+        Serial2.print(M1count);
+        Serial2.print(" M2 Count: ");
+        Serial2.println(M2count);
+  }
+
+  if(VISUALIZE){
+      out+=":M1:";
+      out+=M1count;
+      out+=":M2:";
+      out+=M2count;
+
+  }
+}
+
+void rightEncoderEvent() {
+  if (digitalRead(M1_ENCODER_A) == HIGH) {
+    if (digitalRead(M1_ENCODER_B) == LOW) {
+      M1count++;
+    } else {
+      M1count--;
+    }
+  } else {
+    if (digitalRead(M1_ENCODER_B) == LOW) {
+      M1count--;
+    } else {
+      M1count++;
+    }
+  }
+}
+void leftEncoderEvent() {
+  if (digitalRead(M2_ENCODER_A) == HIGH) {
+    if (digitalRead(M2_ENCODER_B) == LOW) {
+      M2count++;
+    } else {
+      M2count--;
+    }
+  } else {
+    if (digitalRead(M2_ENCODER_B) == LOW) {
+      M2count--;
+    } else {
+      M2count++;
+    }
+  }
 }
