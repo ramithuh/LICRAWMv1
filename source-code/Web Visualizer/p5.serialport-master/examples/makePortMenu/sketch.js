@@ -47,7 +47,7 @@ function printList(serialList) {
   menu = createSelect();
   var title = createElement('option', 'Choose a port:');
   menu.child(title);
-  menu.position(10, 10);
+  menu.position(500, 500);
   menu.changed(openPort);
   for (var i = 0; i < serialList.length; i++) {
     var thisOption = createElement('option', serialList[i]);
