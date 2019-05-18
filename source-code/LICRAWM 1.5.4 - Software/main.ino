@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <VL53L0X.h>
 #include <MPU6050_tockn.h>
+#include <DualVNH5019MotorShield.h>
 #include <Servo.h>
 #include <QTRSensors.h>
 #include <DualVNH5019MotorShield.h>
@@ -22,6 +23,7 @@ VL53L0X Sensor4;
 VL53L0X Sensor5;
 MPU6050 mpu6050(Wire);
 
+DualVNH5019MotorShield md(38,39,5,40,A1,35,36,4,37,A0); ///remove current sense pins in future!!
 Servo pivot_servo;
 Servo tilt_servo;
 Servo grip_servo;
@@ -35,6 +37,7 @@ QTRSensorsA qtr((char[] {0,1,2},no_of_sensors);
 unsigned long O_Serial=micros();
 int last_error = 0;
 int motor_speed = 0;
+
 
 String out;
 #include "libraries/LICRAWM-functions.h"
@@ -56,6 +59,8 @@ void setup() {
   boot_tof();
   LED5.on(); //booting tof done!
 
+  boot_motors();
+  boot_encoders();
   //setting up servos
   pivot_servo.attach(pivot_servo_pin);
   tilt_servo.attach(tilt_servo_pin);
@@ -78,28 +83,32 @@ void setup() {
 
 }
 
+
 void loop(){
 
   out="";
-
+  md.setM1Speed(m1_global_speed);
+  md.setM2Speed(m2_global_speed);
   unsigned long start = micros();
   
-    //TraceFunc();
-  _input_check(); 
-    //openmv_digital_decode();
+
+  _input_check();  
   
   get_tof_reading();
-   
   get_gyro_reading();
+  get_encoder_reading();
+
 
   unsigned long end = micros();
   unsigned long delta = end - start;
 
   if(DEBUG_SPEED){
-    Serial2.print("\n -> Loop ran in ");
+    Serial2.print("-> Loop ran in ");
     Serial2.print(delta);
-    Serial2.print("ns \n");
-  }else if(!DEBUG_GYRO && !DEBUG_TOF && (micros()-O_Serial)/1000>WRITE_EVERY_MS){
+    Serial2.println("ns");
+  }
+  
+  if(VISUALIZE && (micros()-O_Serial)/1000>WRITE_EVERY_MS){
     Serial2.println(out);
     O_Serial=micros();
   }

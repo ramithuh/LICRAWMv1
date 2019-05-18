@@ -1,14 +1,22 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
 //#define DEBUG true
+int m1_global_speed=0;
+int m2_global_speed=350;
+
+bool m1_mode=false;
+bool m2_mode=false;
 
 bool DEBUG_TOF=0;
 bool DEBUG_GYRO=0;
+bool DEBUG_ENCODERS=0;
 bool DEBUG_BLUETOOTH=1;
 bool DEBUG_SPEED=0;
 
 bool UPDATE_GYRO=1;
 bool UPDATE_TOF=1;
+bool VISUALIZE =1;
 
+<<<<<<< HEAD
 bool FOLLOW_LINE=1;
 
 int no_of_sensors = 0;            //number of sensors used in the line sensor array
@@ -22,6 +30,9 @@ int left_motor = 130;
 int right_motor = 130;
 
 #define WRITE_EVERY_MS 20
+=======
+#define WRITE_EVERY_MS 0
+>>>>>>> f81eaa7c1cc14c777c24393c19844d62c4b8ae2f
 
 #define LED_1 23
 #define LED_2 25
@@ -49,6 +60,16 @@ int right_motor = 130;
 #define Sensor3_newAddress 44
 #define Sensor4_newAddress 45
 #define Sensor5_newAddress 46
+
+#define M1_ENCODER_A 2  //encoder pins MOTORB
+#define M1_ENCODER_B 3
+
+#define M2_ENCODER_A 18
+#define M2_ENCODER_B 19
+
+
+volatile long M2count  = 0; //motor encoder counts
+volatile long M1count = 0; //motor encoder counts
 
 #define pivot_servo_pin 6       //pins for the arm
 #define tilt_servo_pin 7
