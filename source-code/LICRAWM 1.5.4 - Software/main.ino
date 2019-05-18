@@ -3,7 +3,12 @@
 #include <Wire.h>
 #include <VL53L0X.h>
 #include <MPU6050_tockn.h>
+<<<<<<< HEAD
 #include <DualVNH5019MotorShield.h>
+=======
+#include <Servo.h>
+
+>>>>>>> f737ef883783dc8873187dd196ddfaa530092c26
 
 _led LED5(LED_5);
 _led LED1(LED_1);
@@ -20,7 +25,14 @@ VL53L0X Sensor4;
 VL53L0X Sensor5;
 MPU6050 mpu6050(Wire);
 
+<<<<<<< HEAD
 DualVNH5019MotorShield md(38,39,5,40,A1,35,36,4,37,A0); ///remove current sense pins in future!!
+=======
+Servo pivot_servo;
+Servo tilt_servo;
+Servo grip_servo;
+Servo coin_servo;
+>>>>>>> f737ef883783dc8873187dd196ddfaa530092c26
 
 unsigned long O_Serial=micros();
 
@@ -45,8 +57,20 @@ void setup() {
   boot_tof();
   LED5.on(); //booting tof done!
 
+<<<<<<< HEAD
   boot_motors();
   boot_encoders();
+=======
+  //setting up servos
+  pivot_servo.attach(pivot_servo_pin);
+  tilt_servo.attach(tilt_servo_pin);
+  grip_servo.attach(gripper_servo_pin);
+  coin_servo.attach(coin_servo_pin);
+
+  //setting initial positions of servos
+  arm_position(1000,1200,2400,1000);
+  coin_servo.writeMicroseconds(0);        //change the duty cycle accordingly
+>>>>>>> f737ef883783dc8873187dd196ddfaa530092c26
 
 }
 
