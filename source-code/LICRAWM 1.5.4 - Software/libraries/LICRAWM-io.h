@@ -16,7 +16,6 @@ bool UPDATE_GYRO=1;
 bool UPDATE_TOF=1;
 bool VISUALIZE =1;
 
-<<<<<<< HEAD
 bool FOLLOW_LINE=1;
 
 int no_of_sensors = 0;            //number of sensors used in the line sensor array
@@ -30,9 +29,6 @@ int left_motor = 130;
 int right_motor = 130;
 
 #define WRITE_EVERY_MS 20
-=======
-#define WRITE_EVERY_MS 0
->>>>>>> f81eaa7c1cc14c777c24393c19844d62c4b8ae2f
 
 #define LED_1 23
 #define LED_2 25

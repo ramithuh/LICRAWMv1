@@ -74,7 +74,7 @@ void setup() {
   //calibrating the sensor array
   int i;
   for (i=0; i<250; i++){
-    gtr.calibrate();
+    qtr.calibrate();
     delay(20);
   }
 
@@ -129,8 +129,8 @@ void loop(){
     motor_speed = map(motor_speed,0,1000*(no_of_sensors-1),-400,400);
     last_error = error;
 
-    left_motor = left_motor + motor_speed;    //plus or minus may change accordingly
-    right_motor = right_motor - motor_speed;
+    left_motor = left_motor - motor_speed;    //plus or minus may change accordingly
+    right_motor = right_motor + motor_speed;
   }
   
 
