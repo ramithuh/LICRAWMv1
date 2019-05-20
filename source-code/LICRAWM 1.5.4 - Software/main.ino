@@ -4,8 +4,24 @@
 #include <VL53L0X.h>
 #include <MPU6050_tockn.h>
 #include <DualVNH5019MotorShield.h>
-#include <Servo.h>
+#include <Servo.h>  
+#include<Gaussian.h>
+#include <LinkedList.h>
+#include <GaussianAverage.h>
 
+/*******/ //experimental
+
+GaussianAverage S_TOF4 = GaussianAverage(10);
+GaussianAverage S_TOF5 = GaussianAverage(10);
+GaussianAverage S_TOF3 = GaussianAverage(10);
+GaussianAverage S_TOF2 = GaussianAverage(10);
+
+float offset_TOF4=-17.8;
+float offset_TOF5=-10.3;
+
+float offset_TOF2=-26;
+float offset_TOF3=-36.6;
+/*******/ //experimental
 
 _led LED5(LED_5);
 _led LED1(LED_1);
@@ -69,12 +85,12 @@ void setup() {
 void loop(){
 
   out="";
-  md.setM1Speed(m1_global_speed);
-  md.setM2Speed(m2_global_speed);
+  //md.setM1Speed(m1_global_speed);
+  //md.setM2Speed(m2_global_speed);
   unsigned long start = micros();
   
 
-  _input_check();  
+  _input_check();   ///takes 4us
   
   get_tof_reading();
   get_gyro_reading();
@@ -84,13 +100,16 @@ void loop(){
   unsigned long end = micros();
   unsigned long delta = end - start;
 
-  if(DEBUG_SPEED){
-    Serial2.print("-> Loop ran in ");
+ // Serial2.println(delta);
+
+ if(DEBUG_SPEED){
+    Serial2.print(F("|-> Loop ran in "));
     Serial2.print(delta);
-    Serial2.println("ns");
+    Serial2.print("us && Free SRAM:");
+    Serial2.println(freeRam());
   }
   
-  if(VISUALIZE && (micros()-O_Serial)/1000>WRITE_EVERY_MS){
+  if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
     Serial2.println(out);
     O_Serial=micros();
   }
