@@ -4,7 +4,7 @@
 #include <VL53L0X.h>
 #include <MPU6050_tockn.h>
 #include <DualVNH5019MotorShield.h>
-<<<<<<< HEAD
+#include <QTRSensors.h>
 #include <Servo.h>  
 #include<Gaussian.h>
 #include <LinkedList.h>
@@ -23,11 +23,7 @@ float offset_TOF5=-10.3;
 float offset_TOF2=-26;
 float offset_TOF3=-36.6;
 /*******/ //experimental
-=======
-#include <Servo.h>
-#include <QTRSensors.h>
-#include <DualVNH5019MotorShield.h>
->>>>>>> 11b551fe288bea262535d23004f3c714fbba6922
+
 
 _led LED5(LED_5);
 _led LED1(LED_1);
