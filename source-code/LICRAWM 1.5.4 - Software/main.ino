@@ -4,6 +4,7 @@
 #include <VL53L0X.h>
 #include <MPU6050_tockn.h>
 #include <DualVNH5019MotorShield.h>
+<<<<<<< HEAD
 #include <Servo.h>  
 #include<Gaussian.h>
 #include <LinkedList.h>
@@ -22,6 +23,11 @@ float offset_TOF5=-10.3;
 float offset_TOF2=-26;
 float offset_TOF3=-36.6;
 /*******/ //experimental
+=======
+#include <Servo.h>
+#include <QTRSensors.h>
+#include <DualVNH5019MotorShield.h>
+>>>>>>> 11b551fe288bea262535d23004f3c714fbba6922
 
 _led LED5(LED_5);
 _led LED1(LED_1);
@@ -44,7 +50,14 @@ Servo tilt_servo;
 Servo grip_servo;
 Servo coin_servo;
 
+DualVNH5019MotorShield md(38,39,5,40,A1,35,36,4,37,A0);
+
+//analog pin numbers used inside the curly brackets
+QTRSensorsA qtr((char[] {0,1,2},no_of_sensors);
+
 unsigned long O_Serial=micros();
+int last_error = 0;
+int motor_speed = 0;
 
 
 String out;
@@ -78,6 +91,16 @@ void setup() {
   //setting initial positions of servos
   arm_position(1000,1200,2400,1000);
   coin_servo.writeMicroseconds(0);        //change the duty cycle accordingly
+
+  //calibrating the sensor array
+  int i;
+  for (i=0; i<250; i++){
+    qtr.calibrate();
+    delay(20);
+  }
+
+  //initializing the motor driver
+  md.init();
 
 }
 
@@ -113,5 +136,26 @@ void loop(){
     Serial2.println(out);
     O_Serial=micros();
   }
+
+  while (FOLLOW_LINE)
+  {
+    md.setM1Speed(left_motor);
+    md.setM2Speed(right_motor);
+
+    unsigned int sensors[no_of_sensors];
+    //reading the white line
+    int position = qtr.readLine(sensors,QTR_EMITTERS_ON,1);
+    //calculating Error
+    int error = position - mid_val;
+    //PID controlling
+    int motor_speed = KP*error + KI*(error + last_error) + KD*(error - last_error);
+    //mapping the motor speed to the range of the motors
+    motor_speed = map(motor_speed,0,1000*(no_of_sensors-1),-400,400);
+    last_error = error;
+
+    left_motor = left_motor - motor_speed;    //plus or minus may change accordingly
+    right_motor = right_motor + motor_speed;
+  }
+  
 
 }
