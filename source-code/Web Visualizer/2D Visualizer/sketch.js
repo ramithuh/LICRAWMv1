@@ -283,8 +283,10 @@ function gotRawData(thedata) {
 // serial.available() returns the number of bytes available in the buffer
 // serial.write(somevar) writes out the value of somevar to the serial device
 function draw_grid(){
+  //background(254);
   for (var x = 0; x < width; x +=GridSize*Zoom) {
 		for (var y = 0; y < height; y += GridSize*Zoom) {
+      //background(234);
 			stroke(204, 102, 0);
 			strokeWeight(0.04);
       line(-x, -height, -x, height);
@@ -295,7 +297,7 @@ function draw_grid(){
   }
 }
 function draw() {
-  background(220);
+  background(240);
 
   console_area.elt.value=consoleLog.join("");
   area.elt.value =visualizationLog.join("");
