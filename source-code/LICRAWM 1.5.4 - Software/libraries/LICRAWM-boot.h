@@ -22,9 +22,9 @@ void boot(){
         delay(100);
     }
 
-    Serial2.println("=============================================================");
-    Serial2.println("|       X      Started booting  -  LICRAWM 1.5.4   X        |");
-    Serial2.println("=============================================================");                              
+    Serial2.println(F("============================================================="));
+    Serial2.println(F("|       X      Started booting  -  LICRAWM 1.5.4   X        |"));
+    Serial2.println(F("============================================================="));                              
                                  
 
     _LED_all_off();
@@ -69,13 +69,13 @@ void boot_tof(){  //under construction
   //Sensor1.init();
   //Serial.print("Sensor 1 ok");
   Sensor2.init();
-  Serial2.print("> Sensor 2 ok\n");
+  Serial2.print(F("> Sensor 2 ok\n"));
   Sensor3.init();
-  Serial2.print("> Sensor 3 ok\n");
+  Serial2.print(F("> Sensor 3 ok\n"));
   Sensor4.init();
-  Serial2.print("> Sensor 4 ok\n");
+  Serial2.print(F("> Sensor 4 ok\n"));
   Sensor5.init();
-  Serial2.print("> Sensor 5 ok\n");
+  Serial2.print(F("> Sensor 5 ok\n"));
 /*   Sensor4.init();
   Serial.print("Sensor 4 ok");
   Sensor5.init();
@@ -118,9 +118,9 @@ void boot_tof(){  //under construction
     Sensor4.startContinuous();
     Sensor5.startContinuous();
 
-    Serial2.println("=============================================================");
-    Serial2.println("|      \\      Successfully Booted ToFs     /                |");
-    Serial2.println("=============================================================");    
+    Serial2.println(F("============================================================="));
+    Serial2.println(F("|      \\      Successfully Booted ToFs     /                |"));
+    Serial2.println(F("============================================================="));    
 }
 
 void boot_gyro(){
@@ -129,9 +129,9 @@ void boot_gyro(){
     mpu6050.begin();
     mpu6050.calcGyroOffsets(true);
 
-    Serial2.println("=============================================================");
-    Serial2.println("|      \\      Successfully Booted GYRO      /               |");
-    Serial2.println("=============================================================");    
+    Serial2.println(F("============================================================="));
+    Serial2.println(F("|      \\      Successfully Booted GYRO      /               |"));
+    Serial2.println(F("============================================================="));    
 }
 
 void boot_encoders(){
@@ -149,18 +149,18 @@ void boot_motors(){
 }
 void block_speed_print(bool m1){
   if(m1){
-      Serial2.println("=====================================================");
-      Serial2.print("||||||||||||    New M1 Speed  =  ");
+      Serial2.println(F("====================================================="));
+      Serial2.print(F("||||||||||||    New M1 Speed  =  "));
       Serial2.print(m1_global_speed);
-      Serial2.println("   ||||||||||||");
-      Serial2.println("=====================================================");
+      Serial2.println(F("   ||||||||||||"));
+      Serial2.println(F("====================================================="));
   }else{
-      Serial2.println("=====================================================");
-      Serial2.print("||||||||||||    New M2 Speed  =  ");
+      Serial2.println(F("====================================================="));
+      Serial2.print(F("||||||||||||    New M2 Speed  =  "));
       
       Serial2.print(m2_global_speed);
-      Serial2.println("   ||||||||||||");
-      Serial2.println("=====================================================");
+      Serial2.println(F("   ||||||||||||"));
+      Serial2.println(F("====================================================="));
   }
 
 }
@@ -195,9 +195,9 @@ void _input_check(){
         LED1.blink(50);
         
         if (x=='R') {
-          Serial2.println("=====================================================");
-          Serial2.println("|     **     Restarting  LICRAWM 1.5.4   **         |");
-          Serial2.println("=====================================================");                                                        
+          Serial2.println(F("====================================================="));
+          Serial2.println(F("|     **     Restarting  LICRAWM 1.5.4   **         |"));
+          Serial2.println(F("====================================================="));                                                        
           delay(1000);
           _reset_board();
 
@@ -233,15 +233,15 @@ void _input_check(){
         }else if(x=='G'){
           UPDATE_GYRO=!UPDATE_GYRO; //Disable Gyro
         }else if(x=='1'){
-            Serial2.println("=====================================================");
-            Serial2.println("============     M1 Speed Edit Mode    ==============");
-            Serial2.println("=====================================================");
+            Serial2.println(F("====================================================="));
+            Serial2.println(F("============     M1 Speed Edit Mode    =============="));
+            Serial2.println(F("====================================================="));
             m1_mode=true;
             m2_mode=false;
         }else if(x=='2'){
-            Serial2.println("=====================================================");
-            Serial2.println("============     M2 Speed Edit Mode    ==============");
-            Serial2.println("=====================================================");
+            Serial2.println(F("====================================================="));
+            Serial2.println(F("============     M2 Speed Edit Mode    =============="));
+            Serial2.println(F("====================================================="));
             m1_mode=false;
             m2_mode=true;
         }else if(x=='+'){
