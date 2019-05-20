@@ -1,7 +1,7 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
 //#define DEBUG true
 int m1_global_speed=0;
-int m2_global_speed=350;
+int m2_global_speed=0;
 
 bool m1_mode=false;
 bool m2_mode=false;
