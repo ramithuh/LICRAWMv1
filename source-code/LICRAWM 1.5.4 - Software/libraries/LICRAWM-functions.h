@@ -2,6 +2,13 @@
 
 #define TraceFunc()   do { Serial2.print(F("In function: ")); Serial2.println(__func__); } while (0)
 
+int freeRam() {
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
+
+
 void _LED_all_off(int miliseconds=0){
     digitalWrite(LED_1, LOW);   
     digitalWrite(LED_2, LOW); 
@@ -36,17 +43,35 @@ void _LED_all_on(int miliseconds=0){
 
 
 void get_tof_reading(int miliseconds=0){
-   uint16_t r1,r2,r3,r4,r5;
+   float r1=999;
+   float r2=999;
+   float r3=999;
+   float r4=999;
+   float r5=999;
 
-
-  if(UPDATE_TOF){
+  if(UPDATE_TOF==1){
     r2=Sensor2.readRangeContinuousMillimeters();
     r3=Sensor3.readRangeContinuousMillimeters();  //this is faster than single read
     r4=Sensor4.readRangeContinuousMillimeters();
     r5=Sensor5.readRangeContinuousMillimeters();
   }
 
+/*** smoothen  & calib **/
+r2+=offset_TOF2;
+r3+=offset_TOF3;
+r4+=offset_TOF4;
+r5+=offset_TOF5;
 
+S_TOF4+=r4;
+S_TOF5+=r5;
+S_TOF3+=r3;
+S_TOF2+=r2;
+r4=S_TOF4.process().mean;
+r5=S_TOF5.process().mean;
+r3=S_TOF3.process().mean;
+r2=S_TOF2.process().mean;
+
+//** **/
   if(DEBUG_TOF==true){
 
         Serial2.print(F("T2:"));
@@ -83,9 +108,9 @@ void get_tof_reading(int miliseconds=0){
 }
 
 void get_gyro_reading(int miliseconds=0){
-    float x;
-    float y;
-    float z;
+    float x=9;
+    float y=9;
+    float z=9;
     if(UPDATE_GYRO){
         mpu6050.update(); 
         x=mpu6050.getAngleX();
