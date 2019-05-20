@@ -17,32 +17,21 @@ var latestData = "Waiting for data..";
 var infoData = "..";
 
 
-var Enable_Rotation=true;
 
 var m1_encoder_count=0;
-
-
 var m2_encoder_count=0;
-
-
 
 var angle = 0;
 
-var TOF1=0;
-var TOF2=0;
-var TOF3=0;
-var TOF4=0;
-var TOF5=0;
-
-
+var TOF1=0.0;
+var TOF2=0.0;
+var TOF3=0.0;
+var TOF4=0.0;
+var TOF5=0.0;
 
 
 function setup() {
-  green=false;
-  //pixelDensity(4);
-  canvas= createCanvas(10, 10);
 
-  canvas.parent('sketch-holder');
 
 
   // Instantiate our SerialPort object
@@ -160,16 +149,13 @@ function gotData() {
 
   //make sure valid serial read
   if(currentString[0]=='T'){
-  
-    
-    green=true;
 
     latestData = currentString.split(":");            // save it for the draw method
 
-    TOF2 =parseInt(latestData[1]);
-    TOF3 =parseInt(latestData[3]);
-    TOF4 =parseInt(latestData[5]);
-    TOF5 =parseInt(latestData[7]);
+    TOF2 =parseFloat(latestData[1]);
+    TOF3 =parseFloat(latestData[3]);
+    TOF4 =parseFloat(latestData[5]);
+    TOF5 =parseFloat(latestData[7]);
     angle=parseFloat(latestData[9]);
     
     m1_encoder_count=parseInt(latestData[15]);

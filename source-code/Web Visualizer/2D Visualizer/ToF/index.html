@@ -18,19 +18,201 @@
 
 		}
 		</style>
-			<script src="../dis/vis.js"></script>
-			<link href="../dis/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+		  <style type="text/css">
+			body, html {
+			  font-family: sans-serif;
+			}
+		
+			.custom-style1 {
+			  fill: #f2ea00;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #b3ab00;
+			}
+		
+			.custom-style2 {
+			  fill: #00a0f2;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #050092;
+			}
+		
+			.custom-style3 {
+			  fill: #00f201;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #029200;
+			}
+		
+			path.custom-style3.fill {
+			  fill-opacity:0.5 !important;
+			  stroke: none;
+			}
+		
+			.vis-graph-group0 {
+			  fill:#4f81bd;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #4f81bd;
+			}
+		
+			.vis-graph-group1 {
+			  fill:#f79646;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #f79646;
+			}
+		
+			.vis-graph-group2 {
+			  fill: #8c51cf;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #8c51cf;
+			}
+		
+			.vis-graph-group3 {
+			  fill: #75c841;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #75c841;
+			}
+		
+			.vis-graph-group4 {
+			  fill: #ff0100;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #ff0100;
+			}
+		
+			.vis-graph-group5 {
+			  fill: #37d8e6;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #37d8e6;
+			}
+		
+			.vis-graph-group6 {
+			  fill: #042662;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #042662;
+			}
+		
+			.vis-graph-group7 {
+			  fill:#00ff26;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #00ff26;
+			}
+		
+			.vis-graph-group8 {
+			  fill:#ff00ff;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #ff00ff;
+			}
+		
+			.vis-graph-group9 {
+			  fill: #8f3938;
+			  fill-opacity:0;
+			  stroke-width:2px;
+			  stroke: #8f3938;
+			}
+		
+			.vis-fill {
+			  fill-opacity:0.1;
+			  stroke: none;
+			}
+		
+		
+			.vis-bar {
+			  fill-opacity:0.5;
+			  stroke-width:1px;
+			}
+		
+			.vis-point {
+			  stroke-width:2px;
+			  fill-opacity:1.0;
+			}
+		
+		
+			.vis-legend-background {
+			  stroke-width:1px;
+			  fill-opacity:0.9;
+			  fill: #ffffff;
+			  stroke: #c2c2c2;
+			}
+		
+		
+			.vis-outline {
+			  stroke-width:1px;
+			  fill-opacity:1;
+			  fill: #ffffff;
+			  stroke: #e5e5e5;
+			}
+		
+			.vis-icon-fill {
+			  fill-opacity:0.3;
+			  stroke: none;
+			}
+		
+			div.description-container {
+			  float:left;
+			  height:30px;
+			  width:160px;
+			  padding-left:5px;
+			  padding-right:5px;
+			  line-height: 30px;
+			}
+		
+			div.icon-container {
+			  float:left;
+			}
+		
+			div.legend-element-container {
+			  display:inline-block;
+			  width:200px;
+			  height:30px;
+			  border-style:solid;
+			  border-width:1px;
+			  border-color: #e0e0e0;
+			  background-color: #d3e6ff;
+			  margin:4px;
+			  padding:4px;
+			  -webkit-touch-callout: none;
+			  -webkit-user-select: none;
+			  -khtml-user-select: none;
+			  -moz-user-select: none;
+			  -ms-user-select: none;
+			  user-select: none;
+			  cursor:pointer;
+			}
+			div.legend-element-container.hidden {
+			  background-color: #ffff;
+			}
+		
+			svg.legend-icon {
+			  width:30px;
+			  height:30px;
+			}
+		
+			div.external-legend {
+			  position:relative;
+			  margin-left: -5px;
+			  width: 900px;
+			}
+		  </style>
+		<script src="../dis/vis.js"></script>
+		<link href="../dis/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
 		<script language="javascript" type="text/javascript" src="../libraries/p5.js"></script>
 		<script src="../libraries/p5.dom.js" type="text/javascript"></script>
 
 
 	    <script language="javascript" type="text/javascript" src="../lib/p5.serialport.js"></script>
-
 		<script src="../gui/quicksettings.js" type="text/javascript"></script>
 		
 		<script language="javascript" type="text/javascript" src="sketch3.js"></script>
 
-	
 		<style> body {padding: 0; margin: 0;} </style>
 		
 	</head>
@@ -46,13 +228,14 @@
 								<option value="static" selected>Static</option>
 							</select>
 						</p>
+						<div id="Legend" class="external-legend"></div>
 				<div id="visualization"></div>
-                <div id="sketch-holder">
+                <div id="sketch-holder"></div>
 						<!-- Our sketch will go here! -->
 					</div>
 				
 				<script type="text/javascript">
-					var DELAY = 100; // delay in ms to add new data points
+					var DELAY = 200; // delay in ms to add new data points
 	
 					var strategy = document.getElementById('strategy');
 				
@@ -107,7 +290,7 @@
 					var options = {
 						start: vis.moment().add(-30, 'seconds'), // changed so its faster
 						end: vis.moment(),
-						legend: true,
+						legend: false,
 						interpolation:false,
 						drawPoints: {
 							style: 'circle' // square, circle
@@ -194,6 +377,78 @@
 						setTimeout(addDataPoint, DELAY);
 					}
 					addDataPoint();
+
+											/**
+						* this function fills the external legend with content using the getLegend() function.
+						*/
+						function populateExternalLegend() {
+							var groupsData = groups.get();
+							var legendDiv = document.getElementById("Legend");
+							legendDiv.innerHTML = "";
+
+							// get for all groups:
+							for (var i = 0; i < groupsData.length; i++) {
+							// create divs
+							var containerDiv = document.createElement("div");
+							var iconDiv = document.createElement("div");
+							var descriptionDiv = document.createElement("div");
+
+							// give divs classes and Ids where necessary
+							containerDiv.className = 'legend-element-container';
+							containerDiv.id = groupsData[i].id + "_legendContainer"
+							iconDiv.className = "icon-container";
+							descriptionDiv.className = "description-container";
+
+							// get the legend for this group.
+							var legend = graph2d.getLegend(groupsData[i].id,30,30);
+
+							// append class to icon. All styling classes from the vis.css/vis-timeline-graph2d.min.css have been copied over into the head here to be able to style the
+							// icons with the same classes if they are using the default ones.
+							legend.icon.setAttributeNS(null, "class", "legend-icon");
+
+							// append the legend to the corresponding divs
+							iconDiv.appendChild(legend.icon);
+							descriptionDiv.innerHTML = legend.label;
+
+							// determine the order for left and right orientation
+							if (legend.orientation == 'left') {
+								descriptionDiv.style.textAlign = "left";
+								containerDiv.appendChild(iconDiv);
+								containerDiv.appendChild(descriptionDiv);
+							}
+							else {
+								descriptionDiv.style.textAlign = "right";
+								containerDiv.appendChild(descriptionDiv);
+								containerDiv.appendChild(iconDiv);
+							}
+
+							// append to the legend container div
+							legendDiv.appendChild(containerDiv);
+
+							// bind click event to this legend element.
+							containerDiv.onclick = toggleGraph.bind(this,groupsData[i].id);
+							}
+						}
+
+						/**
+						* This function switchs the visible option of the selected group on an off.
+						* @param groupId
+						*/
+						function toggleGraph(groupId) {
+							// get the container that was clicked on.
+							var container = document.getElementById(groupId + "_legendContainer")
+							// if visible, hide
+							if (graph2d.isGroupVisible(groupId) == true) {
+								groups.update({id:groupId, visible:false});
+								container.className = container.className + " hidden";
+							}
+							else { // if invisible, show
+								groups.update({id:groupId, visible:true});
+								container.className = container.className.replace("hidden","");
+							}
+						}
+
+						populateExternalLegend()
                 </script>
                 
                 <!--
