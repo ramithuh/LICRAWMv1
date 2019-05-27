@@ -14,7 +14,7 @@ let yOffset = 0.0;
 let bx=0;
 let by=0;
 
-
+var line_array_threshold=200;
 
 var serial;             // Declare a "SerialPort" object
 var latestData = "Waiting for data.."; 
@@ -42,6 +42,7 @@ var TOF4=0;
 var TOF5=0;
 
 var SelectLED=['Blue', 'Red','Green(Turns on/off Gyro)'];
+var SelectRot=['z','y','x'];
 var red=true;
 var blue=true;
 var green;
@@ -55,6 +56,7 @@ var Info_area;
 var consoleLog=[];
 var visualizationLog=[];
 var infoLog=[];
+var line_array_readings=[]
 var consoleBuffer=0;
 
 function setup() {
@@ -83,6 +85,7 @@ function setup() {
   robot2 = loadImage('pcb3.png'); 
   //robot = loadImage('robot-2.png'); 
   arduino_mega = loadImage('arduino_mega.png');
+  line_array = loadImage('line_array.jpg');
   //arduino_mega2 = loadImage('arduino_mega_small.png');
   rectMode(CENTER);
   angleMode(DEGREES);
@@ -109,10 +112,14 @@ function setup() {
   gui.addButton("Toggle LED", function() {
     ToggleLED();
   });
+  sliderRange(0, 1023,1);
+  gui.addGlobals('line_array_threshold');
+  gui.addGlobals('SelectRot');
   gui.addGlobals('Command');
   gui.addButton("Serial Send", function() {
     SendCommand();
   });
+
 
 
   // Instantiate our SerialPort object
@@ -255,11 +262,35 @@ function gotData() {
 
     latestData = currentString.split(":");            // save it for the draw method
 
-    TOF2 =parseInt(latestData[1]);
-    TOF3 =parseInt(latestData[3]);
-    TOF4 =parseInt(latestData[5]);
-    TOF5 =parseInt(latestData[7]);
-    angle=parseFloat(latestData[9]);
+    TOF1 =parseInt(latestData[1]);
+    TOF2 =parseInt(latestData[3]);
+    TOF3 =parseInt(latestData[5]);
+    TOF4 =parseInt(latestData[7]);
+    TOF5 =parseInt(latestData[9]);
+    
+    
+    switch(SelectRot){
+      case 'x':
+          angle=-parseFloat(latestData[15]);
+          break;
+      case 'y':
+          angle=-parseFloat(latestData[13]);
+          break;
+      case 'z':
+          angle=-parseFloat(latestData[11]);
+          break;
+    }
+    //
+    
+    line_array_readings[1]=parseFloat(latestData[21]);
+    line_array_readings[2]=parseFloat(latestData[22]);
+    line_array_readings[3]=parseFloat(latestData[23]);
+    line_array_readings[4]=parseFloat(latestData[24]);
+    line_array_readings[5]=parseFloat(latestData[25]);
+    line_array_readings[6]=parseFloat(latestData[26]);
+    line_array_readings[7]=parseFloat(latestData[27]);
+    line_array_readings[8]=parseFloat(latestData[28]);
+
   }
 }
 
@@ -298,6 +329,26 @@ function draw_grid(){
 }
 function draw() {
   background(240);
+
+  
+  image(line_array, windowWidth - 61*5 , 20*5,61*4,20*4)
+  push();
+    fill(0,153,204,196);
+    rect(windowWidth - 61*5 +61*2 , 20*5 + 20*2,61*4,20*4);
+    pop();
+  var i;
+  for(i=1;i<=15;i++){
+    push();
+    if(line_array_readings[i]>line_array_threshold){
+      fill(0);
+    }else{
+      fill(255);
+    }
+    rect(windowWidth - 61*5 +8.1*(2*i-1), 20*5 + 32 ,10,10); //1
+    pop();
+  }
+  
+
 
   console_area.elt.value=consoleLog.join("");
   area.elt.value =visualizationLog.join("");
@@ -366,7 +417,7 @@ function draw() {
   stroke(255,0,0);
   strokeWeight(4)
  // line(posx1 ,50, posx1   ,300);   //ToF3
-  line(-10,posy2, 10  ,posy2);   //ToF5
+  line(-10,posy2+TOF1, 10  ,posy2+TOF1);   //ToF1
   line(posx1- TOF2,posy2-65,  posx1 -TOF2  ,posy2-45);   //TOF2
   line(posx1- TOF3,posy2-100, posx1 -TOF3  ,posy2-80);   //TOF3
   line(posx2+ TOF4,posy2-100, posx2 +TOF4  ,posy2-80);   //ToF4
@@ -374,7 +425,7 @@ function draw() {
 
   fill(0);
   strokeWeight(1)
-  text( "0mm", -13, posy2+20);
+  text(TOF1+"mm", -13, posy2+20+TOF1);
   text(TOF2 + "mm", posx1- TOF2 - 40, posy2- 50 );
   text(TOF3 + "mm", posx1- TOF3 - 40, posy2- 85 );
   text(TOF4 + "mm", posx2+ TOF4 + 5, posy2- 85 );
