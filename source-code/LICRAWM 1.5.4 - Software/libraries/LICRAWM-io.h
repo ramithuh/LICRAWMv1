@@ -51,7 +51,7 @@ int right_motor = 130;
 #define XSHUT_pin4 51
 #define XSHUT_pin5 53
 
-#define Sensor1_newAddress 42
+#define Sensor1_newAddress 50
 #define Sensor2_newAddress 43
 #define Sensor3_newAddress 44
 #define Sensor4_newAddress 45
@@ -62,6 +62,8 @@ int right_motor = 130;
 
 #define M2_ENCODER_A 18
 #define M2_ENCODER_B 19
+
+#define LINE_ARRAY_EVEN_EMITTER_PIN 41
 
 
 volatile long M2count  = 0; //motor encoder counts
