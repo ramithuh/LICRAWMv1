@@ -59,15 +59,15 @@ void boot_tof(){  //under construction
   pinMode(XSHUT_pin2,INPUT);
   delay(10);
   Sensor2.setAddress(Sensor2_newAddress);
+
+  pinMode(XSHUT_pin1,INPUT);
+  delay(10);
+  Sensor1.setAddress(Sensor1_newAddress);
   
  // LED2.on(); //addresses set!!
 
-  /*pinMode(XSHUT_pin1, INPUT);
-  delay(10);
-  Sensor1.setAddress(Sensor1_newAddress);*/
- 
-  //Sensor1.init();
-  //Serial.print("Sensor 1 ok");
+  Sensor1.init();
+  Serial2.print(F("> Sensor 1 ok\n"));
   Sensor2.init();
   Serial2.print(F("> Sensor 2 ok\n"));
   Sensor3.init();
@@ -81,16 +81,18 @@ void boot_tof(){  //under construction
   Sensor5.init();
   Serial.print("Sensor 5 ok");
     */
-
+    Sensor1.setTimeout(500);
     Sensor2.setTimeout(500);
     Sensor3.setTimeout(500);
     Sensor4.setTimeout(500);
     Sensor5.setTimeout(500);
 
-    Sensor4.setMeasurementTimingBudget(35000);
-    Sensor5.setMeasurementTimingBudget(35000);
+    Sensor1.setMeasurementTimingBudget(35000);
     Sensor2.setMeasurementTimingBudget(35000);
     Sensor3.setMeasurementTimingBudget(35000);
+    Sensor4.setMeasurementTimingBudget(35000);
+    Sensor5.setMeasurementTimingBudget(35000);
+   
 
     Sensor4.setSignalRateLimit(3);
   // increase laser pulse periods (defaults are 14 and 10 PCLKs)
@@ -112,7 +114,7 @@ void boot_tof(){  //under construction
     Sensor3.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
     Sensor3.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 8);
 
-
+    Sensor1.startContinuous();
     Sensor2.startContinuous();
     Sensor3.startContinuous();
     Sensor4.startContinuous();
@@ -129,9 +131,16 @@ void boot_gyro(){
     mpu6050.begin();
     mpu6050.calcGyroOffsets(true);
 
+  if(mpu6050.getAngleY()==90.00 && mpu6050.getAngleX()==-90.00){
+    Serial2.println(F("============================================================="));
+    Serial2.println(F("|      !!      !! GYRO NOT DETECTED !!      !!             |"));
+    Serial2.println(F("=============================================================")); 
+  }else{
     Serial2.println(F("============================================================="));
     Serial2.println(F("|      \\      Successfully Booted GYRO      /               |"));
-    Serial2.println(F("============================================================="));    
+    Serial2.println(F("=============================================================")); 
+    LED3.on(); //booting gyro done!  
+  } 
 }
 
 void boot_encoders(){
