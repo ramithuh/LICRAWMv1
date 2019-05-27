@@ -50,6 +50,7 @@ void get_tof_reading(int miliseconds=0){
    float r5=999;
 
   if(UPDATE_TOF==1){
+    r1=Sensor1.readRangeContinuousMillimeters();
     r2=Sensor2.readRangeContinuousMillimeters();
     r3=Sensor3.readRangeContinuousMillimeters();  //this is faster than single read
     r4=Sensor4.readRangeContinuousMillimeters();
@@ -57,6 +58,7 @@ void get_tof_reading(int miliseconds=0){
   }
 
 /*** smoothen  & calib **/
+r1+=offset_TOF1;
 r2+=offset_TOF2;
 r3+=offset_TOF3;
 r4+=offset_TOF4;
@@ -66,36 +68,43 @@ S_TOF4+=r4;
 S_TOF5+=r5;
 S_TOF3+=r3;
 S_TOF2+=r2;
+S_TOF1+=r1;
 r4=S_TOF4.process().mean;
 r5=S_TOF5.process().mean;
 r3=S_TOF3.process().mean;
 r2=S_TOF2.process().mean;
+r1=S_TOF1.process().mean;
 
 //** **/
   if(DEBUG_TOF==true){
+        Serial2.print(F("T1:"));
+        Serial2.print(r1);
+        if (r1>=65530){ Serial2.print(F(" Error: ToF1 -> TIMEOUT")); }
 
         Serial2.print(F("T2:"));
         Serial2.print(r2);
-        if (r2==65535){ Serial2.print(F(" Error: ToF2 -> TIMEOUT")); }
+        if (r2>=65530){ Serial2.print(F(" Error: ToF2 -> TIMEOUT")); }
 
         Serial2.print(F(":T3:"));
         Serial2.print(r3);
-        if (r3==65535){ Serial2.print(F(" Error: ToF3 -> TIMEOUT")); }
+        if (r3>=65530){ Serial2.print(F(" Error: ToF3 -> TIMEOUT")); }
 
         Serial2.print(F(":T4:"));
         Serial2.print(r4);
-        if (r4==65535) { Serial2.print(F(" Error: ToF4 -> TIMEOUT")); }
+        if (r4>=65530) { Serial2.print(F(" Error: ToF4 -> TIMEOUT")); }
 
         Serial2.print(F(":T5:"));
         Serial2.print(r5);
-        if (r5==65535){ Serial2.print(F(" Error: ToF5 -> TIMEOUT")); }
+        if (r5>=65530){ Serial2.print(F(" Error: ToF5 -> TIMEOUT")); }
 
         Serial2.print(F("\n"));
 
         delay(miliseconds);
 
   }else if(VISUALIZE){
-        out+="T2:";
+        out+="T1:";
+        out+=r1;
+        out+=":T2:";
         out+=r2;
         out+=":T3:";
         out+=r3;
@@ -202,4 +211,16 @@ void transfer_water(int water_transfer_time=0){
     delay(water_transfer_time);
     //bring the arm to its initial position
     arm_position(1000,1200,2400,1000);
+}
+
+void get_line_array(){
+  linearray.read(sensorValues);
+
+  out+=":L:";
+  for (uint8_t i = 0; i < SensorCount; i++){
+    out+=sensorValues[i];
+    out+=":";
+  }
+
+
 }
