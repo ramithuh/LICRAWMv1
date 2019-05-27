@@ -16,12 +16,14 @@ GaussianAverage S_TOF4 = GaussianAverage(10);
 GaussianAverage S_TOF5 = GaussianAverage(10);
 GaussianAverage S_TOF3 = GaussianAverage(10);
 GaussianAverage S_TOF2 = GaussianAverage(10);
+GaussianAverage S_TOF1 = GaussianAverage(10);
 
+float offset_TOF1=0;
+float offset_TOF2=-26;
+float offset_TOF3=-36.6;
 float offset_TOF4=-17.8;
 float offset_TOF5=-10.3;
 
-float offset_TOF2=-26;
-float offset_TOF3=-36.6;
 /*******/ //experimental
 
 
@@ -34,10 +36,15 @@ _switch S2(S_2);
 _switch S3(S_3);
 _switch S4(S_4);
 
+VL53L0X Sensor1;
 VL53L0X Sensor2;
 VL53L0X Sensor3;
 VL53L0X Sensor4;
 VL53L0X Sensor5;
+QTRSensors linearray;
+const uint8_t SensorCount = 8;
+uint16_t sensorValues[SensorCount];
+
 MPU6050 mpu6050(Wire);
 
 DualVNH5019MotorShield md(38,39,5,40,A1,35,36,4,37,A0); ///remove current sense pins in future!!
@@ -46,10 +53,8 @@ Servo tilt_servo;
 Servo grip_servo;
 Servo coin_servo;
 
-DualVNH5019MotorShield md(38,39,5,40,A1,35,36,4,37,A0);
 
-//analog pin numbers used inside the curly brackets
-QTRSensorsA qtr((char[] {0,1,2},no_of_sensors);
+
 
 unsigned long O_Serial=micros();
 int last_error = 0;
@@ -62,7 +67,9 @@ String out;
 
 
 void setup() {
-
+  linearray.setTypeAnalog();
+  linearray.setSensorPins((const uint8_t[]){A7, A6, A5, A4, 3, A2, A1, A0}, SensorCount);
+  linearray.setEmitterPin(LINE_ARRAY_EVEN_EMITTER_PIN);
 
   Serial2.begin(230400);
   //Serial2.setTimeout(100);
@@ -72,7 +79,7 @@ void setup() {
   LED1.on();
 
   boot_gyro();
-  LED3.on(); //booting gyro done!
+
   boot_tof();
   LED5.on(); //booting tof done!
 
@@ -89,14 +96,14 @@ void setup() {
   coin_servo.writeMicroseconds(0);        //change the duty cycle accordingly
 
   //calibrating the sensor array
-  int i;
+ /* int i;
   for (i=0; i<250; i++){
     qtr.calibrate();
     delay(20);
-  }
+  }*/
 
   //initializing the motor driver
-  md.init();
+
 
 }
 
@@ -114,6 +121,7 @@ void loop(){
   get_tof_reading();
   get_gyro_reading();
   get_encoder_reading();
+  get_line_array();
 
 
   unsigned long end = micros();
@@ -132,7 +140,7 @@ void loop(){
     Serial2.println(out);
     O_Serial=micros();
   }
-
+/*
   while (FOLLOW_LINE)
   {
     md.setM1Speed(left_motor);
@@ -151,7 +159,7 @@ void loop(){
 
     left_motor = left_motor - motor_speed;    //plus or minus may change accordingly
     right_motor = right_motor + motor_speed;
-  }
+  }*/
   
 
 }
