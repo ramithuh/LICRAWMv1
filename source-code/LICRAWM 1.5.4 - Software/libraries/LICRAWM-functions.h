@@ -1,6 +1,7 @@
 /* Contains LICRAWM BOARD FUNCTIONS */
 
 #define TraceFunc()   do { Serial2.print(F("In function: ")); Serial2.println(__func__); } while (0)
+#define abs(X) ((X < 0) ? -1 * X : X)
 
 int freeRam() {
   extern int __heap_start, *__brkval; 
@@ -121,6 +122,10 @@ void get_gyro_reading(int miliseconds=0){
     float y=9;
     float z=9;
     if(UPDATE_GYRO){
+       /*readAndProcessAccelData();
+       readAndProcessGyroData();
+       calculateAngle();*/
+       
         mpu6050.update(); 
         x=mpu6050.getAngleX();
         y=mpu6050.getAngleY();
@@ -213,8 +218,14 @@ void transfer_water(int water_transfer_time=0){
     arm_position(1000,1200,2400,1000);
 }
 
+void coin_servo_pos(int pulse=0){
+  coin_servo.writeMicroseconds(pulse);
+}
+
 void get_line_array(){
-  linearray.read(sensorValues);
+  //uint16_t position = linearray.readLineBlack(sensorValues);
+  uint16_t position = linearray.readLineWhite(sensorValues);
+
 
   out+=":L:";
   for (uint8_t i = 0; i < SensorCount; i++){
@@ -223,4 +234,107 @@ void get_line_array(){
   }
 
 
+
+}
+
+void move_fixed_distance(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
+  int old_m1_count=M1count;
+  int old_m2_count=M2count;
+
+  while(abs(M1count-old_m1_count)<distance || abs(M2count-old_m2_count)<distance){
+
+    //Serial2.print("|##-> moving fixed distance ");
+    if(abs(M1count-old_m1_count)>distance)md.setM1Brake(400);
+    else md.setM1Speed(speed1);
+    if(abs(M2count-old_m2_count)>distance)md.setM2Brake(400);
+    else md.setM2Speed(speed2);
+    
+  }
+  md.setBrakes(400, 400);  //if above brakes fails
+  Serial2.println("|##-> moved fixed distance! ");
+
+
+}
+void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
+  M1count=0;
+  M2count=0;
+  int old_m1_count=M1count;
+  int old_m2_count=M2count;
+
+    /*Serial2.print(old_m1_count);
+    Serial2.print(" ");
+    Serial2.println(old_m2_count);*/
+
+  while(abs(M1count-old_m1_count)<distance || abs(M2count-old_m2_count)<distance){
+
+    int error=(abs(M1count-old_m1_count)-abs(M2count-old_m2_count))*5;    
+    Serial2.print("error:");
+    Serial2.println(error);
+
+
+    if(abs(M1count-old_m1_count)>distance)md.setM1Brake(400);
+    else {
+      speed1=speed1-error;
+      if(speed1<150){
+        speed1=150;
+      }
+      if(speed1>400){
+        speed1=400;
+      }
+      md.setM1Speed(speed1);
+
+    }
+    if(abs(M2count-old_m2_count)>distance)md.setM2Brake(400);
+    else{
+      speed2=speed2+error;
+      md.setM2Speed(speed2);
+      if(speed2<150){
+        speed2=150;
+      }
+      if(speed2>400){
+        speed2=400;
+      }
+    }
+    
+  }
+  md.setBrakes(400, 400);  //if above brakes fails
+
+}
+
+void make_90_degree_clockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
+  move_fixed_distance(1000,-speed1,speed2);
+}
+void make_90_degree_anticlockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
+  move_fixed_distance(1000,speed1,-speed2);
+}
+void make_x_degree_clockwise(int dis=0,int speed1=m1_global_speed,int speed2=m2_global_speed){
+  move_fixed_distance(dis,-speed1,speed2);
+}
+void make_x_degree_anticlockwise(int dis=0,int speed1=m1_global_speed,int speed2=m2_global_speed){
+  move_fixed_distance(dis,speed1,-speed2);
+}
+
+void coin_pick(){
+   coin_servo_pos(1500);
+   delay(2000);
+}
+void coin_place(){
+    coin_servo_pos(1800);
+    delay(2000);
+}
+float calculate_tof_error(float _tof_front_r,float _tof_back_r){
+//,float _tof_front_l,float _tof_back_l
+  float error=0;
+  float right_error = _tof_front_r - _tof_back_r;
+  //float left_error = _tof_front_l - _tof_back_l;
+  if (_tof_front_r<offset_distance && _tof_back_r<offset_distance){
+    error = offset_distance - right_error;// + left_error;
+  }
+  else if (_tof_front_r>offset_distance && _tof_back_r>offset_distance){
+    error = -1*(offset_distance + right_error);// - left_error;
+  }
+  else{
+    error = -1*KW*(right_error);// - left_error);
+  }
+  return error;
 }
