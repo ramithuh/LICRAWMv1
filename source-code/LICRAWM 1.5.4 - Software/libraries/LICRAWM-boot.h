@@ -126,9 +126,11 @@ void boot_tof(){  //under construction
 }
 
 void boot_gyro(){
-
-
+  /*
+  setUpMPU();
+  callibrateGyroValues();*/
     mpu6050.begin();
+    delay(500);
     mpu6050.calcGyroOffsets(true);
 
   if(mpu6050.getAngleY()==90.00 && mpu6050.getAngleX()==-90.00){
@@ -156,20 +158,33 @@ void boot_encoders(){
 void boot_motors(){
     md.init();
 }
-void block_speed_print(bool m1){
-  if(m1){
+void block_pid_print(int _mode){
+  m1_global_speed=275;
+  m2_global_speed=275;
+  last_error = 0;
+  _last_position=0;
+
+  if(_mode==1){
       Serial2.println(F("====================================================="));
-      Serial2.print(F("||||||||||||    New M1 Speed  =  "));
-      Serial2.print(m1_global_speed);
+      Serial2.print(F("||||||||||||    New KP Value  =  "));
+      Serial2.print(KP);
       Serial2.println(F("   ||||||||||||"));
       Serial2.println(F("====================================================="));
-  }else{
+  }else if(_mode==0){
       Serial2.println(F("====================================================="));
-      Serial2.print(F("||||||||||||    New M2 Speed  =  "));
+      Serial2.print(F("||||||||||||    New KI Value  =  "));
       
-      Serial2.print(m2_global_speed);
+      Serial2.print(KI);
       Serial2.println(F("   ||||||||||||"));
       Serial2.println(F("====================================================="));
+  }else if(_mode==-1){
+      Serial2.println(F("====================================================="));
+      Serial2.print(F("||||||||||||    New KD Value  =  "));
+      
+      Serial2.print(KD);
+      Serial2.println(F("   ||||||||||||"));
+      Serial2.println(F("====================================================="));
+
   }
 
 }
@@ -194,6 +209,7 @@ void _input_check(){
   }*/
 
   if(DEBUG_BLUETOOTH==true){
+
  
       if (Serial2.available()) {
         char x=Serial2.read();
@@ -241,25 +257,66 @@ void _input_check(){
           UPDATE_TOF=!UPDATE_TOF;   //Disable ToF 
         }else if(x=='G'){
           UPDATE_GYRO=!UPDATE_GYRO; //Disable Gyro
-        }else if(x=='1'){
+        }else if(x=='p'){
             Serial2.println(F("====================================================="));
-            Serial2.println(F("============     M1 Speed Edit Mode    =============="));
+            Serial2.println(F("============     KP       Edit Mode    =============="));
             Serial2.println(F("====================================================="));
-            m1_mode=true;
-            m2_mode=false;
-        }else if(x=='2'){
+            kp_mode=true;
+            ki_mode=false;
+            kd_mode=false;
+        }else if(x=='i'){
             Serial2.println(F("====================================================="));
-            Serial2.println(F("============     M2 Speed Edit Mode    =============="));
+            Serial2.println(F("============     KI       Edit Mode    =============="));
             Serial2.println(F("====================================================="));
-            m1_mode=false;
-            m2_mode=true;
+            kp_mode=false;
+            ki_mode=true;
+            kd_mode=false;
+        }else if(x=='d'){
+            Serial2.println(F("====================================================="));
+            Serial2.println(F("============     KD       Edit Mode    =============="));
+            Serial2.println(F("====================================================="));
+            kp_mode=false;
+            ki_mode=false;
+            kd_mode=true;
         }else if(x=='+'){
-            if(m1_mode){m1_global_speed+=10; block_speed_print(1);}
-            if(m2_mode){m2_global_speed+=10; block_speed_print(0);}
+            if(kp_mode){KP+=1; block_pid_print(1);}
+            if(ki_mode){KI+=1; block_pid_print(0);}
+            if(kd_mode){KD+=1; block_pid_print(-1);}
 
         }else if(x=='-'){
-            if(m1_mode){m1_global_speed-=10;block_speed_print(1);}
-            if(m2_mode){m2_global_speed-=10;block_speed_print(0);}
+            if(kp_mode){KP-=1;block_pid_print(1);}
+            if(ki_mode){KI-=1;block_pid_print(0);}
+            if(kd_mode){KD-=1; block_pid_print(-1);}
+        }else if(x=='['){
+            make_90_degree_anticlockwise();
+            Serial2.println("| Made -90 turn!");
+
+        }else if(x==']'){
+            make_90_degree_clockwise();
+            Serial2.println("| Made +90 turn!");
+            
+        }else if(x=='*'){
+            if(FOLLOW_LINE==1){
+                  md.setM1Speed(0);
+                  md.setM2Speed(0);
+                  m1_global_speed=275;
+                  m2_global_speed=275;
+                  last_error = 0;
+                  _last_position=0;
+                  
+            }
+            FOLLOW_LINE=!FOLLOW_LINE;
+            
+        }else if(x=='>'){
+          make_90_degree_clockwise();           
+        }else if(x=='<'){
+          make_90_degree_anticlockwise();         
+        }else if(x=='^'){
+          move_fixed_distance(1000);        
+        }else if(x=='_'){
+            coin_pick();
+        }else if(x=='z'){
+            coin_place();
         }
         
     }
@@ -284,20 +341,86 @@ void openmv_digital_decode(){
   int p9=digitalRead(openmv_p9);
 
   String out="";
-  if(p7==0 && p8==0 && p9==1)out="red";
-  if(p7==0 && p8==1 && p9==0)out="green";
-  if(p7==1 && p8==0 && p9==0)out= "blue";
 
+  
+  if(p7==0 && p8==0 && p9==1){
+    _LED_all_off();
+   // LED2.blink();
+    //LED2.blink(200);
+    //LED2.blink(200);
+    LED2.on();
+    out="red";
+  
+  }
+  if(p7==0 && p8==1 && p9==0){
+    _LED_all_off();
+   // LED3.blink();
+    //LED3.blink(200);
+    //LED3.blink(200);
+    LED3.on();
+    out="green";
+  
+  }
+  if(p7==1 && p8==0 && p9==0){
+    _LED_all_off();
+   // LED5.blink();
+   //LED5.blink(200);
+    //LED5.blink(200);
+    LED5.on();
+    out= "blue";
+
+  }
   if(out!=""){
+      
       Serial2.print("== + ");   //write it to bluetooth serial
       Serial2.print(out);
       Serial2.print(" +  == :");    
       Serial2.println(String(p7)+String(p8)+String(p9));
 
+  }else{
+     _LED_all_off();
   }
 
 }                                                     
-                                                        
+
+
+void boot_linearray(){
+  LED2.blink(50);
+  LED2.blink(50);
+  LED2.on();
+  Serial2.println(F("============================================================="));
+  Serial2.println(F("|      \\  Started CALIBRATING     LINE ARRAY      /         |"));
+  Serial2.println(F("=============================================================")); 
+
+  for (uint16_t i = 0; i < 100; i++){
+    linearray.calibrate();
+  }
+
+  Serial2.println(F("============================================================="));
+  Serial2.println(F("|      \\  Successfully CALIBRATED LINE ARRAY      /         |"));
+  Serial2.println(F("=============================================================")); 
+  Serial2.print("|** ");
+  for (uint8_t i = 0; i < SensorCount; i++){
+    Serial2.print(linearray.calibrationOn.minimum[i]);
+    Serial2.print(' ');
+  }
+  Serial2.println();
+
+  // print the calibration maximum values measured when emitters were on
+  Serial2.print("|** ");
+  for (uint8_t i = 0; i < SensorCount; i++){
+    Serial2.print(linearray.calibrationOn.maximum[i]);
+    Serial2.print(' ');
+  }
+   Serial2.println();
+
+  LED2.blink(500);
+  LED2.blink(500);
+  LED2.off();
+
+
+
+}                                              
                                                         
                                                         
                                                         
