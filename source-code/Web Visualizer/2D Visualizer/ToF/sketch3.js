@@ -152,11 +152,12 @@ function gotData() {
 
     latestData = currentString.split(":");            // save it for the draw method
 
-    TOF2 =parseFloat(latestData[1]);
-    TOF3 =parseFloat(latestData[3]);
-    TOF4 =parseFloat(latestData[5]);
-    TOF5 =parseFloat(latestData[7]);
-    angle=parseFloat(latestData[9]);
+    TOF1 =parseInt(latestData[1]);
+    TOF2 =parseInt(latestData[3]);
+    TOF3 =parseInt(latestData[5]);
+    TOF4 =parseInt(latestData[7]);
+    TOF5 =parseInt(latestData[9]);
+    angle=-parseFloat(latestData[11]);
     
     m1_encoder_count=parseInt(latestData[15]);
     m2_encoder_count=parseInt(latestData[17]);
