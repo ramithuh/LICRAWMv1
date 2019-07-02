@@ -1,10 +1,11 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
 //#define DEBUG true
-int m1_global_speed=0;
-int m2_global_speed=0;
+int m1_global_speed=180; //150
+int m2_global_speed=210; //180
 
-bool m1_mode=false;
-bool m2_mode=false;
+bool kp_mode=false;
+bool ki_mode=false;
+bool kd_mode=false;
 
 bool DEBUG_TOF=0;
 bool DEBUG_GYRO=0;
@@ -16,17 +17,39 @@ bool UPDATE_GYRO=1;
 bool UPDATE_TOF=1;
 bool VISUALIZE =1;
 
+bool FOLLOW_WALL=0;
+float tof_error=0;
+float offset_distance=120;      //keep this distance from the wall
+
 bool FOLLOW_LINE=1;
 
-int no_of_sensors = 0;            //number of sensors used in the line sensor array
-int KP = 0;                       //set Kp accordingly
-int KI = 0;                       //set Ki accordingly
-int KD = 0;                       //set Kd accordingly
+int no_of_sensors=15;
+float KP = 80;   //80     /*was 20*/               //set Kp accordingly
+float KI = 3;                       //set Ki accordingly
+float KD = 300;         //240              //set Kd accordingly
+float KW = 20;
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
+int last_error = 0;
+float _last_position=0;
 
-//default motor speeds
-int left_motor = 130;
-int right_motor = 130;
+
+//*** gyro.h ***
+double gyroXCalli;
+double gyroYCalli;
+double gyroZCalli;
+double gyroXPresent;
+double gyroYPresent;
+double gyroZPresent;
+double gyroXPast;
+double gyroYPast;
+double gyroZPast;
+double accelX;
+double accelY;
+double accelZ;
+double gForceX;
+double gForceY;
+double gForceZ;
+//***  ***//
 
 #define WRITE_EVERY_MS 20
 
@@ -60,19 +83,20 @@ int right_motor = 130;
 #define M1_ENCODER_A 2  //encoder pins MOTORB
 #define M1_ENCODER_B 3
 
-#define M2_ENCODER_A 18
-#define M2_ENCODER_B 19
+#define M2_ENCODER_A 19
+#define M2_ENCODER_B 18
 
 #define LINE_ARRAY_EVEN_EMITTER_PIN 41
+#define LINE_ARRAY_ODD_EMITTER_PIN 42
 
 
 volatile long M2count  = 0; //motor encoder counts
 volatile long M1count = 0; //motor encoder counts
 
-#define pivot_servo_pin 6       //pins for the arm
+#define pivot_servo_pin 9       //pins for the arm
 #define tilt_servo_pin 7
 #define gripper_servo_pin 8
-#define coin_servo_pin 9        //pin for the coin collecting servo
+#define coin_servo_pin 6       //pin for the coin collecting servo
 
 
 class _led{
