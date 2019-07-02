@@ -14,7 +14,7 @@ let yOffset = 0.0;
 let bx=0;
 let by=0;
 
-var line_array_threshold=200;
+var line_array_threshold=500;
 
 var serial;             // Declare a "SerialPort" object
 var latestData = "Waiting for data.."; 
@@ -46,6 +46,8 @@ var SelectRot=['z','y','x'];
 var red=true;
 var blue=true;
 var green;
+var SelectPID=['KP','KI','KD'];
+var SelectVal=['+100','-100','+50','-50','+20','-20','+10','-10','+5','-5','+1','-1'];
 
 var gui;
 var menu;
@@ -118,6 +120,16 @@ function setup() {
   gui.addGlobals('Command');
   gui.addButton("Serial Send", function() {
     SendCommand();
+  });
+  gui.addButton("Start/Stop Motors", function() {
+    StartStop();
+  });
+  gui.addGlobals('SelectPID');
+  gui.addGlobals('SelectVal');
+  
+  
+  gui.addButton("PID Change", function() {
+    SendValue();
   });
 
 
@@ -263,10 +275,25 @@ function gotData() {
     latestData = currentString.split(":");            // save it for the draw method
 
     TOF1 =parseInt(latestData[1]);
+    if(TOF1>65000){
+      TOF1=9.99;
+    }
     TOF2 =parseInt(latestData[3]);
+    if(TOF2>65000){
+      TOF2=9.99;
+    }
     TOF3 =parseInt(latestData[5]);
+    if(TOF3>65000){
+      TOF3=9.99;
+    }
     TOF4 =parseInt(latestData[7]);
+    if(TOF4>65000){
+      TOF4=9.99;
+    }
     TOF5 =parseInt(latestData[9]);
+    if(TOF5>65000){
+      TOF5=9.99;
+    }
     
     
     switch(SelectRot){
@@ -290,6 +317,13 @@ function gotData() {
     line_array_readings[6]=parseFloat(latestData[26]);
     line_array_readings[7]=parseFloat(latestData[27]);
     line_array_readings[8]=parseFloat(latestData[28]);
+    line_array_readings[9]=parseFloat(latestData[29]);
+    line_array_readings[10]=parseFloat(latestData[30]);
+    line_array_readings[11]=parseFloat(latestData[31]);
+    line_array_readings[12]=parseFloat(latestData[32]);
+    line_array_readings[13]=parseFloat(latestData[33]);
+    line_array_readings[14]=parseFloat(latestData[34]);
+    line_array_readings[15]=parseFloat(latestData[35]);
 
   }
 }
@@ -331,10 +365,10 @@ function draw() {
   background(240);
 
   
-  image(line_array, windowWidth - 61*5 , 20*5,61*4,20*4)
+  image(line_array, windowWidth - 61*5 , windowHeight-20*5,61*4,20*4)
   push();
     fill(0,153,204,196);
-    rect(windowWidth - 61*5 +61*2 , 20*5 + 20*2,61*4,20*4);
+    rect(windowWidth - 61*5 +61*2 ,windowHeight- 20*5 + 20*2,61*4,20*4);
     pop();
   var i;
   for(i=1;i<=15;i++){
@@ -344,7 +378,7 @@ function draw() {
     }else{
       fill(255);
     }
-    rect(windowWidth - 61*5 +8.1*(2*i-1), 20*5 + 32 ,10,10); //1
+    rect(windowWidth - 61*5 +8.1*(2*i-1),windowHeight- 20*5 + 32 ,10,10); //1
     pop();
   }
   
@@ -359,7 +393,7 @@ function draw() {
   let fps = frameRate();
   fill(100);
   stroke(1);
-  text("FPS: " + fps.toFixed(2),  9*width/10, 9*height/10);
+  text("FPS: " + fps.toFixed(2),  9*width/10, 9*height/10 -20*5);
   pop();
 
   translate(bx,by); // pan on mouse drag
@@ -483,6 +517,97 @@ function ResetWindow() {
 
 function SendCommand() {
   serial.write(Command);
+}
+function StartStop() {
+  serial.write('*');
+}
+
+function send_pid_value(mode){
+    if(mode==1){
+      serial.write('+');
+     // console.log('i');
+
+
+    }else{
+      serial.write('-');
+    //  console.log('i');
+
+    }
+}
+function delay(ms) {
+  var cur_d = new Date();
+  var cur_ticks = cur_d.getTime();
+  var ms_passed = 0;
+  while(ms_passed < ms) {
+      var d = new Date();  // Possible memory leak?
+      var ticks = d.getTime();
+      ms_passed = ticks - cur_ticks;
+      // d = null;  // Prevent memory leak?
+  }
+}
+
+function multiplesend(l,mode){
+
+  switch(SelectPID){
+    case 'KP':
+      serial.write('p');
+      break;
+    case 'KI':
+      serial.write('i');
+      break;
+    case 'KD':
+      serial.write('d');
+      break;
+  }
+  for(var i=0;i<l;i++){
+    send_pid_value(mode);
+    delay(150);
+  } 
+  
+
+}
+
+function SendValue() {
+
+  switch(SelectVal){
+    case '+100':
+      multiplesend(100,1);
+      break;
+    case '-100':
+      multiplesend(100,0);
+      break;
+    case '+50':
+      multiplesend(50,1);
+      break;
+    case '-50':
+      multiplesend(50,0);
+      break;
+    case '+10':
+      multiplesend(10,1);
+      break;
+    case '-10':
+      multiplesend(10,0);
+      break;
+    case '+20':
+      multiplesend(20,1);
+      break;
+    case '-20':
+      multiplesend(20,0);
+      break;
+    case '+5':
+      multiplesend(5,1);
+      break;
+    case '-5':
+      multiplesend(5,0);
+      break;
+    case '+1':
+      multiplesend(1,1);
+      break;
+    case '-1':
+      multiplesend(1,0);
+      break;
+    
+  }
 }
 function ToggleLED() {
 
