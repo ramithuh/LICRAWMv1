@@ -1,7 +1,7 @@
 /* Contains LICRAWM BOARD FUNCTIONS */
 
 #define TraceFunc()   do { Serial2.print(F("In function: ")); Serial2.println(__func__); } while (0)
-#define abs(X) ((X < 0) ? -1 * X : X)
+
 
 int freeRam() {
   extern int __heap_start, *__brkval; 
@@ -44,11 +44,11 @@ void _LED_all_on(int miliseconds=0){
 
 
 void get_tof_reading(int miliseconds=0){
-   float r1=999;
-   float r2=999;
-   float r3=999;
-   float r4=999;
-   float r5=999;
+   double r1=999;
+   double r2=999;
+   double r3=999;
+   double r4=999;
+   double r5=999;
 
   if(UPDATE_TOF==1){
     r1=Sensor1.readRangeContinuousMillimeters();
@@ -118,18 +118,24 @@ r1=S_TOF1.process().mean;
 }
 
 void get_gyro_reading(int miliseconds=0){
-    float x=9;
-    float y=9;
-    float z=9;
+    double x=9;
+    double y=9;
+    double z=9;
     if(UPDATE_GYRO){
        /*readAndProcessAccelData();
        readAndProcessGyroData();
        calculateAngle();*/
        
         mpu6050.update(); 
+
+
+        /* 
         x=mpu6050.getAngleX();
         y=mpu6050.getAngleY();
-        z=mpu6050.getAngleZ();
+        z=mpu6050.getAngleZ();*/
+        x=mpu6050.getGyroAngleX();
+        y=mpu6050.getGyroAngleY();
+        z=mpu6050.getGyroAngleZ();
     }
 
     
@@ -238,15 +244,22 @@ void get_line_array(){
 }
 
 void move_fixed_distance(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
-  int old_m1_count=M1count;
-  int old_m2_count=M2count;
+  M1count=0;
+  M2count=0;
+  long old_m1_count=abs(M1count);
+  long old_m2_count=abs(M2count);
 
-  while(abs(M1count-old_m1_count)<distance || abs(M2count-old_m2_count)<distance){
+  while(abs(abs(M1count)-old_m1_count)<distance || abs(abs(M2count)-old_m2_count)<distance){
 
-    //Serial2.print("|##-> moving fixed distance ");
-    if(abs(M1count-old_m1_count)>distance)md.setM1Brake(400);
+  /*  Serial2.print("|##-> moving fixed distance M1:");
+    Serial2.print(M1count);
+    Serial2.print(" M2:");
+    Serial2.println(M1count);*/
+  
+
+    if(abs(abs(M1count)-old_m1_count)>distance)md.setM1Brake(400);
     else md.setM1Speed(speed1);
-    if(abs(M2count-old_m2_count)>distance)md.setM2Brake(400);
+    if(abs(abs(M2count)-old_m2_count)>distance)md.setM2Brake(400);
     else md.setM2Speed(speed2);
     
   }
@@ -255,28 +268,65 @@ void move_fixed_distance(int distance ,int speed1=m1_global_speed,int speed2=m2_
 
 
 }
+
+void move_fixed_distance2(int distance, int slaveSpeed=m1_global_speed,int masterSpeed=m2_global_speed ){
+  int totalTicks = 0;
+  int error = 0;
+  int kp = 5;
+ 
+  M2count = 0;
+  M1count = 0;
+ 
+  while(abs(totalTicks) < distance)
+  {
+    //Proportional algorithm to keep the robot going straight.
+    md.setM2Speed(masterSpeed);
+    md.setM1Speed(slaveSpeed);
+ 
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+      error = M2count - M1count;
+    }
+    
+ 
+    slaveSpeed += error / kp;
+ 
+    M2count = 0;
+    M1count = 0;
+ 
+    delay(100);
+ 
+    //Add this iteration's encoder values to totalTicks.
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+      totalTicks+= M2count;
+    }
+  }
+  md.setBrakes(400,400);
+
+}
+
 void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
   M1count=0;
   M2count=0;
-  int old_m1_count=M1count;
-  int old_m2_count=M2count;
 
-    /*Serial2.print(old_m1_count);
-    Serial2.print(" ");
-    Serial2.println(old_m2_count);*/
+  int last_error=0;
 
-  while(abs(M1count-old_m1_count)<distance || abs(M2count-old_m2_count)<distance){
 
-    int error=(abs(M1count-old_m1_count)-abs(M2count-old_m2_count))*5;    
+  while(abs(M1count)<distance || abs(M2count)<distance){
+
+    int error=(abs(M1count)-abs(M2count))*10;    
+    error=error+(error-last_error)*0;
+    last_error = error;
+
+
     Serial2.print("error:");
     Serial2.println(error);
 
 
-    if(abs(M1count-old_m1_count)>distance)md.setM1Brake(400);
+    if(abs(M1count)>distance)md.setM1Brake(400);
     else {
       speed1=speed1-error;
-      if(speed1<150){
-        speed1=150;
+      if(speed1<0){
+        speed1=0;
       }
       if(speed1>400){
         speed1=400;
@@ -284,17 +334,18 @@ void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2
       md.setM1Speed(speed1);
 
     }
-    if(abs(M2count-old_m2_count)>distance)md.setM2Brake(400);
+    if(abs(M2count)>distance)md.setM2Brake(400);
     else{
       speed2=speed2+error;
       md.setM2Speed(speed2);
-      if(speed2<150){
-        speed2=150;
+      if(speed2<0){
+        speed2=0;
       }
       if(speed2>400){
         speed2=400;
       }
     }
+
     
   }
   md.setBrakes(400, 400);  //if above brakes fails
@@ -302,11 +353,36 @@ void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2
 }
 
 void make_90_degree_clockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
-  move_fixed_distance(1000,-speed1,speed2);
+  /* for(int i=0;i<101;i++){
+    Serial2.println("clockwise");
+    Serial2.println(i);
+   move_fixed_distance(10,-speed1,speed2);
+  }*/
+   /* for(int i=0;i<1010;i++){
+   move_fixed_distance(1,-speed1,speed2);
+  }*/
+ move_fixed_distance2(955,-400,400);
 }
 void make_90_degree_anticlockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
-  move_fixed_distance(1000,speed1,-speed2);
+  /*for(int i=0;i<101;i++){
+      Serial2.println("anti clockwise");
+    Serial2.println(i);
+    move_fixed_distance(10,speed1,-speed2);
+  }*/
+ /* for(int i=0;i<1010;i++){
+    move_fixed_distance(1,speed1,-speed2);
+  }*/
+  move_fixed_distance2(955,400,-400);
 }
+void move_cell_distance(int speed1=m1_global_speed,int speed2=m2_global_speed){
+  //for(int i=0;i<3;i++){
+    move_fixed_distance(10);
+ /* for(int i=0;i<1010;i++){
+    move_fixed_distance(1,speed1,-speed2);
+  }*/
+ 
+}
+
 void make_x_degree_clockwise(int dis=0,int speed1=m1_global_speed,int speed2=m2_global_speed){
   move_fixed_distance(dis,-speed1,speed2);
 }
@@ -322,11 +398,11 @@ void coin_place(){
     coin_servo_pos(1800);
     delay(2000);
 }
-float calculate_tof_error(float _tof_front_r,float _tof_back_r){
-//,float _tof_front_l,float _tof_back_l
-  float error=0;
-  float right_error = _tof_front_r - _tof_back_r;
-  //float left_error = _tof_front_l - _tof_back_l;
+double calculate_tof_error(double _tof_front_r,double _tof_back_r){
+//,double _tof_front_l,double _tof_back_l
+  double error=0;
+  double right_error = _tof_front_r - _tof_back_r;
+  //double left_error = _tof_front_l - _tof_back_l;
   if (_tof_front_r<offset_distance && _tof_back_r<offset_distance){
     error = offset_distance - right_error;// + left_error;
   }

@@ -1,3 +1,4 @@
+#include<util/atomic.h>
 #include "libraries/LICRAWM-io.h"
 #include <Wire.h>
 #include <VL53L0X.h>
@@ -18,10 +19,10 @@ GaussianAverage S_TOF2 = GaussianAverage(5);
 GaussianAverage S_TOF1 = GaussianAverage(5);
 
 float offset_TOF1=0;
-float offset_TOF2=-26;
-float offset_TOF3=-36.6;
-float offset_TOF4=-17.8;
-float offset_TOF5=-10.3;
+float offset_TOF2=-17;
+float offset_TOF3=-10.3;
+float offset_TOF4=-18.8;
+float offset_TOF5=-29.6;//
 
 /*******/ //experimental
 
@@ -67,7 +68,7 @@ float calculate_pos(){
   int pos=0;
   int on_count=0;
   for(int i=0;i<15;i++){
-      if(sensorValues[i]>300){
+      if(sensorValues[i]<300){
           pos+=(i-7)*10;
           on_count+=1;
       }
@@ -107,9 +108,9 @@ void setup() {
   linearray.setEmitterPin(LINE_ARRAY_EVEN_EMITTER_PIN);
   linearray.setEmitterPin(LINE_ARRAY_ODD_EMITTER_PIN);
 
+ // Serial.begin(9600);
   Serial2.begin(230400);
-  //Serial2.setTimeout(100);
-  Serial3.begin(9600);
+ 
   boot();
   Wire.begin();
   LED1.on();
@@ -145,14 +146,11 @@ void setup() {
 void loop(){
 
 
-   //make_90_degree_clockwise();
-   //delay(10000);
-
   out="";
   _input_check();   ///takes 4us
   //openmv_digital_decode();
-  //get_tof_reading();
-    
+ // get_tof_reading();
+//move_fixed_distance(1000);
   
 
     if(FOLLOW_LINE){
@@ -161,8 +159,8 @@ void loop(){
         md.setM2Speed(m2_global_speed);
         unsigned int sensors[no_of_sensors];
         //reading the white line
-      //  linearray.readLineWhite(sensorValues);
-       linearray.readLineBlack(sensorValues);
+        linearray.readLineWhite(sensorValues);
+       //linearray.readLineBlack(sensorValues);
         int position=calculate_pos();
 
         out+=":POS:";
@@ -184,10 +182,6 @@ void loop(){
         Serial2.print(motor_speed);
 
 
-        //mapping the motor speed to the range of the motors
-        //motor_speed = map(motor_speed,KP*-7000,KP*7000,-15,15);
-        Serial2.print(" :motor_speed_mapped:");
-        Serial2.print(motor_speed);
 
 
         last_error = error;
@@ -230,7 +224,7 @@ void loop(){
 
 
 */
-/*
+
   if(FOLLOW_WALL){
         md.setM1Speed(m1_global_speed);
         md.setM2Speed(m2_global_speed);
@@ -282,18 +276,25 @@ void loop(){
         }
     }
 
-  */
-/*
-  get_gyro_reading();
-  get_encoder_reading();
-  get_line_array();
-  int position=calculate_pos();
-  out+=":POS:";
-  out+=position;
+ /* */
+/**/
+    get_gyro_reading();
+    get_encoder_reading();
+    get_line_array();
+    int position=calculate_pos();
+    out+=":POS:";
+    out+=position;
 
+ 
   if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
+  //  Serial.println(out);
     Serial2.println(out);
     O_Serial=micros();
-  } */
+  } 
 
+
+    if(SOLVE_MAZE){
+      
+
+    }
 }

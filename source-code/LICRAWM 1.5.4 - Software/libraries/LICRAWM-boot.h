@@ -290,11 +290,21 @@ void _input_check(){
         }else if(x=='['){
             make_90_degree_anticlockwise();
             Serial2.println("| Made -90 turn!");
+           
 
         }else if(x==']'){
             make_90_degree_clockwise();
             Serial2.println("| Made +90 turn!");
+           
             
+        }else if(x=='^'){
+            move_fixed_distance2(1000);
+            Serial2.println("| Move Fixed Distance");
+           
+            
+        }else if(x=='n'){
+           move_fixed_distance_pid(4010,-m1_global_speed,m2_global_speed);  
+        
         }else if(x=='*'){
             if(FOLLOW_LINE==1){
                   md.setM1Speed(0);
@@ -307,12 +317,6 @@ void _input_check(){
             }
             FOLLOW_LINE=!FOLLOW_LINE;
             
-        }else if(x=='>'){
-          make_90_degree_clockwise();           
-        }else if(x=='<'){
-          make_90_degree_anticlockwise();         
-        }else if(x=='^'){
-          move_fixed_distance(1000);        
         }else if(x=='_'){
             coin_pick();
         }else if(x=='z'){

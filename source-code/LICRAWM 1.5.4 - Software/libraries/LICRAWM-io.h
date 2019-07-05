@@ -21,7 +21,8 @@ bool FOLLOW_WALL=0;
 float tof_error=0;
 float offset_distance=120;      //keep this distance from the wall
 
-bool FOLLOW_LINE=1;
+bool FOLLOW_LINE=0;
+#define SOLVE_MAZE 0
 
 int no_of_sensors=15;
 float KP = 80;   //80     /*was 20*/               //set Kp accordingly
@@ -90,8 +91,9 @@ double gForceZ;
 #define LINE_ARRAY_ODD_EMITTER_PIN 42
 
 
-volatile long M2count  = 0; //motor encoder counts
-volatile long M1count = 0; //motor encoder counts
+//volatile
+volatile int M2count = 0; //motor encoder counts
+volatile int M1count = 0; //motor encoder counts
 
 #define pivot_servo_pin 9       //pins for the arm
 #define tilt_servo_pin 7
