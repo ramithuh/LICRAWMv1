@@ -118,43 +118,42 @@ r1=S_TOF1.process().mean;
 }
 
 void get_gyro_reading(int miliseconds=0){
-    double x=9;
-    double y=9;
-    double z=9;
+
     if(UPDATE_GYRO){
        /*readAndProcessAccelData();
        readAndProcessGyroData();
        calculateAngle();*/
        
-        mpu6050.update(); 
-
-
-        /* 
+        /* mpu6050.update(); 
+      
         x=mpu6050.getAngleX();
         y=mpu6050.getAngleY();
-        z=mpu6050.getAngleZ();*/
+        z=mpu6050.getAngleZ();
         x=mpu6050.getGyroAngleX();
         y=mpu6050.getGyroAngleY();
-        z=mpu6050.getGyroAngleZ();
+        z=mpu6050.getGyroAngleZ();*/
+
+          readAndProcessGyroData();
+          delay(50);
     }
 
     
     if(DEBUG_GYRO==true){      /* displays only if needed */
         Serial2.print(F("angleX:"));
-        Serial2.print(x);
+        Serial2.print(angleX);
         Serial2.print(F(":Y:"));
-        Serial2.print(y);
+        Serial2.print(angleY);
         Serial2.print(F(":Z:"));
-        Serial2.println(z);
+        Serial2.println(angleZ);
         delay(miliseconds);
     }
     if(VISUALIZE){
         out+=":Z:";
-        out+=z;
+        out+=angleZ;
         out+=":Y:";
-        out+=y;
+        out+=angleY;
         out+=":X:";
-        out+=x;
+        out+=angleX;
     
     }
 }
@@ -206,23 +205,8 @@ void leftEncoderEvent() {
   }
 }
 
-void arm_position(int pivot=0,int tilt=0,int grip=0,int miliseconds=0){
-    pivot_servo.writeMicroseconds(pivot);
-    delay(miliseconds);
-    tilt_servo.writeMicroseconds(tilt);
-    delay(miliseconds);
-    grip_servo.writeMicroseconds(grip);
-    delay(miliseconds);   
-}
 
-void transfer_water(int water_transfer_time=0){
-    //place the straw
-    arm_position(1450,1550,600,1000);
-    //wait till water is transferred
-    delay(water_transfer_time);
-    //bring the arm to its initial position
-    arm_position(1000,1200,2400,1000);
-}
+
 
 void coin_servo_pos(int pulse=0){
   coin_servo.writeMicroseconds(pulse);
@@ -244,29 +228,116 @@ void get_line_array(){
 }
 
 void move_fixed_distance(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
-  M1count=0;
-  M2count=0;
-  long old_m1_count=abs(M1count);
-  long old_m2_count=abs(M2count);
 
-  while(abs(abs(M1count)-old_m1_count)<distance || abs(abs(M2count)-old_m2_count)<distance){
+  int m1=0;
+  int m2=0;
 
-  /*  Serial2.print("|##-> moving fixed distance M1:");
-    Serial2.print(M1count);
-    Serial2.print(" M2:");
-    Serial2.println(M1count);*/
-  
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+    M1count=0;
+    M2count=0;
+  }
 
-    if(abs(abs(M1count)-old_m1_count)>distance)md.setM1Brake(400);
+  while(abs(m1)<distance || abs(m2)<distance){
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+        m1=M1count;
+        m2=M2count;
+    }
+
+    if(abs(m1)>distance)md.setM1Brake(400);
     else md.setM1Speed(speed1);
-    if(abs(abs(M2count)-old_m2_count)>distance)md.setM2Brake(400);
+    if(abs(m2)>distance)md.setM2Brake(400);
     else md.setM2Speed(speed2);
     
   }
   md.setBrakes(400, 400);  //if above brakes fails
-  Serial2.println("|##-> moved fixed distance! ");
+  //Serial2.println("|##-> moved fixed distance! ");
 
+}
 
+void move_fixed_distance_with_tof(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
+  //move with constraint of TOF front!!!
+
+  int m1=0;
+  int m2=0;
+
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+    M1count=0;
+    M2count=0;
+  }
+
+  while((abs(m1)<distance || abs(m2)<distance)&&(Sensor1.readRangeContinuousMillimeters()+offset_TOF1>60)){
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+        m1=M1count;
+        m2=M2count;
+    }
+
+    if(abs(m1)>distance)md.setM1Brake(400);
+    else md.setM1Speed(speed1);
+    if(abs(m2)>distance)md.setM2Brake(400);
+    else md.setM2Speed(speed2);
+    
+  }
+  md.setBrakes(400, 400);  //if above brakes fails
+  //Serial2.println("|##-> moved fixed distance! ");
+
+}
+
+double calculate_tof_error(double _tof_front_r,double _tof_back_r){
+//,double _tof_front_l,double _tof_back_l
+  double error=0;
+
+  double left_error = _tof_front_r - _tof_back_r;
+  //double left_error = _tof_front_l - _tof_back_l;
+  if (_tof_front_r < offset_distance && _tof_back_r<offset_distance){
+    error = -(offset_distance - left_error);// + left_error;
+  }
+  else if (_tof_front_r>offset_distance && _tof_back_r>offset_distance){
+    error = (offset_distance + left_error);// - left_error;
+  }
+  else{
+    error = KW*(left_error);// - left_error);
+  }
+  return error;
+}
+
+void align_left(){
+  int m1_speed = m1_global_speed;
+  int m2_speed = m2_global_speed;
+
+ float tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
+    float tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
+
+  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && tof_2<180 && tof_1<180){
+     tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
+     tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
+
+    double left_tof_error = calculate_tof_error(tof_1,tof_2);
+
+    if (abs(left_tof_error)>2){
+
+      m1_speed += left_tof_error;
+      m2_speed -= left_tof_error;
+
+      if (m1_speed>400){
+          m1_speed = 400;
+      }else if (m1_speed<150){
+          m1_speed = 150;
+      }
+      if (m2_speed>400){
+          m2_speed = 400;
+      }
+      else if (m2_speed<150){
+          m2_speed = 150;
+      }
+      md.setM1Speed(m1_speed);
+      md.setM2Speed(m2_speed);
+    
+    
+    }else{
+      move_fixed_distance_with_tof(200);
+    }
+  }
+   md.setBrakes(400,400);
 }
 
 void move_fixed_distance2(int distance, int slaveSpeed=m1_global_speed,int masterSpeed=m2_global_speed ){
@@ -274,33 +345,34 @@ void move_fixed_distance2(int distance, int slaveSpeed=m1_global_speed,int maste
   int error = 0;
   int kp = 5;
  
-  M2count = 0;
-  M1count = 0;
- 
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+    M2count = 0;
+    M1count = 0;
+  }
   while(abs(totalTicks) < distance)
   {
     //Proportional algorithm to keep the robot going straight.
-    md.setM2Speed(masterSpeed);
-    md.setM1Speed(slaveSpeed);
+    md.setM1Speed(masterSpeed);
+    md.setM2Speed(slaveSpeed);
  
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
-      error = M2count - M1count;
+      error = M1count - M2count;
+      slaveSpeed += error / kp;
+ 
+      M2count = 0;
+      M1count = 0;
     }
+ 
     
- 
-    slaveSpeed += error / kp;
- 
-    M2count = 0;
-    M1count = 0;
- 
     delay(100);
  
     //Add this iteration's encoder values to totalTicks.
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
-      totalTicks+= M2count;
+      totalTicks+= M1count;
     }
   }
   md.setBrakes(400,400);
+
 
 }
 
@@ -352,27 +424,34 @@ void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2
 
 }
 
-void make_90_degree_clockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
-  /* for(int i=0;i<101;i++){
-    Serial2.println("clockwise");
-    Serial2.println(i);
-   move_fixed_distance(10,-speed1,speed2);
-  }*/
-   /* for(int i=0;i<1010;i++){
-   move_fixed_distance(1,-speed1,speed2);
-  }*/
- move_fixed_distance2(955,-400,400);
-}
 void make_90_degree_anticlockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
-  /*for(int i=0;i<101;i++){
-      Serial2.println("anti clockwise");
-    Serial2.println(i);
-    move_fixed_distance(10,speed1,-speed2);
-  }*/
- /* for(int i=0;i<1010;i++){
-    move_fixed_distance(1,speed1,-speed2);
-  }*/
-  move_fixed_distance2(955,400,-400);
+  
+
+  /* --> To turn using Delays
+   md.setM1Speed(speed1);
+   md.setM2Speed(-speed2);
+   delay(433);
+   md.setBrakes(400,400);*/
+
+  //turn using encoder counts
+  move_fixed_distance(1050,speed1,-speed2);
+  Serial2.println("turned anticlockwise 90 degrees");
+
+}
+
+
+void make_90_degree_clockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
+
+  /*   --> turn using delays
+   md.setM1Speed(-speed1);
+   md.setM2Speed(speed2);
+   delay(433);
+   md.setBrakes(400,400); */
+
+  //turn using encoders
+  move_fixed_distance(1050,-speed1,speed2);
+  Serial2.println("turned clockwise 90 degrees");
+
 }
 void move_cell_distance(int speed1=m1_global_speed,int speed2=m2_global_speed){
   //for(int i=0;i<3;i++){
@@ -397,20 +476,4 @@ void coin_pick(){
 void coin_place(){
     coin_servo_pos(1800);
     delay(2000);
-}
-double calculate_tof_error(double _tof_front_r,double _tof_back_r){
-//,double _tof_front_l,double _tof_back_l
-  double error=0;
-  double right_error = _tof_front_r - _tof_back_r;
-  //double left_error = _tof_front_l - _tof_back_l;
-  if (_tof_front_r<offset_distance && _tof_back_r<offset_distance){
-    error = offset_distance - right_error;// + left_error;
-  }
-  else if (_tof_front_r>offset_distance && _tof_back_r>offset_distance){
-    error = -1*(offset_distance + right_error);// - left_error;
-  }
-  else{
-    error = -1*KW*(right_error);// - left_error);
-  }
-  return error;
 }

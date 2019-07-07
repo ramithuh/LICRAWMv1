@@ -126,12 +126,16 @@ void boot_tof(){  //under construction
 }
 
 void boot_gyro(){
+
+  setUpMPU();
+  callibrateGyroValues();
+
   /*
   setUpMPU();
   callibrateGyroValues();*/
-    mpu6050.begin();
+   /*  mpu6050.begin();
     delay(500);
-    mpu6050.calcGyroOffsets(true);
+    mpu6050.calcGyroOffsets(true)
 
   if(mpu6050.getAngleY()==90.00 && mpu6050.getAngleX()==-90.00){
     Serial2.println(F("============================================================="));
@@ -142,7 +146,7 @@ void boot_gyro(){
     Serial2.println(F("|      \\      Successfully Booted GYRO      /               |"));
     Serial2.println(F("=============================================================")); 
     LED3.on(); //booting gyro done!  
-  } 
+  } */
 }
 
 void boot_encoders(){
@@ -288,17 +292,24 @@ void _input_check(){
             if(ki_mode){KI-=1;block_pid_print(0);}
             if(kd_mode){KD-=1; block_pid_print(-1);}
         }else if(x=='['){
-            make_90_degree_anticlockwise();
+            //make_90_degree_anticlockwise();
+
+            move_fixed_distance(1050,m1_global_speed,-m2_global_speed);
+
             Serial2.println("| Made -90 turn!");
            
 
         }else if(x==']'){
-            make_90_degree_clockwise();
+            //make_90_degree_clockwise();
+
+            move_fixed_distance(1050,-m1_global_speed,m2_global_speed);
             Serial2.println("| Made +90 turn!");
            
             
         }else if(x=='^'){
-            move_fixed_distance2(1000);
+           
+            move_fixed_distance(1000);
+            
             Serial2.println("| Move Fixed Distance");
            
             
