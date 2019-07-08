@@ -82,13 +82,12 @@ areas=[0,0,0] #r.g.b
 
 
 
-#pyb.LED(4).on()
-i=100000;
+pyb.LED(4).on()
 
 while(1):
 
     LED_white(1);
-    print("running", str(50-i), areas)
+    #print("running", str(50-i), areas)
 
     clock.tick()
     img = sensor.snapshot()
@@ -107,7 +106,7 @@ while(1):
             img.draw_rectangle(blob.rect())
             img.draw_cross(blob.cx(), blob.cy())
             img.draw_string(blob.x() + 2, blob.y() + 2, "red")
-            uart.write("red\n")  ##communication with arduino
+            #uart.write("red\n")  ##communication with arduino
             write_to_arduino("red")
 
         elif blob.code() ==2: # g code
@@ -115,7 +114,7 @@ while(1):
             img.draw_rectangle(blob.rect())
             img.draw_cross(blob.cx(), blob.cy())
             img.draw_string(blob.x() + 2, blob.y() + 2, "green")
-            uart.write("green\n") ##communication with arduino
+            #uart.write("green\n") ##communication with arduino
             write_to_arduino("green")
 
         elif blob.code() == 4: # b code
@@ -123,7 +122,7 @@ while(1):
             img.draw_rectangle(blob.rect())
             img.draw_cross(blob.cx(), blob.cy())
             img.draw_string(blob.x() + 2, blob.y() + 2, "blue")
-            uart.write("blue\n")  ##communication with arduino
+            #uart.write("blue\n")  ##communication with arduino
             write_to_arduino("blue")
         else:
             write_to_arduino("nothing")
@@ -135,6 +134,8 @@ while(1):
     #print(clock.fps())
     #time.sleep(1000)
 
+
+'''
 print(areas)
 pyb.LED(4).off()
 most=-1;
@@ -159,4 +160,4 @@ else:
         time.sleep(500)
         LEDs[most].off()
         time.sleep(500)
-
+'''
