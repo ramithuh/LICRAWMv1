@@ -58,11 +58,11 @@ String out;
 #include "libraries/LICRAWM-functions.h"
 #include "libraries/LICRAWM-boot.h"
 
-float calculate_pos(){
+float calculate_pos(int threshold = 300){
   int pos=0;
   int on_count=0;
   for(int i=0;i<15;i++){
-      if(sensorValues[i]<300){
+      if(sensorValues[i]<threshold){
           pos+=(i-7)*10;
           on_count+=1;
       }
@@ -89,12 +89,15 @@ float calculate_pos(){
        delay(1000);
     }
   }*/
-  if (sensorValues[0]<300 && sensorValues[14]<300 && on_count>12){
+  if (sensorValues[0]<threshold && sensorValues[14]<threshold && on_count>12){
+    flag = 1;
+    flag_count += 1;
     md.setBrakes(400,400);
     delay(1000);
+    return;
   }
   if(on_count>10){
-    if (sensorValues[0]<300 && sensorValues[14]>300){
+    if (sensorValues[0]<threshold && sensorValues[14]>threshold){
       //delay(200);
       //md.setBrakes(400, 400); 
       //delay(200);
@@ -104,7 +107,7 @@ float calculate_pos(){
       md.setBrakes(400, 400);
       delay(200);
     }
-    else if (sensorValues[0]>300 && sensorValues[14]<300){
+    else if (sensorValues[0]>threshold && sensorValues[14]<threshold){
       //delay(200);
       //md.setBrakes(400, 400); 
       //delay(200);
@@ -132,7 +135,7 @@ void setup() {
 
   //setting initial positions of servos
   coin_servo_pos(1500); 
-  arm_servo.writeMicroseconds(2000);
+  arm_servo.writeMicroseconds(2050);
   delay(1000);
 
   linearray.setTypeAnalog();
@@ -166,7 +169,7 @@ void loop(){
  
   out="";
   _input_check();   ///takes 4us
-  //openmv_digital_decode();
+  openmv_digital_decode();
 
   //get_tof_reading();
   
@@ -188,7 +191,6 @@ void loop(){
   }
     
   if(FOLLOW_LINE){
-
         md.setM1Speed(m1_global_speed);
         md.setM2Speed(m2_global_speed);
         unsigned int sensors[no_of_sensors];
@@ -197,6 +199,14 @@ void loop(){
        //linearray.readLineBlack(sensorValues);
         int position=calculate_pos();
 
+        if (flag == 1 && (flag_count == 1|| flag_count ==5)){
+          move_fixed_distance_pid(1000);
+        }
+        else if (flag == 1 && flag_count ==2){
+          move_fixed_distance(300,-default_m1_speed,-default_m2_speed);
+          int coin_colour = openmv_digital_decode();
+
+        }
         out+=":POS:";
         out+=position;
 
