@@ -1,4 +1,3 @@
-
 void boot(){
 
     //essential at start to make use of Software Reset
@@ -94,7 +93,7 @@ void boot_tof(){  //under construction
     Sensor5.setMeasurementTimingBudget(35000);
    
 
-    Sensor4.setSignalRateLimit(3);
+    Sensor4.setSignalRateLimit(4);
   // increase laser pulse periods (defaults are 14 and 10 PCLKs)
     Sensor4.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
     Sensor4.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 8);
@@ -108,8 +107,13 @@ void boot_tof(){  //under construction
   // increase laser pulse periods (defaults are 14 and 10 PCLKs)
     Sensor2.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
     Sensor2.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange,8);
+
+    Sensor1.setSignalRateLimit(3);
+  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    Sensor1.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
+    Sensor1.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange,8);
     
-    Sensor3.setSignalRateLimit(4);
+    Sensor3.setSignalRateLimit(3);
   // increase laser pulse periods (defaults are 14 and 10 PCLKs)
     Sensor3.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 12);
     Sensor3.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 8);
@@ -195,25 +199,8 @@ void block_pid_print(int _mode){
 
 void _input_check(){
 
-  /*
-  if(S4.on()){
-    DEBUG_TOF=0;
-    DEBUG_GYRO=0;
-    DEBUG_SPEED=0;
-    _LED_all_off();
-    LED4.on();
-    
-  }else{
-    DEBUG_GYRO=1;
-    LED3.on();
-    DEBUG_TOF=1;
-    LED4.off();
-    LED5.on();
-
-  }*/
 
   if(DEBUG_BLUETOOTH==true){
-
  
       if (Serial2.available()) {
         char x=Serial2.read();
@@ -294,27 +281,24 @@ void _input_check(){
         }else if(x=='['){
             //make_90_degree_anticlockwise();
 
-            move_fixed_distance(1050,m1_global_speed,-m2_global_speed);
-
+            move_fixed_distance(1050,default_m1_speed,-default_m2_speed);
             Serial2.println("| Made -90 turn!");
            
 
         }else if(x==']'){
             //make_90_degree_clockwise();
-
-            move_fixed_distance(1050,-m1_global_speed,m2_global_speed);
+            move_fixed_distance(1050,-default_m1_speed,default_m2_speed);
             Serial2.println("| Made +90 turn!");
            
             
         }else if(x=='^'){
            
             move_fixed_distance(1000);
-            
             Serial2.println("| Move Fixed Distance");
            
             
         }else if(x=='n'){
-           move_fixed_distance_pid(4010,-m1_global_speed,m2_global_speed);  
+           move_fixed_distance_pid(4010,-default_m1_speed,default_m2_speed);  
         
         }else if(x=='*'){
             if(FOLLOW_LINE==1){

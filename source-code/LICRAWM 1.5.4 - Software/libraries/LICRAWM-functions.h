@@ -227,8 +227,8 @@ void get_line_array(){
 
 }
 
-void move_fixed_distance(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
-
+void move_fixed_distance(int distance ,int speed1=default_m1_speed,int speed2=default_m2_speed){
+  interrupts();
   int m1=0;
   int m2=0;
 
@@ -254,9 +254,9 @@ void move_fixed_distance(int distance ,int speed1=m1_global_speed,int speed2=m2_
 
 }
 
-void move_fixed_distance_with_tof(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
+void move_fixed_distance_with_tof(int distance ,int speed1=default_m1_speed,int speed2=default_m2_speed){
   //move with constraint of TOF front!!!
-
+  interrupts();
   int m1=0;
   int m2=0;
 
@@ -282,7 +282,7 @@ void move_fixed_distance_with_tof(int distance ,int speed1=m1_global_speed,int s
 
 }
 
-double calculate_tof_error(double _tof_front_r,double _tof_back_r){
+double calculate_tof_error_left(double _tof_front_r,double _tof_back_r){
 //,double _tof_front_l,double _tof_back_l
   double error=0;
 
@@ -300,20 +300,38 @@ double calculate_tof_error(double _tof_front_r,double _tof_back_r){
   return error;
 }
 
+double calculate_tof_error_right(double _tof_front_r,double _tof_back_r){
+//,double _tof_front_l,double _tof_back_l
+  double error=0;
+
+  double right_error = _tof_front_r - _tof_back_r;
+  //double left_error = _tof_front_l - _tof_back_l;
+  if (_tof_front_r < offset_distance && _tof_back_r<offset_distance){
+    error = (offset_distance - right_error);// + left_error;
+  }
+  else if (_tof_front_r>offset_distance && _tof_back_r>offset_distance){
+    error = -(offset_distance + right_error);// - right_error;
+  }
+  else{
+    error = -KW*(right_error);// - left_error);
+  }
+  return error;
+}
+
 void align_left(){
-  int m1_speed = m1_global_speed;
-  int m2_speed = m2_global_speed;
+  int m1_speed = default_m1_speed;
+  int m2_speed = default_m2_speed;
 
- float tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
-    float tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
+  float tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
+  float tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
 
-  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && tof_2<180 && tof_1<180){
+ double left_tof_error = calculate_tof_error_left(tof_1,tof_2);
+
+  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(left_tof_error)>2){
      tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
      tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
 
-    double left_tof_error = calculate_tof_error(tof_1,tof_2);
-
-    if (abs(left_tof_error)>2){
+     left_tof_error = calculate_tof_error_left(tof_1,tof_2);
 
       m1_speed += left_tof_error;
       m2_speed -= left_tof_error;
@@ -323,24 +341,117 @@ void align_left(){
       }else if (m1_speed<150){
           m1_speed = 150;
       }
+
       if (m2_speed>400){
           m2_speed = 400;
-      }
-      else if (m2_speed<150){
+      }else if (m2_speed<150){
           m2_speed = 150;
       }
       md.setM1Speed(m1_speed);
-      md.setM2Speed(m2_speed);
-    
-    
-    }else{
-      move_fixed_distance_with_tof(200);
-    }
+      md.setM2Speed(m2_speed);   
+
   }
    md.setBrakes(400,400);
 }
 
-void move_fixed_distance2(int distance, int slaveSpeed=m1_global_speed,int masterSpeed=m2_global_speed ){
+void align_right(){
+  int m1_speed = default_m1_speed;
+  int m2_speed = default_m2_speed;
+
+  float tof_2 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
+  float tof_1 = Sensor2.readRangeContinuousMillimeters()+offset_TOF2;
+
+  double right_tof_error = calculate_tof_error_right(tof_1,tof_2);
+
+  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(right_tof_error)>2){
+     tof_2 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
+     tof_1 = Sensor2.readRangeContinuousMillimeters()+offset_TOF2;
+
+     right_tof_error = calculate_tof_error_right(tof_1,tof_2);
+
+      m1_speed += right_tof_error;
+      m2_speed -= right_tof_error;
+
+      if (m1_speed>400){
+          m1_speed = 400;
+      }else if (m1_speed<150){
+          m1_speed = 150;
+      }
+
+      if (m2_speed>400){
+          m2_speed = 400;
+      }else if (m2_speed<150){
+          m2_speed = 150;
+      }
+      md.setM1Speed(m1_speed);
+      md.setM2Speed(m2_speed);   
+
+  }
+   md.setBrakes(400,400);
+}
+
+bool wall_in_left(){
+    float tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
+    float tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
+
+    if(tof_1<200 && tof_2<200){
+      _LED_all_off();
+      LED3.on();
+      return true;
+    
+    }
+    return false;
+  
+
+}
+
+bool wall_in_right(){
+    float tof_2 = Sensor2.readRangeContinuousMillimeters()+offset_TOF2;
+    float tof_1 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
+
+    if(tof_1<200 && tof_2<200){
+      _LED_all_off();
+      LED5.on();
+      return true;
+    }else{
+      return false;
+    }
+}
+
+void move_fixed_distance_with_walls(int distance){
+    LED1.on();
+    interrupts();
+    int m1=0;
+    int m2=0;
+
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+      M1count=0;
+      M2count=0;
+    }
+
+    while((abs(m1)<distance || abs(m2)<distance)&&(Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80)){
+        if(wall_in_left()){
+          Serial2.println("! left wall deteted");
+          align_left();
+        }else if(wall_in_right()){
+          Serial2.println("! right wall deteted");
+          align_right();
+          
+        }
+
+        move_fixed_distance_with_tof(50);
+
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+          m1=M1count;
+          m2=M2count;
+        }
+    }
+    LED1.off();
+
+}
+///avoid using
+void move_fixed_distance2(int distance, int slaveSpeed=default_m1_speed,int masterSpeed=default_m2_speed ){
+  interrupts();
   int totalTicks = 0;
   int error = 0;
   int kp = 5;
@@ -377,6 +488,7 @@ void move_fixed_distance2(int distance, int slaveSpeed=m1_global_speed,int maste
 }
 
 void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
+  interrupts();
   M1count=0;
   M2count=0;
 
@@ -424,7 +536,7 @@ void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2
 
 }
 
-void make_90_degree_anticlockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
+void make_90_degree_anticlockwise(int speed1=default_m1_speed,int speed2=default_m2_speed){
   
 
   /* --> To turn using Delays
@@ -440,7 +552,7 @@ void make_90_degree_anticlockwise(int speed1=m1_global_speed,int speed2=m2_globa
 }
 
 
-void make_90_degree_clockwise(int speed1=m1_global_speed,int speed2=m2_global_speed){
+void make_90_degree_clockwise(int speed1=default_m1_speed,int speed2=default_m2_speed){
 
   /*   --> turn using delays
    md.setM1Speed(-speed1);
@@ -453,7 +565,7 @@ void make_90_degree_clockwise(int speed1=m1_global_speed,int speed2=m2_global_sp
   Serial2.println("turned clockwise 90 degrees");
 
 }
-void move_cell_distance(int speed1=m1_global_speed,int speed2=m2_global_speed){
+void move_cell_distance(int speed1=default_m1_speed,int speed2=default_m2_speed){
   //for(int i=0;i<3;i++){
     move_fixed_distance(10);
  /* for(int i=0;i<1010;i++){
@@ -462,10 +574,10 @@ void move_cell_distance(int speed1=m1_global_speed,int speed2=m2_global_speed){
  
 }
 
-void make_x_degree_clockwise(int dis=0,int speed1=m1_global_speed,int speed2=m2_global_speed){
+void make_x_degree_clockwise(int dis=0,int speed1=default_m1_speed,int speed2=default_m1_speed){
   move_fixed_distance(dis,-speed1,speed2);
 }
-void make_x_degree_anticlockwise(int dis=0,int speed1=m1_global_speed,int speed2=m2_global_speed){
+void make_x_degree_anticlockwise(int dis=0,int speed1=default_m1_speed,int speed2=default_m2_speed){
   move_fixed_distance(dis,speed1,-speed2);
 }
 

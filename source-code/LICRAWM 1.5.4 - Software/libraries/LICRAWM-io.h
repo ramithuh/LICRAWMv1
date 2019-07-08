@@ -1,7 +1,11 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
 //#define DEBUG true
+int default_m1_speed=180;
+int default_m2_speed=210;  ///never change or overwrite!! 
+
 int m1_global_speed=180; //150
 int m2_global_speed=210; //180
+
 int m1_wall_follow = 180;
 int m2_wall_follow = 210;
 
@@ -19,19 +23,19 @@ bool UPDATE_GYRO=1;
 bool UPDATE_TOF=1;
 bool VISUALIZE =1;
 
-bool FOLLOW_WALL=0;
+bool FOLLOW_WALL=1;
 float tof_error=0;
-float offset_distance=100;      //keep this distance from the wall
+float offset_distance=80;      //keep this distance from the wall
 
 bool WATER_TRANSFER=0;
-bool FOLLOW_LINE=1;
+bool FOLLOW_LINE=0;
 #define SOLVE_MAZE 0
 
 int no_of_sensors=15;
 float KP = 80;   //80     /*was 20*/               //set Kp accordingly
 float KI = 3;                       //set Ki accordingly
 float KD = 300;         //240              //set Kd accordingly
-float KW = 5;
+float KW = 46;
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
 int last_error = 0;
 float _last_position=0;
@@ -79,9 +83,8 @@ float _last_position=0;
 volatile int M2count = 0; //motor encoder counts
 volatile int M1count = 0; //motor encoder counts
 
-#define pivot_servo_pin 9       //pins for the arm
-#define tilt_servo_pin 7
-#define arm_servo_pin 8
+
+#define arm_servo_pin 8        //pin for water arm
 #define coin_servo_pin 6       //pin for the coin collecting servo
 
 
