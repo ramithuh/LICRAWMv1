@@ -250,6 +250,8 @@ void loop(){
         else if (flag==1 && flag_count==3){
           md.setBrakes(400,400);
           Serial2.println("Going to place the coin!");
+          move_fixed_distance(200);
+          coin_place();
 
         }
         out+=":POS:";
