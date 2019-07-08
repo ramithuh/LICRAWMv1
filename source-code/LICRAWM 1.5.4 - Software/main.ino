@@ -252,7 +252,8 @@ void loop(){
           Serial2.println("Going to place the coin!");
           move_fixed_distance(200);
           coin_place();
-          
+          move_fixed_distance(200);
+          coin_pick();
         }
         out+=":POS:";
         out+=position;
