@@ -91,7 +91,7 @@ float calculate_pos(int threshold = 300){
        delay(1000);
     }
   }*/
-  if (on_count>=14 ){
+  if (on_count>=15 ){
     flag = 1;
     flag_count += 1;
     Serial2.print("Flag Detected! with theshold ");
@@ -230,30 +230,29 @@ void loop(){
           Serial2.println(coin_colour);
 
           Serial2.println("   Moving forward to pick!");
-          for(int i=0;i<12;i++){
+          for(int i=0;i<14;i++){
             move_fixed_distance(200,default_m1_speed-30,default_m2_speed-30);////coin pick!
           }
          
           
-         
           if(coin_colour == 0){ //RED COLOR
             make_45_degree_clockwise();
           }else if (coin_colour == 2){ //BLUE COLOR
             make_45_degree_anticlockwise();
           } else{//GREEN COLOR (go straight) 
-            move_fixed_distance(200);
+            move_fixed_distance(400);
           }
-           flag=0;
+          flag=0;
           position = calculate_pos(700);
          
-        }
-        else if (flag==1 && flag_count==3){
+        }else if (flag==1 && flag_count==3){
           md.setBrakes(400,400);
           Serial2.println("Going to place the coin!");
           move_fixed_distance(200);
           coin_place();
           move_fixed_distance(200);
           coin_pick();
+          flag=0;
         }
         out+=":POS:";
         out+=position;

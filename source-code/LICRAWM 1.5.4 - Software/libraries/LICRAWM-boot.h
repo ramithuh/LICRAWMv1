@@ -406,6 +406,7 @@ int read_colour(){
   }else{
     return 2;
   }
+  
 }
 
 void boot_linearray(){
