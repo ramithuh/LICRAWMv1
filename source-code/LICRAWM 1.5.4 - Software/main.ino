@@ -240,7 +240,7 @@ void loop(){
             make_45_degree_clockwise();
           }else if (coin_colour == 2){ //BLUE COLOR
             make_45_degree_anticlockwise();
-          } else{//GREEN COLOR (go straight)
+          } else{//GREEN COLOR (go straight) 
             move_fixed_distance(200);
           }
            flag=0;
@@ -250,7 +250,7 @@ void loop(){
         else if (flag==1 && flag_count==3){
           md.setBrakes(400,400);
           Serial2.println("Going to place the coin!");
-          
+
         }
         out+=":POS:";
         out+=position;
