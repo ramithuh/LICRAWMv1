@@ -55,16 +55,16 @@ def LED_white(f):
 
 # Color Tracking Thresholds (L Min, L Max, A Min, A Max, B Min, B Max)
 # The below thresholds track in general red/green things. You may wish to tune them...
-thresholds = [(0, 80, 15, 127, 10, 127), # generic_red_thresholds -> index is 0 so code == (1 << 0)
+thresholds = [(0, 80, 15, 127, -5, 127), # generic_red_thresholds -> index is 0 so code == (1 << 0)
                (30, 100, -128, -15, -15, 127), # generic_green_thresholds -> index is 1 so code == (1 << 1)
-              (0, 80, -128, 10, -128, -30)] # generic_blue_thresholds -> index is 2 so code == (1 << 2)
+              (0, 85, -128, 10, -128, -25)] # generic_blue_thresholds -> index is 2 so code == (1 << 2)
 # Codes are or'ed together when "merge=True" for "find_blobs".
 
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.CIF)
 
-sensor.skip_frames(time = 2000)
+sensor.skip_frames(time = 1000)
 sensor.set_auto_gain(False) # must be turned off for color tracking
 sensor.set_auto_whitebal(False) # must be turned off for color tracking
 clock = time.clock()
@@ -81,12 +81,33 @@ areas=[0,0,0] #r.g.b
 
 
 
+LED_white(1);
+time.sleep(500);
+LED_white(0);
+time.sleep(500);
+LED_white(1);
+time.sleep(500);
+LED_white(0);
+time.sleep(500);
+LED_white(1);
+time.sleep(500);
+LED_white(0);
 
-pyb.LED(4).on()
-
+i=0;
 while(1):
+    print(i)
+    if(i%15==0):
+        sensor.reset()
+        sensor.set_pixformat(sensor.RGB565)
+        sensor.set_framesize(sensor.CIF)
 
-    LED_white(1);
+        sensor.skip_frames(time = 500)
+        sensor.set_auto_gain(False) # must be turned off for color tracking
+        sensor.set_auto_whitebal(False) # must be turned off for color tracking
+        clock = time.clock()
+    i+=1;
+
+    #LED_white(1);
     #print("running", str(50-i), areas)
 
     clock.tick()
