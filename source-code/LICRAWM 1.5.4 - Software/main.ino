@@ -59,6 +59,8 @@ String out;
 #include "libraries/LICRAWM-boot.h"
 
 float calculate_pos(int threshold = 300){
+  linearray.readLineWhite(sensorValues);
+
   int pos=0;
   int on_count=0;
   for(int i=0;i<15;i++){
@@ -89,9 +91,11 @@ float calculate_pos(int threshold = 300){
        delay(1000);
     }
   }*/
-  if (sensorValues[0]<threshold && sensorValues[14]<threshold && on_count>12){
+  if (on_count>=14 ){
     flag = 1;
     flag_count += 1;
+    Serial2.print("Flag Detected! with theshold ");
+    Serial2.println(threshold);
     md.setBrakes(400,400);
     delay(1000);
     return;
@@ -118,7 +122,7 @@ float calculate_pos(int threshold = 300){
       delay(500);
     }
   
-      }
+  }
   if(on_count==0){
     return _last_position;
   }
@@ -150,7 +154,7 @@ void setup() {
   Wire.begin();
   LED1.on();
 
- // boot_gyro();
+//  boot_gyro();
   delay(1000);
 
   boot_tof();
@@ -161,7 +165,7 @@ void setup() {
   boot_linearray();
 
 
-  delay(2000);
+  delay(3000);
 }
 
 
@@ -169,9 +173,9 @@ void loop(){
  
   out="";
   _input_check();   ///takes 4us
-  openmv_digital_decode();
+  //openmv_digital_decode();
 
-  //get_tof_reading();
+  get_tof_reading();
   
 //move_fixed_distance(1000);
 
@@ -195,17 +199,58 @@ void loop(){
         md.setM2Speed(m2_global_speed);
         unsigned int sensors[no_of_sensors];
         //reading the white line
-        linearray.readLineWhite(sensorValues);
+       
        //linearray.readLineBlack(sensorValues);
-        int position=calculate_pos();
 
-        if (flag == 1 && (flag_count == 1|| flag_count ==5)){
-          move_fixed_distance_pid(1000);
+       int position;
+
+       if(flag_count==2 || flag_count==3){
+           position=calculate_pos(700);
+       }else{
+          position=calculate_pos();
+       }
+
+        if (flag == 1 && (flag_count == 1|| flag_count ==5)){//start and end of arena
+          Serial2.println("Arena Start/END");
+          move_fixed_distance(2000);
+          flag=0;
+          position=calculate_pos();
+          
+
+        }else if (flag == 1 && flag_count==2){   //coin pick
+          md.setBrakes(400,400);
+          Serial2.println("Going to Pick Coin");
+          Serial2.println("   Reversed 4.5cm");
+          move_fixed_distance(800,-default_m1_speed,-default_m2_speed);//4.5 cm reverse 
+
+          Serial2.println("   Reading Color for 15s....");
+          int coin_colour = read_colour();
+
+          Serial2.print("   Color is ");
+          Serial2.println(coin_colour);
+
+          Serial2.println("   Moving forward to pick!");
+          for(int i=0;i<12;i++){
+            move_fixed_distance(200,default_m1_speed-30,default_m2_speed-30);////coin pick!
+          }
+         
+          
+         
+          if(coin_colour == 0){ //RED COLOR
+            make_45_degree_clockwise();
+          }else if (coin_colour == 2){
+            make_45_degree_anticlockwise();
+          }
+          else{
+            move_fixed_distance(200);
+          }
+           flag=0;
+          position = calculate_pos(700);
+         
         }
-        else if (flag == 1 && flag_count ==2){
-          move_fixed_distance(300,-default_m1_speed,-default_m2_speed);
-          int coin_colour = openmv_digital_decode();
-
+        else if (flag==1 && flag_count==3){
+          md.setBrakes(400,400);
+          Serial2.println("Going to place the coin!");
         }
         out+=":POS:";
         out+=position;
@@ -326,11 +371,19 @@ void loop(){
 
 /**/
    // get_gyro_reading();
-   /* get_encoder_reading();*/
-    //get_line_array();
-  /*   int position=calculate_pos();
-    out+=":POS:";
-    out+=position; */
+
+    out+=":Z:";
+        out+="0";
+        out+=":Y:";
+        out+="0";
+        out+=":X:";
+        out+="0";
+    
+    get_encoder_reading();
+    get_line_array();
+ //   int position=calculate_pos();
+   // out+=":POS:";
+   // out+=position; 
 
  
   if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){

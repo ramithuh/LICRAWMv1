@@ -9,6 +9,9 @@ int m2_global_speed=210; //180
 int m1_wall_follow = 180;
 int m2_wall_follow = 210;
 
+bool flag=0;
+int flag_count = 0;
+
 bool kp_mode=false;
 bool ki_mode=false;
 bool kd_mode=false;
@@ -21,19 +24,19 @@ bool DEBUG_SPEED=0;
 
 bool UPDATE_GYRO=1;
 bool UPDATE_TOF=1;
-bool VISUALIZE =1;
+bool VISUALIZE =0;
 
-bool FOLLOW_WALL=1;
+bool FOLLOW_WALL=0;
 float tof_error=0;
 float offset_distance=80;      //keep this distance from the wall
 
 bool WATER_TRANSFER=0;
-bool FOLLOW_LINE=0;
+bool FOLLOW_LINE=1;
 #define SOLVE_MAZE 0
 
 int no_of_sensors=15;
 float KP = 80;   //80     /*was 20*/               //set Kp accordingly
-float KI = 3;                       //set Ki accordingly
+float KI = 0;//was 3                       //set Ki accordingly
 float KD = 300;         //240              //set Kd accordingly
 float KW = 46;
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line

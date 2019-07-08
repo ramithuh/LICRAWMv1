@@ -334,12 +334,10 @@ void openmv_serial_check(){
   }
 }                                            
                                                         
-void openmv_digital_decode(){
+int openmv_digital_decode(){
   int p7=digitalRead(openmv_p7);
   int p8=digitalRead(openmv_p8);
   int p9=digitalRead(openmv_p9);
-
-  String out="";
 
   
   if(p7==0 && p8==0 && p9==1){
@@ -349,7 +347,7 @@ void openmv_digital_decode(){
     //LED2.blink(200);
     LED2.on();
     out="red";
-  
+    return 0;
   }
   if(p7==0 && p8==1 && p9==0){
     _LED_all_off();
@@ -358,6 +356,7 @@ void openmv_digital_decode(){
     //LED3.blink(200);
     LED3.on();
     out="green";
+    return 1;
   
   }
   if(p7==1 && p8==0 && p9==0){
@@ -367,21 +366,47 @@ void openmv_digital_decode(){
     //LED5.blink(200);
     LED5.on();
     out= "blue";
+    return 2;
 
   }
-  if(out!=""){
+/*  if(out!=""){
       
       Serial2.print("== + ");   //write it to bluetooth serial
       Serial2.print(out);
       Serial2.print(" +  == :");    
       Serial2.println(String(p7)+String(p8)+String(p9));
 
-  }else{
-     _LED_all_off();
+  }else{*/
+  _LED_all_off();
+  return 0;
+   
+
+
+}
+
+
+int read_colour(){
+  long arr[3];
+  arr[0]=0;  //RED
+  arr[1]=0;  //GREEN
+  arr[2]=0;  //BLUE
+  unsigned long start = micros();
+
+  while (micros()-start < 10000000){  //wait 15 seconds to check color
+    arr[openmv_digital_decode()]+=1;
   }
-
-}                                                     
-
+  if (arr[0]>=arr[1]){
+    if (arr[0]>=arr[2]){
+      return 0;
+    }else{
+      return 2;
+    }
+  }else if (arr[1]>=arr[2]){
+    return 1;
+  }else{
+    return 2;
+  }
+}
 
 void boot_linearray(){
   LED2.blink(50);

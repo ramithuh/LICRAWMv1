@@ -501,11 +501,6 @@ void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2
     error=error+(error-last_error)*0;
     last_error = error;
 
-
-    Serial2.print("error:");
-    Serial2.println(error);
-
-
     if(abs(M1count)>distance)md.setM1Brake(400);
     else {
       speed1=speed1-error;
@@ -565,6 +560,37 @@ void make_90_degree_clockwise(int speed1=default_m1_speed,int speed2=default_m2_
   Serial2.println("turned clockwise 90 degrees");
 
 }
+
+void make_45_degree_anticlockwise(int speed1=default_m1_speed,int speed2=default_m2_speed){
+  
+
+  /* --> To turn using Delays
+   md.setM1Speed(speed1);
+   md.setM2Speed(-speed2);
+   delay(433);
+   md.setBrakes(400,400);*/
+
+  //turn using encoder counts
+  move_fixed_distance(525,speed1,-speed2);
+  Serial2.println("turned anticlockwise 45 degrees");
+
+}
+
+void make_45_degree_clockwise(int speed1=default_m1_speed,int speed2=default_m2_speed){
+  
+
+  /* --> To turn using Delays
+   md.setM1Speed(speed1);
+   md.setM2Speed(-speed2);
+   delay(433);
+   md.setBrakes(400,400);*/
+
+  //turn using encoder counts
+  move_fixed_distance(525,-speed1,speed2);
+  Serial2.println("turned clockwise 45 degrees");
+
+}
+
 void move_cell_distance(int speed1=default_m1_speed,int speed2=default_m2_speed){
   //for(int i=0;i<3;i++){
     move_fixed_distance(10);
