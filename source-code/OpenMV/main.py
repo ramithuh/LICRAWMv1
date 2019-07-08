@@ -55,9 +55,9 @@ def LED_white(f):
 
 # Color Tracking Thresholds (L Min, L Max, A Min, A Max, B Min, B Max)
 # The below thresholds track in general red/green things. You may wish to tune them...
-thresholds = [(0, 80, 15, 127, 15, 127), # generic_red_thresholds -> index is 0 so code == (1 << 0)
-               (30, 100, -128, -15, 0, 127), # generic_green_thresholds -> index is 1 so code == (1 << 1)
-              (0, 70, -128, 10, -128, -30)] # generic_blue_thresholds -> index is 2 so code == (1 << 2)
+thresholds = [(0, 80, 15, 127, 10, 127), # generic_red_thresholds -> index is 0 so code == (1 << 0)
+               (30, 100, -128, -15, -15, 127), # generic_green_thresholds -> index is 1 so code == (1 << 1)
+              (0, 80, -128, 10, -128, -30)] # generic_blue_thresholds -> index is 2 so code == (1 << 2)
 # Codes are or'ed together when "merge=True" for "find_blobs".
 
 sensor.reset()
@@ -82,12 +82,12 @@ areas=[0,0,0] #r.g.b
 
 
 
-pyb.LED(4).on()
+#pyb.LED(4).on()
 i=100000;
 
-for i in range(0,i):
+while(1):
 
-    LED_white(0);
+    LED_white(1);
     print("running", str(50-i), areas)
 
     clock.tick()
