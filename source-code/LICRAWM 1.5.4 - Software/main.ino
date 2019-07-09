@@ -290,12 +290,12 @@ void loop(){
           
           if(coin_colour == 0){ //RED COLOR
             make_45_degree_clockwise();
-            move_fixed_distance(500);
+            move_fixed_distance(800);
           }else if (coin_colour == 2){ //BLUE COLOR
             make_45_degree_anticlockwise();
-            move_fixed_distance(500);
+            move_fixed_distance(800);
           } else{//GREEN COLOR (go straight) 
-            move_fixed_distance(500);
+            move_fixed_distance(800);
           }
           flag=0;
           position = calculate_pos(700);
