@@ -215,6 +215,12 @@ void loop(){
   }
 
   if(WATER_TRANSFER){
+    //turn 180 degrees to transfer water from the back
+  make_90_degree_clockwise();
+  make_90_degree_clockwise();
+
+  //reverse to the containers
+  move_fixed_distance(1600,-default_m1_speed,-default_m2_speed);
     //lowering the arm
     for (int j = 2000;j>=1475;j=j-25){
       arm_servo.writeMicroseconds(j);
