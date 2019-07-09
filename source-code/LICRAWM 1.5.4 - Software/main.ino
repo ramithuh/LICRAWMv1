@@ -113,7 +113,7 @@ float calculate_pos(int threshold = 300){
        delay(1000);
     }
   }*/
-  if (on_count>=14 ){
+  /*if (on_count>=14 ){
     flag = 1;
     flag_count += 1;
     Serial2.print("| Flag Detected! with theshold:  ");
@@ -121,8 +121,20 @@ float calculate_pos(int threshold = 300){
     md.setBrakes(400,400);
     delay(1000);
     return 0;
-  }
+  }*/
   if(on_count>10){
+    if (flag_count >= 1){
+      md.setBrakes(400,400);
+      delay(2000);
+    }
+    if (openmv_digital_decode()!=-1 || on_count == 15){      //using the camera to detect whether to turn 90 degrees
+      md.setBrakes(400,400);
+      flag = 1;
+      flag_count += 1;
+      Serial2.println("flag count :");
+      Serial2.println(flag_count);
+      return 0;
+    }
     if (sensorValues[0]<threshold && sensorValues[14]>threshold){
       //delay(200);
       //md.setBrakes(400, 400); 
@@ -190,16 +202,17 @@ void setup() {
   delay(3000);
 }
 
-
 void loop(){
  
   out="";
- 
+  
   _input_check();   ///takes 4us
-  //openmv_digital_decode();
+  
 
   //get_tof_reading();
-  
+  if (openmv_digital_decode()==-1){
+    _LED_all_on();
+  }
 
   if(WATER_TRANSFER){
     //lowering the arm
@@ -227,13 +240,13 @@ void loop(){
 
        int position;
 
-       if(flag_count==2 || flag_count==3){
+       if(flag_count==2 || flag_count==4){
           position=calculate_pos(700);
        }else{
           position=calculate_pos();
        }
 
-       if (flag == 1 && (flag_count == 1|| flag_count ==5)){//start and end of arena
+       if (flag == 1 && (flag_count == 1|| flag_count ==6)){//start and end of arena
           Serial2.println("| Arena Start/END");
           move_fixed_distance(2000);
           flag=0;
@@ -270,7 +283,7 @@ void loop(){
           flag=0;
           position = calculate_pos(700);
          
-        }else if (flag==1 && flag_count==3){
+        }else if (flag==1 && flag_count==4){
           md.setBrakes(400,400);
           Serial2.println("|Going to place the coin!");
           move_fixed_distance(200);
@@ -278,7 +291,7 @@ void loop(){
           move_fixed_distance(200);
           coin_pick();
           flag=0;
-          position = calculate_pos(700); //follow the rest of the color line
+          //position = calculate_pos(700); //follow the rest of the color line
         }
       
        // Serial2.print("Pos:");
@@ -308,14 +321,14 @@ void loop(){
         if (m1_global_speed>250){
           m1_global_speed = 250;
         }
-        else if (m1_global_speed<0){
-          m1_global_speed = 0;
+        else if (m1_global_speed<30){
+          m1_global_speed = 30;
         }
         if (m2_global_speed>280){
           m2_global_speed = 280;
         }
-        else if (m2_global_speed<30){
-          m2_global_speed = 30;
+        else if (m2_global_speed<60){
+          m2_global_speed = 60;
         }
       
     }

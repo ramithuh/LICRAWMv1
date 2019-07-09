@@ -339,9 +339,9 @@ int openmv_digital_decode(){
   int p8=digitalRead(openmv_p8);
   int p9=digitalRead(openmv_p9);
 
-  
+   _LED_all_off();
   if(p7==0 && p8==0 && p9==1){
-    _LED_all_off();
+   
    // LED2.blink();
     //LED2.blink(200);
     //LED2.blink(200);
@@ -350,7 +350,7 @@ int openmv_digital_decode(){
     return 0;
   }
   if(p7==0 && p8==1 && p9==0){
-    _LED_all_off();
+  
    // LED3.blink();
     //LED3.blink(200);
     //LED3.blink(200);
@@ -360,14 +360,18 @@ int openmv_digital_decode(){
   
   }
   if(p7==1 && p8==0 && p9==0){
-    _LED_all_off();
+    
    // LED5.blink();
    //LED5.blink(200);
     //LED5.blink(200);
     LED5.on();
     out= "blue";
     return 2;
+  }
 
+  if(p7==1 && p8==0 && p9==1){
+    out="white";
+    return 3;
   }
 /*  if(out!=""){
       
@@ -377,8 +381,8 @@ int openmv_digital_decode(){
       Serial2.println(String(p7)+String(p8)+String(p9));
 
   }else{*/
-  _LED_all_off();
-  return 0;
+  //_LED_all_off();
+  return -1;
    
 
 
