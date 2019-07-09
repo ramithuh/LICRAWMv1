@@ -325,6 +325,8 @@ function gotData() {
     line_array_readings[14]=parseFloat(latestData[34]);
     line_array_readings[15]=parseFloat(latestData[35]);
 
+    line_array_threshold=parseFloat(latestData[39]);
+
   }
 }
 

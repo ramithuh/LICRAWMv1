@@ -19,10 +19,10 @@ bool kd_mode=false;
 bool DEBUG_TOF=0;
 bool DEBUG_GYRO=0;
 bool DEBUG_ENCODERS=0;
-bool DEBUG_BLUETOOTH=1;
+bool DEBUG_BLUETOOTH=1;  //turn off during competition
 bool DEBUG_SPEED=0;
 
-bool UPDATE_GYRO=1;
+bool UPDATE_GYRO=0;
 bool UPDATE_TOF=1;
 bool VISUALIZE =0;
 
@@ -35,9 +35,9 @@ bool FOLLOW_LINE=1;
 #define SOLVE_MAZE 0
 
 int no_of_sensors=15;
-float KP = 90;   //80     /*was 20*/               //set Kp accordingly
-float KI = 3;//was 3                       //set Ki accordingly
-float KD = 500;//300;         //240              //set Kd accordingly
+float KP = 80;   //80     /*was 20*/               //set Kp accordingly
+float KI =3;// 3;//was 3                       //set Ki accordingly
+float KD = 500;//500;//300;         //240              //set Kd accordingly
 float KW = 46;
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
 int last_error = 0;
