@@ -127,12 +127,18 @@ float calculate_pos(int threshold = 300){
       md.setBrakes(400,400);
       delay(2000);
     }
-    if (openmv_digital_decode()!=-1 || on_count == 15){      //Color is in FOV, or ALL sensors on!
+    int clr=openmv_digital_decode(); 
+     
+    if (clr!=-1 || on_count == 15){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(400,400);
       flag = 1;
       flag_count += 1;
-      Serial2.print("flag count :");
-      Serial2.println(flag_count);
+      Serial2.print("| flag_count :");
+      Serial2.print(flag_count);
+      Serial2.print(" color: ");
+      Serial2.print(clr);
+      Serial2.print(" on_sensor_count: ");
+      Serial2.println(on_count);
       return 0;
     }
     if (sensorValues[0]<threshold && sensorValues[14]>threshold){
