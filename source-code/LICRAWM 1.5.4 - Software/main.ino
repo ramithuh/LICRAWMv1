@@ -113,10 +113,10 @@ float calculate_pos(int threshold = 300){
        delay(1000);
     }
   }*/
-  if (on_count>=13 ){
+  if (on_count>=14 ){
     flag = 1;
     flag_count += 1;
-    Serial2.print("Flag Detected! with theshold:  ");
+    Serial2.print("| Flag Detected! with theshold:  ");
     Serial2.println(threshold);
     md.setBrakes(400,400);
     delay(1000);
@@ -234,7 +234,7 @@ void loop(){
        }
 
        if (flag == 1 && (flag_count == 1|| flag_count ==5)){//start and end of arena
-          Serial2.println("Arena Start/END");
+          Serial2.println("| Arena Start/END");
           move_fixed_distance(2000);
           flag=0;
           position=calculate_pos();
@@ -242,17 +242,17 @@ void loop(){
 
         }else if (flag == 1 && flag_count==2){   //coin pick
           md.setBrakes(400,400);
-          Serial2.println("Going to Pick Coin");
-          Serial2.println("   Reversed 4.5cm");
+          Serial2.println("| Going to Pick Coin");
+          Serial2.println("|   Reversed 4.5cm");
           move_fixed_distance(800,-default_m1_speed,-default_m2_speed);//4.5 cm reverse 
 
-          Serial2.println("   Reading Color for 15s....");
+          Serial2.println("|   Reading Color for 15s....");
           int coin_colour = read_colour();
 
-          Serial2.print("   Color is ");
+          Serial2.print("|   Color is ");
           Serial2.println(coin_colour);
 
-          Serial2.println("   Moving forward to pick!");
+          Serial2.println("|   Moving forward to pick!");
           for(int i=0;i<14;i++){
             move_fixed_distance(200,default_m1_speed-30,default_m2_speed-30);////coin pick!
           }
@@ -272,7 +272,7 @@ void loop(){
          
         }else if (flag==1 && flag_count==3){
           md.setBrakes(400,400);
-          Serial2.println("Going to place the coin!");
+          Serial2.println("|Going to place the coin!");
           move_fixed_distance(200);
           coin_place();
           move_fixed_distance(200);
@@ -305,17 +305,17 @@ void loop(){
         //Serial2.print(m1_global_speed);
         //Serial2.print(" ::M2speed=");
         //Serial2.println(m2_global_speed);
-        if (m1_global_speed>400){
-          m1_global_speed = 400;
+        if (m1_global_speed>250){
+          m1_global_speed = 250;
         }
         else if (m1_global_speed<0){
           m1_global_speed = 0;
         }
-        if (m2_global_speed>400){
-          m2_global_speed = 400;
+        if (m2_global_speed>280){
+          m2_global_speed = 280;
         }
-        else if (m2_global_speed<0){
-          m2_global_speed = 0;
+        else if (m2_global_speed<30){
+          m2_global_speed = 30;
         }
       
     }

@@ -35,9 +35,9 @@ bool FOLLOW_LINE=1;
 #define SOLVE_MAZE 0
 
 int no_of_sensors=15;
-float KP = 80;   //80     /*was 20*/               //set Kp accordingly
-float KI =3;// 3;//was 3                       //set Ki accordingly
-float KD = 500;//500;//300;         //240              //set Kd accordingly
+float KP = 25;   //80     /*was 20*/               //set Kp accordingly
+float KI =0;// 3;//was 3                       //set Ki accordingly
+float KD = 0;//500;//300;         //240              //set Kd accordingly
 float KW = 46;
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
 int last_error = 0;
