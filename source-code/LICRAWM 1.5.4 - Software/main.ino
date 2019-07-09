@@ -65,13 +65,13 @@ int error_weights[]={-110, -90, -70, -50, -35, -20, -10, 0, 10, 20,  35, 50, 70,
 
 float calculate_pos(int threshold = 300){
   linearray.readLineWhite(sensorValues);
-  out="T1:0:T2:0:T3:0:T4:0:T5:0:Z:0:Y:0:X:0:M1:0:M2:0";
+  //out="T1:0:T2:0:T3:0:T4:0:T5:0:Z:0:Y:0:X:0:M1:0:M2:0";
 
-  out+=":L:";
+  /*out+=":L:";
   for (uint8_t i = 0; i < SensorCount; i++){
     out+=sensorValues[i];
     out+=":";
-  }
+  }*/
 
  
 
@@ -85,12 +85,12 @@ float calculate_pos(int threshold = 300){
       }
   }
 
-  out+=":POS:";
+  /*out+=":POS:";
   out+=pos;
   out+=":T:";
   out+=threshold;
 
-  Serial2.println(out);
+  Serial2.println(out);*/
 
   /*
   if(on_count>9){
@@ -127,11 +127,11 @@ float calculate_pos(int threshold = 300){
       md.setBrakes(400,400);
       delay(2000);
     }
-    if (openmv_digital_decode()!=-1 || on_count == 15){      //using the camera to detect whether to turn 90 degrees
+    if (openmv_digital_decode()!=-1 || on_count == 15){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(400,400);
       flag = 1;
       flag_count += 1;
-      Serial2.println("flag count :");
+      Serial2.print("flag count :");
       Serial2.println(flag_count);
       return 0;
     }
@@ -215,8 +215,9 @@ void loop(){
   }
 
   if(WATER_TRANSFER){
-    //turn 180 degrees to transfer water from the back
+  //turn 180 degrees to transfer water from the back
   make_90_degree_clockwise();
+  delay(1000);
   make_90_degree_clockwise();
 
   //reverse to the containers
@@ -227,6 +228,10 @@ void loop(){
       delay(100);
     }
     delay(1000);      //delay to transfer water
+    digitalWrite(8,HIGH);//start water transfer
+    delay(20000);
+    digitalWrite(8,LOW);//finished transfering water
+
     //lifting the arm
     for (int i = 1475;i<2000;i=i+25){
       arm_servo.writeMicroseconds(i);
