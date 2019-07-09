@@ -127,11 +127,11 @@ float calculate_pos(int threshold = 300){
       md.setBrakes(400,400);
       delay(2000);
     }
-    if (openmv_digital_decode()!=-1 || on_count == 15){      //using the camera to detect whether to turn 90 degrees
+    if (openmv_digital_decode()!=-1 || on_count == 15){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(400,400);
       flag = 1;
       flag_count += 1;
-      Serial2.println("flag count :");
+      Serial2.print("flag count :");
       Serial2.println(flag_count);
       return 0;
     }
