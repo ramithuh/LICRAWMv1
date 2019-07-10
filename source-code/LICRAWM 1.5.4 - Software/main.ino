@@ -226,6 +226,8 @@ void loop(){
   delay(1000);
   make_90_degree_clockwise();
 
+  //move forward to align with the line
+
   //reverse to the containers
   move_fixed_distance(1600,-default_m1_speed,-default_m2_speed);
     //lowering the arm
@@ -253,8 +255,6 @@ void loop(){
         unsigned int sensors[no_of_sensors];
         //reading the white line
        
-       //linearray.readLineBlack(sensorValues);
-
        int position;
 
        if(flag_count==2 || flag_count==4){
