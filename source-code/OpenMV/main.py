@@ -59,14 +59,14 @@ def LED_white(f):
 # Color Tracking Thresholds (L Min, L Max, A Min, A Max, B Min, B Max)
 # The below thresholds track in general red/green things. You may wish to tune them...
 thresholds = [(0, 80, 15, 127, -5, 127), # generic_red_thresholds -> index is 0 so code == (1 << 0)
-               (30, 100, -128, -15, -15, 127), # generic_green_thresholds -> index is 1 so code == (1 << 1)
-              (0, 85, -128, 38, -128, -25),  # generic_blue_thresholds -> index is 2 so code == (1 << 2)
+               (25, 100, -128, -15, -15, 127), # generic_green_thresholds -> index is 1 so code == (1 << 1)
+              (0, 85, -128, 30, -128, -28),  # generic_blue_thresholds -> index is 2 so code == (1 << 2)
               # Codes are or'ed together when "merge=True" for "find_blobs".
                (85, 100, -10, 10, -10, 10)]
 #(0, 30, -10, 10, -10, 10)]
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
-sensor.set_framesize(sensor.CIF)
+sensor.set_framesize(sensor.QVGA)
 
 sensor.skip_frames(time = 1000)
 sensor.set_auto_gain(False) # must be turned off for color tracking
@@ -121,7 +121,7 @@ while(1):
     '''
     i+=1;
 
-    LED_white(0);
+    #LED_white(1);
     #print("running", str(50-i), areas)
 
     clock.tick()
@@ -160,12 +160,6 @@ while(1):
             #uart.write("blue\n")  ##communication with arduino
             write_to_arduino("blue")
 
-        elif (blob.code() == 8 and blob.area()>20000) : # b code
-            LED_white(1);
-            img.draw_rectangle(blob.rect())
-            img.draw_cross(blob.cx(), blob.cy())
-            img.draw_string(blob.x() + 2, blob.y() + 2, "White"+str(blob.area()))
-            write_to_arduino("white")
         else:
             write_to_arduino("nothing")
 
