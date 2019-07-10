@@ -487,7 +487,7 @@ void move_fixed_distance2(int distance, int slaveSpeed=default_m1_speed,int mast
 
 }
 
-void move_fixed_distance_pid(int distance ,int speed1=m1_global_speed,int speed2=m2_global_speed){
+void move_fixed_distance_pid(int distance ,int speed1=default_m1_speed,int speed2=default_m2_speed){
   interrupts();
   M1count=0;
   M2count=0;
@@ -571,7 +571,7 @@ void make_45_degree_anticlockwise(int speed1=default_m1_speed,int speed2=default
    md.setBrakes(400,400);*/
 
   //turn using encoder counts
-  move_fixed_distance(575,speed1,-speed2);  //was 525
+  move_fixed_distance(550,speed1,-speed2);  //was 525
   Serial2.println("turned anticlockwise 45 degrees");
 
 }
@@ -586,7 +586,7 @@ void make_45_degree_clockwise(int speed1=default_m1_speed,int speed2=default_m2_
    md.setBrakes(400,400);*/
 
   //turn using encoder counts
-  move_fixed_distance(575,-speed1,speed2);  //was 525
+  move_fixed_distance(550,-speed1,speed2);  //was 525
   Serial2.println("turned clockwise 45 degrees");
 
 }

@@ -65,13 +65,13 @@ int error_weights[]={-110, -90, -70, -50, -35, -20, -10, 0, 10, 20,  35, 50, 70,
 
 float calculate_pos(int threshold = 300){
   linearray.readLineWhite(sensorValues);
-  //out="T1:0:T2:0:T3:0:T4:0:T5:0:Z:0:Y:0:X:0:M1:0:M2:0";
+  out="T1:0:T2:0:T3:0:T4:0:T5:0:Z:0:Y:0:X:0:M1:0:M2:0";
 
-  /*out+=":L:";
+  out+=":L:";
   for (uint8_t i = 0; i < SensorCount; i++){
     out+=sensorValues[i];
     out+=":";
-  }*/
+  }
 
  
 
@@ -85,14 +85,14 @@ float calculate_pos(int threshold = 300){
       }
   }
 
-  /*out+=":POS:";
+  out+=":POS:";
   out+=pos;
   out+=":T:";
   out+=threshold;
 
-  Serial2.println(out);*/
+  Serial2.println(out);
 
-  /*
+  /* 
   if(on_count>9){
     if (sensorValues[0]<300 && sensorValues[14]>300){
       delay(200);
@@ -122,43 +122,62 @@ float calculate_pos(int threshold = 300){
     delay(1000);
     return 0;
   }*/
-  if(on_count>10){
+  if(on_count>11){
+    Serial2.print("On count: ");
+    Serial2.println(on_count);
     if (flag_count >= 1){
-      md.setBrakes(400,400);
+      md.setBrakes(300,300);
       delay(2000);
     }
-    int clr=openmv_digital_decode(); 
+    if (flag_count==1){
+      move_fixed_distance(1000,default_m1_speed-30,default_m2_speed-30);
+      delay(1000);
+    }
+
+    int clr=openmv_digital_decode();
+
+    if (flag_count==1){
+      move_fixed_distance(1000,-default_m1_speed+30,-default_m2_speed+30);
+      delay(1000);
+    }
      
     if (clr!=-1 || on_count == 15){      //Color is in FOV, or ALL sensors on!
-      md.setBrakes(400,400);
+      md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
+      /*if (on_count != 15 && flag_count==2){
+        md.setM2Speed(default_m2_speed);
+        md.setM1Speed(0);
+        delay(100);
+      }*/
       Serial2.print("| flag_count :");
       Serial2.print(flag_count);
       Serial2.print(" color: ");
       Serial2.print(clr);
       Serial2.print(" on_sensor_count: ");
-      Serial2.println(on_count);
+      Serial2.print(on_count);
+      Serial2.print(" threshold: ");
+      Serial2.println(threshold);
       return 0;
     }
     if (sensorValues[0]<threshold && sensorValues[14]>threshold){
       //delay(200);
       //md.setBrakes(400, 400); 
       //delay(200);
-      move_fixed_distance_pid(700);
+      move_fixed_distance(700);
       delay(200);
       make_90_degree_anticlockwise(180,210);
-      md.setBrakes(400, 400);
+      md.setBrakes(300, 300);
       delay(200);
     }
     else if (sensorValues[0]>threshold && sensorValues[14]<threshold){
       //delay(200);
       //md.setBrakes(400, 400); 
       //delay(200);
-      move_fixed_distance_pid(700);
+      move_fixed_distance(700);
       delay(200);
       make_90_degree_clockwise(180,210);
-      md.setBrakes(400, 400);
+      md.setBrakes(300, 300);
       delay(500);
     }
   
@@ -178,7 +197,7 @@ void setup() {
   coin_servo.attach(coin_servo_pin);
 
   //setting initial positions of servos
-  coin_servo_pos(1500); 
+  coin_servo_pos(1800); 
   arm_servo.writeMicroseconds(2050);
   delay(1000);
 
@@ -257,8 +276,8 @@ void loop(){
 
        int position;
 
-       if(flag_count==2 || flag_count==4){
-          position=calculate_pos(700);
+       if(flag_count==2 || flag_count==3 || flag_count==4){
+          position=calculate_pos(650);
        }else{
           position=calculate_pos();
        }
@@ -271,10 +290,11 @@ void loop(){
           
 
         }else if (flag == 1 && flag_count==2){   //coin pick
-          md.setBrakes(400,400);
+          md.setBrakes(300,300);
           Serial2.println("| Going to Pick Coin");
           Serial2.println("|   Reversed 4.5cm");
-          move_fixed_distance(800,-default_m1_speed,-default_m2_speed);//4.5 cm reverse 
+          move_fixed_distance(500,-default_m1_speed+30,-default_m2_speed+30);//4.5 cm reverse 
+          coin_pick();
 
           Serial2.println("|   Reading Color for 15s....");
           int coin_colour = read_colour();
@@ -283,32 +303,34 @@ void loop(){
           Serial2.println(coin_colour);
 
           Serial2.println("|   Moving forward to pick!");
-          for(int i=0;i<14;i++){
-            move_fixed_distance(200,default_m1_speed-30,default_m2_speed-30);////coin pick!
+          for(int i=0;i<28;i++){
+            move_fixed_distance(100,default_m1_speed-30,default_m2_speed-30);////coin pick!
           }
          
           
           if(coin_colour == 0){ //RED COLOR
             make_45_degree_clockwise();
-            move_fixed_distance(800);
+            move_fixed_distance(900);
           }else if (coin_colour == 2){ //BLUE COLOR
             make_45_degree_anticlockwise();
-            move_fixed_distance(800);
+            move_fixed_distance(900);
           } else{//GREEN COLOR (go straight) 
-            move_fixed_distance(800);
+            move_fixed_distance(750);
           }
+          delay(1000);
           flag=0;
-          position = calculate_pos(700);
+          position = calculate_pos(650);
          
-        }else if (flag==1 && flag_count==4){
-          md.setBrakes(400,400);
+        }else if (flag==1 && flag_count==3){
+          md.setBrakes(300,300);
           Serial2.println("|Going to place the coin!");
-          move_fixed_distance(200);
+          move_fixed_distance(500);
           coin_place();
-          move_fixed_distance(200);
+          Serial2.println("|Coin placed!");
+          move_fixed_distance(500);
           coin_pick();
           flag=0;
-          //position = calculate_pos(700); //follow the rest of the color line
+          position = calculate_pos(650); //follow the rest of the color line
         }
       
        // Serial2.print("Pos:");
@@ -407,7 +429,7 @@ void loop(){
                 delay(1000);
 
         }else{
-                md.setBrakes(400,400);
+                md.setBrakes(300,300);
                 LED2.on();
                 make_90_degree_clockwise();
                 delay(1000);

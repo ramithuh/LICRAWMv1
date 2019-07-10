@@ -396,7 +396,7 @@ int read_colour(){
   arr[2]=0;  //BLUE
   unsigned long start = micros();
 
-  while (micros()-start < 10000000){  //wait 15 seconds to check color
+  while (micros()-start < 6000000){  //wait 15 seconds to check color
     arr[openmv_digital_decode()]+=1;
   }
   if (arr[0]>=arr[1]){
