@@ -125,23 +125,13 @@ float calculate_pos(int threshold = 300){
   if(on_count>11){
     Serial2.print("On count: ");
     Serial2.println(on_count);
-    if (flag_count >= 1){
-      md.setBrakes(300,300);
-      delay(2000);
-    }
-    if (flag_count==1){
-      move_fixed_distance(1000,default_m1_speed-30,default_m2_speed-30);
-      delay(1000);
-    }
+   
+    md.setBrakes(300,300);
+    move_fixed_distance(180);
+    md.setBrakes(300,300);
 
-    int clr=openmv_digital_decode();
-
-    if (flag_count==1){
-      move_fixed_distance(1000,-default_m1_speed+30,-default_m2_speed+30);
-      delay(1000);
-    }
      
-    if (clr!=-1 || on_count == 15){      //Color is in FOV, or ALL sensors on!
+    if (((digitalRead(LEFT_TRACKER)==0 && digitalRead(RIGHT_TRACKER)==0)) || on_count == 15){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
@@ -152,8 +142,6 @@ float calculate_pos(int threshold = 300){
       }*/
       Serial2.print("| flag_count :");
       Serial2.print(flag_count);
-      Serial2.print(" color: ");
-      Serial2.print(clr);
       Serial2.print(" on_sensor_count: ");
       Serial2.print(on_count);
       Serial2.print(" threshold: ");
@@ -197,7 +185,7 @@ void setup() {
   coin_servo.attach(coin_servo_pin);
 
   //setting initial positions of servos
-  coin_servo_pos(1800); 
+  coin_servo_pos(1500); 
   arm_servo.writeMicroseconds(2050);
   delay(1000);
 
@@ -277,7 +265,7 @@ void loop(){
        int position;
 
        if(flag_count==2 || flag_count==3 || flag_count==4){
-          position=calculate_pos(650);
+          position=calculate_pos(700);
        }else{
           position=calculate_pos();
        }
@@ -319,7 +307,7 @@ void loop(){
           }
           delay(1000);
           flag=0;
-          position = calculate_pos(650);
+          position = calculate_pos(700);
          
         }else if (flag==1 && flag_count==3){
           md.setBrakes(300,300);
@@ -330,7 +318,7 @@ void loop(){
           move_fixed_distance(500);
           coin_pick();
           flag=0;
-          position = calculate_pos(650); //follow the rest of the color line
+          position = calculate_pos(700); //follow the rest of the color line
         }
       
        // Serial2.print("Pos:");

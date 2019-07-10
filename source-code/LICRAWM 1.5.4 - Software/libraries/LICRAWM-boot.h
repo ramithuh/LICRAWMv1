@@ -8,6 +8,10 @@ void boot(){
     pinMode(openmv_p7, INPUT_PULLUP);
     pinMode(openmv_p8, INPUT_PULLUP);
     pinMode(openmv_p9, INPUT_PULLUP);
+
+
+    pinMode(RIGHT_TRACKER,INPUT );//right
+    pinMode(LEFT_TRACKER ,INPUT );
  
 
     _LED_all_off();         //turn off all LEDs

@@ -51,6 +51,9 @@ float _last_position=0;
 #define LED_4 29
 #define LED_5 31
 
+#define LEFT_TRACKER 48
+#define RIGHT_TRACKER 43
+
 #define RESET_PIN 33
 #define S_2 22
 #define S_3 24
