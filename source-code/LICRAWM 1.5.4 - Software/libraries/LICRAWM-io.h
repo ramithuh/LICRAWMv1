@@ -34,6 +34,8 @@ bool WATER_TRANSFER=0;
 bool FOLLOW_LINE=1;
 #define SOLVE_MAZE 0
 
+int coin_colour=2;
+
 int no_of_sensors=15;
 float KP = 28;   //80     /*was 20*/               //set Kp accordingly
 float KI =0;// 3;//was 3                       //set Ki accordingly

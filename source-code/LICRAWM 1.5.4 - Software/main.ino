@@ -281,35 +281,37 @@ void loop(){
           md.setBrakes(300,300);
           Serial2.println("| Going to Pick Coin");
           Serial2.println("|   Reversed 4.5cm");
-          move_fixed_distance(500,-default_m1_speed+30,-default_m2_speed+30);//4.5 cm reverse 
-          coin_pick();
+          move_fixed_distance(700,-default_m1_speed+30,-default_m2_speed+30);//4.5 cm reverse 
 
           Serial2.println("|   Reading Color for 15s....");
-          int coin_colour = read_colour();
+          coin_colour = read_colour();
 
           Serial2.print("|   Color is ");
           Serial2.println(coin_colour);
 
           Serial2.println("|   Moving forward to pick!");
-          for(int i=0;i<28;i++){
+          for(int i=0;i<27;i++){
             move_fixed_distance(100,default_m1_speed-30,default_m2_speed-30);////coin pick!
           }
+          delay(1000);
+          flag=0;
+          position = calculate_pos();
          
-          
+        }else if (flag==1 && flag_count==3){
           if(coin_colour == 0){ //RED COLOR
             make_45_degree_clockwise();
-            move_fixed_distance(900);
+            //move_fixed_distance(900);
           }else if (coin_colour == 2){ //BLUE COLOR
             make_45_degree_anticlockwise();
-            move_fixed_distance(900);
+            //move_fixed_distance(900);
           } else{//GREEN COLOR (go straight) 
-            move_fixed_distance(750);
+            move_fixed_distance(300);
           }
           delay(1000);
           flag=0;
           position = calculate_pos(700);
-         
-        }else if (flag==1 && flag_count==3){
+        }
+        else if (flag==1 && flag_count==4){
           md.setBrakes(300,300);
           Serial2.println("|Going to place the coin!");
           move_fixed_distance(500);
