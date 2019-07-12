@@ -96,34 +96,32 @@ void setup() {
 
 void loop(){
  
-  out="";
   _input_check();   ///takes 4us
 
-  
   line_follow();
+  //picking up the coin
   coin_collect();
+  line_follow(300,700);
   line_follow(700);
-  
-  //colored junction
   delay(1000);
-  move_fixed_distance(1000,170,170);
-  line_follow();
-
+  coin_colour=0;
   //color line following 
   if(coin_colour == 0){ //RED COLOR
-    move_fixed_distance(500);
+    //move_fixed_distance(900);
     make_45_degree_clockwise();
     move_fixed_distance(500);
   }
   else if (coin_colour == 2){ //BLUE COLOR
-    move_fixed_distance(500);
+    //move_fixed_distance(900);
     make_45_degree_anticlockwise();
     move_fixed_distance(500);
   } 
   else{//GREEN COLOR (go straight) 
-    move_fixed_distance(700);
+    move_fixed_distance(900);
   }
-
+  delay(5000);
+/* 
+  line_follow();
   line_follow();
 
   //coin place
@@ -135,7 +133,7 @@ void loop(){
   move_fixed_distance(500);
   coin_pick();
 
-  line_follow();
+  line_follow();*/
 
   if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
     Serial2.println(out);

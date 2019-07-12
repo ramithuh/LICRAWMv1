@@ -247,7 +247,7 @@ void move_fixed_distance(int distance ,int speed1=default_m1_speed,int speed2=de
     
   }
   if (flag_count==1){
-    md.setBrakes(200,200);
+    md.setBrakes(300,300);
   }else{
     md.setBrakes(400,400);
   }

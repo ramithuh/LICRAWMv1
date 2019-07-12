@@ -54,15 +54,15 @@ float calculate_pos(int threshold = 300){
       Serial2.print(" threshold: ");
       Serial2.println(threshold);
     }
-    else if (digitalRead(LEFT_TRACKER)==0 && digitalRead(RIGHT_TRACKER)==1){    //sensorValues[0]<threshold && sensorValues[14]>threshold
-      move_fixed_distance(700);
+    else if (digitalRead(LEFT_TRACKER)==0 && digitalRead(RIGHT_TRACKER)==1 && threshold==300){    //sensorValues[0]<threshold && sensorValues[14]>threshold
+      move_fixed_distance(900);
       delay(200);
       make_90_degree_anticlockwise(180,210);
       md.setBrakes(300, 300);
       delay(200);
     }
-    else if (digitalRead(LEFT_TRACKER)==1 && digitalRead(RIGHT_TRACKER)==0){
-      move_fixed_distance(700);
+    else if (digitalRead(LEFT_TRACKER)==1 && digitalRead(RIGHT_TRACKER)==0 && threshold==300){
+      move_fixed_distance(900);
       delay(200);
       make_90_degree_clockwise(180,210);
       md.setBrakes(300, 300);
@@ -80,11 +80,12 @@ float calculate_pos(int threshold = 300){
   
 }
 
-void line_follow(int distance=0){
+void line_follow(int threshold=300,int distance=0){
     /*
     Follow line indefinitely
      */
-
+  m1_global_speed=default_m1_speed;
+  m2_global_speed=default_m2_speed;
   _LED_all_off();
   LED1.on();
   if (distance==0){
@@ -96,14 +97,11 @@ void line_follow(int distance=0){
       int position;
       
       int last_flag_count = flag_count;
-      if(flag_count==2 || flag_count==3){
-          position=calculate_pos(700);
-      }else{
-          position=calculate_pos();
-      }
+      position = calculate_pos(threshold);
     
       if (last_flag_count < flag_count){
         _LED_all_off();
+        md.setBrakes(300,300);
         return;
       }
 
@@ -179,6 +177,7 @@ void line_follow(int distance=0){
         m2=M2count;
       }    
     }
+    md.setBrakes(200,200);
   }
 }
 
@@ -294,7 +293,7 @@ void coin_collect() {
   md.setBrakes(300,300);
   Serial2.println("| Going to Pick Coin");
   Serial2.println("|   Reversed 4.5cm");
-  move_fixed_distance(700,-default_m1_speed,-default_m2_speed);//4.5 cm reverse 
+  move_fixed_distance(700,-default_m2_speed,-default_m1_speed);//4.5 cm reverse 
 
   Serial2.println("|   Reading Color for 15s....");
   coin_colour = read_colour();
@@ -303,4 +302,8 @@ void coin_collect() {
   Serial2.println(coin_colour);
 
   Serial2.println("|   Moving forward to pick!");
+  line_follow(300,500);
+  delay(1000);
+  move_fixed_distance(1200,170,170);
+  delay(1000);
 }
