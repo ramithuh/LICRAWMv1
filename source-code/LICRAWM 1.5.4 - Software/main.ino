@@ -92,36 +92,6 @@ float calculate_pos(int threshold = 300){
 
   Serial2.println(out);
 
-  /* 
-  if(on_count>9){
-    if (sensorValues[0]<300 && sensorValues[14]>300){
-      delay(200);
-      md.setBrakes(400, 400); 
-       md.setM1Speed(170);
-       md.setM2Speed(-170);
-       delay(350);
-       md.setBrakes(400, 400); 
-       delay(1000);
-    }
-    else if (sensorValues[0]>300 && sensorValues[14]<300){
-      delay(200);
-      md.setBrakes(400, 400); 
-       md.setM1Speed(-170);
-       md.setM2Speed(170);
-       delay(350);
-       md.setBrakes(400, 400); 
-       delay(1000);
-    }
-  }*/
-  /*if (on_count>=14 ){
-    flag = 1;
-    flag_count += 1;
-    Serial2.print("| Flag Detected! with theshold:  ");
-    Serial2.println(threshold);
-    md.setBrakes(400,400);
-    delay(1000);
-    return 0;
-  }*/
   if(on_count>11){
     Serial2.print("On count: ");
     Serial2.println(on_count);
@@ -131,15 +101,19 @@ float calculate_pos(int threshold = 300){
     md.setBrakes(300,300);
 
      
-    if (((digitalRead(LEFT_TRACKER)==0 && digitalRead(RIGHT_TRACKER)==0)) || on_count == 15){      //Color is in FOV, or ALL sensors on!
+    if (((digitalRead(LEFT_TRACKER)==0 || digitalRead(RIGHT_TRACKER)==0)) || on_count == 15){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
-      /*if (on_count != 15 && flag_count==2){
+      if (flag_count==2 && on_count < 15){
+        md.setBrakes(300,300);
+        delay(1000);
         md.setM2Speed(default_m2_speed);
         md.setM1Speed(0);
-        delay(100);
-      }*/
+        delay(110);
+        md.setBrakes(300,300);
+        delay(1000);
+      }
       Serial2.print("| flag_count :");
       Serial2.print(flag_count);
       Serial2.print(" on_sensor_count: ");
@@ -186,6 +160,7 @@ void setup() {
 
   //setting initial positions of servos
   coin_servo_pos(1500); 
+  
   arm_servo.writeMicroseconds(2050);
   delay(1000);
 
@@ -281,7 +256,7 @@ void loop(){
           md.setBrakes(300,300);
           Serial2.println("| Going to Pick Coin");
           Serial2.println("|   Reversed 4.5cm");
-          move_fixed_distance(700,-default_m1_speed+30,-default_m2_speed+30);//4.5 cm reverse 
+          move_fixed_distance(700,-default_m1_speed,-default_m2_speed);//4.5 cm reverse 
 
           Serial2.println("|   Reading Color for 15s....");
           coin_colour = read_colour();
@@ -290,28 +265,31 @@ void loop(){
           Serial2.println(coin_colour);
 
           Serial2.println("|   Moving forward to pick!");
-          for(int i=0;i<27;i++){
-            move_fixed_distance(100,default_m1_speed-30,default_m2_speed-30);////coin pick!
-          }
+         
+          move_fixed_distance(1000,180,180);
+          delay(1000);
+          move_fixed_distance(700);
           delay(1000);
           flag=0;
           position = calculate_pos();
          
         }else if (flag==1 && flag_count==3){
           if(coin_colour == 0){ //RED COLOR
+            move_fixed_distance(400);
             make_45_degree_clockwise();
             //move_fixed_distance(900);
           }else if (coin_colour == 2){ //BLUE COLOR
+            move_fixed_distance(500);
             make_45_degree_anticlockwise();
             //move_fixed_distance(900);
           } else{//GREEN COLOR (go straight) 
-            move_fixed_distance(300);
+            move_fixed_distance(500);
           }
           delay(1000);
           flag=0;
           position = calculate_pos(700);
         }
-        else if (flag==1 && flag_count==4){
+        else if (flag==1 && flag_count==5){
           md.setBrakes(300,300);
           Serial2.println("|Going to place the coin!");
           move_fixed_distance(500);
@@ -347,17 +325,17 @@ void loop(){
         //Serial2.print(m1_global_speed);
         //Serial2.print(" ::M2speed=");
         //Serial2.println(m2_global_speed);
-        if (m1_global_speed>250){
-          m1_global_speed = 250;
+        if (m1_global_speed>230){
+          m1_global_speed = 230;
         }
         else if (m1_global_speed<30){
           m1_global_speed = 30;
         }
-        if (m2_global_speed>280){
-          m2_global_speed = 280;
+        if (m2_global_speed>230){
+          m2_global_speed = 230;
         }
-        else if (m2_global_speed<60){
-          m2_global_speed = 60;
+        else if (m2_global_speed<30){
+          m2_global_speed = 30;
         }
       
     }
