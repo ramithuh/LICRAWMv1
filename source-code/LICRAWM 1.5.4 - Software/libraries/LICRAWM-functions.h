@@ -249,7 +249,12 @@ void move_fixed_distance(int distance ,int speed1=default_m1_speed,int speed2=de
     else md.setM2Speed(speed2);
     
   }
-  md.setBrakes(400, 400);  //if above brakes fails
+  if (flag_count==2){
+    md.setBrakes(200,200);
+  }else{
+    md.setBrakes(400,400);
+  }
+    //if above brakes fails
   //Serial2.println("|##-> moved fixed distance! ");
 
 }

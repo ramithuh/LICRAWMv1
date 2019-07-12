@@ -101,7 +101,7 @@ float calculate_pos(int threshold = 300){
     md.setBrakes(300,300);
 
      
-    if (((digitalRead(LEFT_TRACKER)==0 || digitalRead(RIGHT_TRACKER)==0)) || on_count == 15){      //Color is in FOV, or ALL sensors on!
+    if (((digitalRead(LEFT_TRACKER)==0 && digitalRead(RIGHT_TRACKER)==0)) || on_count == 15){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
@@ -110,7 +110,7 @@ float calculate_pos(int threshold = 300){
         delay(1000);
         md.setM2Speed(default_m2_speed);
         md.setM1Speed(0);
-        delay(110);
+        delay(70);
         md.setBrakes(300,300);
         delay(1000);
       }
@@ -122,7 +122,7 @@ float calculate_pos(int threshold = 300){
       Serial2.println(threshold);
       return 0;
     }
-    if (sensorValues[0]<threshold && sensorValues[14]>threshold){
+    if ((digitalRead(LEFT_TRACKER)==0 && digitalRead(RIGHT_TRACKER)==1) && (sensorValues[0]<threshold && sensorValues[14]>threshold)){    //sensorValues[0]<threshold && sensorValues[14]>threshold
       //delay(200);
       //md.setBrakes(400, 400); 
       //delay(200);
@@ -132,7 +132,7 @@ float calculate_pos(int threshold = 300){
       md.setBrakes(300, 300);
       delay(200);
     }
-    else if (sensorValues[0]>threshold && sensorValues[14]<threshold){
+    else if ((digitalRead(LEFT_TRACKER)==1 && digitalRead(RIGHT_TRACKER)==0) && (sensorValues[0]>threshold && sensorValues[14]<threshold)){
       //delay(200);
       //md.setBrakes(400, 400); 
       //delay(200);
@@ -266,16 +266,16 @@ void loop(){
 
           Serial2.println("|   Moving forward to pick!");
          
-          move_fixed_distance(1000,180,180);
+          move_fixed_distance(1100,160,160);
           delay(1000);
-          move_fixed_distance(700);
+          move_fixed_distance(1000);
           delay(1000);
           flag=0;
           position = calculate_pos();
          
         }else if (flag==1 && flag_count==3){
           if(coin_colour == 0){ //RED COLOR
-            move_fixed_distance(400);
+            move_fixed_distance(500);
             make_45_degree_clockwise();
             //move_fixed_distance(900);
           }else if (coin_colour == 2){ //BLUE COLOR
@@ -283,7 +283,7 @@ void loop(){
             make_45_degree_anticlockwise();
             //move_fixed_distance(900);
           } else{//GREEN COLOR (go straight) 
-            move_fixed_distance(500);
+            move_fixed_distance(700);
           }
           delay(1000);
           flag=0;
@@ -328,14 +328,14 @@ void loop(){
         if (m1_global_speed>230){
           m1_global_speed = 230;
         }
-        else if (m1_global_speed<30){
-          m1_global_speed = 30;
+        else if (m1_global_speed<60){
+          m1_global_speed = 60;
         }
         if (m2_global_speed>230){
           m2_global_speed = 230;
         }
-        else if (m2_global_speed<30){
-          m2_global_speed = 30;
+        else if (m2_global_speed<60){
+          m2_global_speed = 60;
         }
       
     }
