@@ -101,24 +101,31 @@ void loop(){
   line_follow();
   //picking up the coin
   coin_collect();
-  line_follow(300,700);
-  line_follow(700);
+  line_follow(300,900);
+  //line_follow(700);
   delay(1000);
   coin_colour=0;
   //color line following 
   if(coin_colour == 0){ //RED COLOR
-    //move_fixed_distance(900);
+    //move_fixed_distance(500);
     make_45_degree_clockwise();
     move_fixed_distance(500);
   }
   else if (coin_colour == 2){ //BLUE COLOR
-    //move_fixed_distance(900);
+    //move_fixed_distance(300);
     make_45_degree_anticlockwise();
     move_fixed_distance(500);
   } 
   else{//GREEN COLOR (go straight) 
-    move_fixed_distance(900);
+    move_fixed_distance(950);
   }
+  delay(1000);
+  move_fixed_distance(200,-default_m2_speed,-default_m1_speed);
+  line_follow(700,300);
+  delay(1000);
+  line_follow(700);
+  delay(1000);
+  line_follow(700);
   delay(5000);
 /* 
   line_follow();
