@@ -304,18 +304,6 @@ void _input_check(){
         }else if(x=='n'){
            move_fixed_distance_pid(4010,-default_m1_speed,default_m2_speed);  
         
-        }else if(x=='*'){
-            if(FOLLOW_LINE==1){
-                  md.setM1Speed(0);
-                  md.setM2Speed(0);
-                  m1_global_speed=275;
-                  m2_global_speed=275;
-                  last_error = 0;
-                  _last_position=0;
-                  
-            }
-            FOLLOW_LINE=!FOLLOW_LINE;
-            
         }else if(x=='_'){
             coin_pick();
         }else if(x=='z'){

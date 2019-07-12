@@ -222,9 +222,6 @@ void get_line_array(){
     out+=sensorValues[i];
     out+=":";
   }
-
-
-
 }
 
 void move_fixed_distance(int distance ,int speed1=default_m1_speed,int speed2=default_m2_speed){
@@ -249,7 +246,7 @@ void move_fixed_distance(int distance ,int speed1=default_m1_speed,int speed2=de
     else md.setM2Speed(speed2);
     
   }
-  if (flag_count==2){
+  if (flag_count==1){
     md.setBrakes(200,200);
   }else{
     md.setBrakes(400,400);

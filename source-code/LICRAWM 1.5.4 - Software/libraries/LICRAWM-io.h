@@ -1,13 +1,14 @@
 /* Contains LICRAWM PIN DEFINITIONS & CLASS DEFINITIONS */
 //#define DEBUG true
-int default_m1_speed=210;
+int default_m1_speed=197;
 int default_m2_speed=210;  ///never change or overwrite!! 
 
-int m1_global_speed=210; //150
+int m1_global_speed=197; //150
 int m2_global_speed=210; //180
 
 int m1_wall_follow = 210;
 int m2_wall_follow = 210;
+
 
 bool flag=0;
 int flag_count = 0;
@@ -26,20 +27,18 @@ bool UPDATE_GYRO=0;
 bool UPDATE_TOF=1;
 bool VISUALIZE =0;
 
-bool FOLLOW_WALL=0;
 float tof_error=0;
 float offset_distance=80;      //keep this distance from the wall
 
-bool WATER_TRANSFER=0;
-bool FOLLOW_LINE=1;
+
 #define SOLVE_MAZE 0
 
 int coin_colour=2;
 
 int no_of_sensors=15;
-float KP = 35;   //80     /*was 20*/               //set Kp accordingly
+float KP = 80;   //80     /*was 20*/               //set Kp accordingly
 float KI =0;// 3;//was 3                       //set Ki accordingly
-float KD = 80;//100      //240              //set Kd accordingly
+float KD = 160;//100      //240              //set Kd accordingly
 float KW = 46;
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
 int last_error = 0;
