@@ -308,7 +308,12 @@ void _input_check(){
             coin_pick();
         }else if(x=='z'){
             coin_place();
+        }else if(x=='D'){
+            lower_water_arm();
+        }else if(x=='A'){
+            lift_water_arm();
         }
+
         
     }
   }

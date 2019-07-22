@@ -38,8 +38,8 @@ float calculate_pos(int threshold = 300){
   Serial2.println(out);
 */
   if(on_count>10){
-    Serial2.print("On count: ");
-    Serial2.println(on_count);
+    //Serial2.print("On count: ");
+    //Serial2.println(on_count);
    
     md.setBrakes(300,300);
       
@@ -269,10 +269,7 @@ void water_transfer(){
     move_fixed_distance(1600,-default_m1_speed,-default_m2_speed);
 
     //lowering the arm
-    for (int j = 2000;j>=1475;j-=25){
-      arm_servo.writeMicroseconds(j);
-      delay(100);
-    }
+    lower_water_arm();
 
     delay(1000);      //delay to transfer water
     digitalWrite(8,HIGH);//start water transfer
@@ -280,11 +277,10 @@ void water_transfer(){
     digitalWrite(8,LOW);//finished transfering water
 
     //lifting the arm
-    for (int i = 1475;i<2000;i=i+25){
-      arm_servo.writeMicroseconds(i);
-      delay(100);
-    }
-      delay(1000);    //wait till water is drained
+    lift_water_arm();
+
+
+    delay(1000);    //wait till water is drained
 
 } 
 
@@ -306,4 +302,13 @@ void coin_collect() {
   delay(1000);
   move_fixed_distance(1200,170,170);
   delay(1000);
+}
+
+void start_square(){
+    // ####### START SQUARE! ######
+ 
+  
+  move_fixed_distance(1000);
+  // #######        ######
+
 }

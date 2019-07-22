@@ -85,18 +85,28 @@ void setup() {
   boot_tof();
   LED5.on(); //booting tof done
   
-  // ####### START SQUARE! ######
+
   boot_motors();
   boot_encoders();
   boot_linearray();
   delay(2000);
-  move_fixed_distance(1000);
-  // #######        ######
+
+  //move_fixed_distance(2500);
+//  start_square();
+  delay(2000);
+  
 }
 
 void loop(){
- 
-  _input_check();   ///takes 4us
+  
+ // _input_check();   ///takes 4us
+//line_follow();
+align_right();
+//out="";
+//get_tof_reading();
+//align_right();
+/*
+
 
   line_follow();
   //picking up the coin
@@ -140,7 +150,7 @@ void loop(){
   move_fixed_distance(500);
   coin_pick();
 
-  line_follow();*/
+  line_follow();*/ 
 
   if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
     Serial2.println(out);

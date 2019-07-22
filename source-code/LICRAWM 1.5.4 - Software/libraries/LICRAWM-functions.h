@@ -267,7 +267,7 @@ void move_fixed_distance_with_tof(int distance ,int speed1=default_m1_speed,int 
     M2count=0;
   }
 
-  while((abs(m1)<distance || abs(m2)<distance)&&(Sensor1.readRangeContinuousMillimeters()+offset_TOF1>60)){
+  while((abs(m1)<distance || abs(m2)<distance)&&(Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80)){
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
         m1=M1count;
         m2=M2count;
@@ -308,11 +308,11 @@ double calculate_tof_error_right(double _tof_front_r,double _tof_back_r){
 
   double right_error = _tof_front_r - _tof_back_r;
   //double left_error = _tof_front_l - _tof_back_l;
-  if (_tof_front_r < offset_distance && _tof_back_r<offset_distance){
-    error = (offset_distance - right_error);// + left_error;
+  if (_tof_front_r < 78 && _tof_back_r<78){
+    error = ((offset_distance)/3 - right_error);// + left_error;
   }
-  else if (_tof_front_r>offset_distance && _tof_back_r>offset_distance){
-    error = -(offset_distance + right_error);// - right_error;
+  else if (_tof_front_r>82 && _tof_back_r>82){
+    error = -((offset_distance)/3 + right_error);// - right_error;
   }
   else{
     error = -KW*(right_error);// - left_error);
@@ -323,6 +323,8 @@ double calculate_tof_error_right(double _tof_front_r,double _tof_back_r){
 void align_left(){
   int m1_speed = default_m1_speed;
   int m2_speed = default_m2_speed;
+  
+
 
   float tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
   float tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
@@ -359,13 +361,14 @@ void align_left(){
 void align_right(){
   int m1_speed = default_m1_speed;
   int m2_speed = default_m2_speed;
+  
 
   float tof_2 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
   float tof_1 = Sensor2.readRangeContinuousMillimeters()+offset_TOF2;
 
   double right_tof_error = calculate_tof_error_right(tof_1,tof_2);
 
-  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(right_tof_error)>2){
+  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(right_tof_error)>0){
      tof_2 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
      tof_1 = Sensor2.readRangeContinuousMillimeters()+offset_TOF2;
 
@@ -374,16 +377,16 @@ void align_right(){
       m1_speed += right_tof_error;
       m2_speed -= right_tof_error;
 
-      if (m1_speed>400){
-          m1_speed = 400;
+      if (m1_speed>230){
+          m1_speed = 230;
       }else if (m1_speed<150){
           m1_speed = 150;
       }
 
-      if (m2_speed>400){
-          m2_speed = 400;
-      }else if (m2_speed<150){
-          m2_speed = 150;
+      if (m2_speed>243){
+          m2_speed = 243;
+      }else if (m2_speed<170){
+          m2_speed = 170;
       }
       md.setM1Speed(m1_speed);
       md.setM2Speed(m2_speed);   
@@ -433,20 +436,27 @@ void move_fixed_distance_with_walls(int distance){
 
     while((abs(m1)<distance || abs(m2)<distance)&&(Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80)){
         if(wall_in_left()){
-          Serial2.println("! left wall deteted");
+          //Serial2.println("! left wall deteted");
           align_left();
         }else if(wall_in_right()){
-          Serial2.println("! right wall deteted");
+          //Serial2.println("! right wall deteted");
           align_right();
           
+        }else{
+          md.setBrakes(400,400);
+          //move_fixed_distance_with_tof(50);
+          
         }
-
-        move_fixed_distance_with_tof(50);
-
-        ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+        
+        
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE){    
+          //obviously we're going to move 50 down below.. so we increment that 50
+          //even if move_fixed_distance_with_tof() is not done due to front wall.. this while will exit ne
           m1=M1count;
           m2=M2count;
         }
+
+        
     }
     LED1.off();
 
@@ -614,6 +624,22 @@ void coin_pick(){
    delay(2000);
 }
 void coin_place(){
-    coin_servo_pos(1800);
+    coin_servo_pos(1850);
     delay(2000);
+}
+
+void lower_water_arm(){
+  //lowering the arm
+    for (int j = 2000;j>=1475;j-=25){
+      arm_servo.writeMicroseconds(j);
+      delay(100);
+    }
+}
+
+void lift_water_arm(){
+  //lifting the arm
+    for (int i = 1475;i<2000;i=i+25){
+      arm_servo.writeMicroseconds(i);
+      delay(100);
+    }
 }

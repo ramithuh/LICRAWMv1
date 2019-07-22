@@ -6,7 +6,7 @@ int default_m2_speed=210;  ///never change or overwrite!!
 int m1_global_speed=197; //150
 int m2_global_speed=210; //180
 
-int m1_wall_follow = 210;
+int m1_wall_follow = 197;
 int m2_wall_follow = 210;
 
 
@@ -39,7 +39,7 @@ int no_of_sensors=15;
 float KP = 80;   //80     /*was 20*/               //set Kp accordingly
 float KI =0;// 3;//was 3                       //set Ki accordingly
 float KD = 180;//100      //240              //set Kd accordingly
-float KW = 46;
+float KW = 46; //46
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
 int last_error = 0;
 float _last_position=0;
