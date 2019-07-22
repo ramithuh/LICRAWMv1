@@ -101,7 +101,9 @@ void loop(){
   
  // _input_check();   ///takes 4us
 //line_follow();
-align_right();
+//align_left();
+//line_follow();
+FOLLOW_WALL();
 //out="";
 //get_tof_reading();
 //align_right();

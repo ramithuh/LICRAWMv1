@@ -73,7 +73,12 @@ float calculate_pos(int threshold = 300){
 
 
   if(on_count==0){
+    if (Sensor3.readRangeContinuousMillimeters()+offset_TOF3<80||Sensor4.readRangeContinuousMillimeters()+offset_TOF4<80 || Sensor1.readRangeContinuousMillimeters()+offset_TOF1<80){
+      flag_count += 1;
+    }
+    else{
     return _last_position;
+    }
   }
   _last_position=pos/on_count;
   return _last_position;
@@ -104,6 +109,7 @@ void line_follow(int threshold=300,int distance=0){
         md.setBrakes(300,300);
         return;
       }
+      
 
       //calculating Error
       int error = position ;
@@ -186,14 +192,14 @@ void FOLLOW_WALL() {
     Follow wall indefinitely
 
     */
-
+while(1){
     float tof1 = Sensor1.readRangeContinuousMillimeters()+offset_TOF1;
     float tof2 = Sensor2.readRangeContinuousMillimeters()+offset_TOF2;
     float tof3 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
     float tof4 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
     float tof5 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
     
-    out+="T1:";
+   /*  out+="T1:";
     out+=tof1;
     out+=":T2:";
     out+='0';
@@ -202,12 +208,15 @@ void FOLLOW_WALL() {
     out+=":T4:";
     out+=tof4;
     out+=":T5:";
-    out+=tof5;
+    out+=tof5;*/
     
     if (tof4>150 && tof5>150){  // can I turn Left ??
 
             Serial2.println("#no wall in left");
             md.setBrakes(400,400);
+            move_fixed_distance_with_tof(1200);
+            md.setBrakes(400,400);
+            delay(2000);
 
             LED3.on();
             make_90_degree_anticlockwise();
@@ -228,6 +237,7 @@ void FOLLOW_WALL() {
 
     }else if (tof3>150){
             Serial2.println("#wall in left & front NOT in RIGHT");
+
             md.setBrakes(400,400);
 
             LED5.on();
@@ -251,6 +261,7 @@ void FOLLOW_WALL() {
             
             delay(1000);
     }
+}
 }
 
 void water_transfer(){

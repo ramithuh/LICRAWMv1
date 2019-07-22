@@ -290,11 +290,11 @@ double calculate_tof_error_left(double _tof_front_r,double _tof_back_r){
 
   double left_error = _tof_front_r - _tof_back_r;
   //double left_error = _tof_front_l - _tof_back_l;
-  if (_tof_front_r < offset_distance && _tof_back_r<offset_distance){
-    error = -(offset_distance - left_error);// + left_error;
+  if (_tof_front_r < 78 && _tof_back_r<78){
+    error = -((offset_distance)/3 - left_error);// + left_error;
   }
-  else if (_tof_front_r>offset_distance && _tof_back_r>offset_distance){
-    error = (offset_distance + left_error);// - left_error;
+  else if (_tof_front_r>82 && _tof_back_r>82){
+    error = ((offset_distance)/3 + left_error);// - left_error;
   }
   else{
     error = KW*(left_error);// - left_error);
@@ -309,7 +309,7 @@ double calculate_tof_error_right(double _tof_front_r,double _tof_back_r){
   double right_error = _tof_front_r - _tof_back_r;
   //double left_error = _tof_front_l - _tof_back_l;
   if (_tof_front_r < 78 && _tof_back_r<78){
-    error = ((offset_distance)/3 - right_error);// + left_error;
+    error = ((offset_distance)/3 - right_error);// + right_error;
   }
   else if (_tof_front_r>82 && _tof_back_r>82){
     error = -((offset_distance)/3 + right_error);// - right_error;
@@ -331,7 +331,7 @@ void align_left(){
 
  double left_tof_error = calculate_tof_error_left(tof_1,tof_2);
 
-  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(left_tof_error)>2){
+  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(left_tof_error)>0 && (tof_1<150||tof_2<150)){
      tof_2 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
      tof_1 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
 
@@ -340,16 +340,16 @@ void align_left(){
       m1_speed += left_tof_error;
       m2_speed -= left_tof_error;
 
-      if (m1_speed>400){
-          m1_speed = 400;
+      if (m1_speed>230){
+          m1_speed = 230;
       }else if (m1_speed<150){
           m1_speed = 150;
       }
 
-      if (m2_speed>400){
-          m2_speed = 400;
-      }else if (m2_speed<150){
-          m2_speed = 150;
+      if (m2_speed>243){
+          m2_speed = 243;
+      }else if (m2_speed<170){
+          m2_speed = 170;
       }
       md.setM1Speed(m1_speed);
       md.setM2Speed(m2_speed);   
@@ -368,7 +368,7 @@ void align_right(){
 
   double right_tof_error = calculate_tof_error_right(tof_1,tof_2);
 
-  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(right_tof_error)>0){
+  while (Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80 && abs(right_tof_error)>0 && (tof_1<150||tof_2<150)){
      tof_2 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
      tof_1 = Sensor2.readRangeContinuousMillimeters()+offset_TOF2;
 
@@ -443,10 +443,10 @@ void move_fixed_distance_with_walls(int distance){
           align_right();
           
         }else{
-          md.setBrakes(400,400);
-          //move_fixed_distance_with_tof(50);
-          
+          //md.setBrakes(400,400);
+          move_fixed_distance_with_tof(100);
         }
+        
         
         
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE){    
