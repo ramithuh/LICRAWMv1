@@ -43,10 +43,11 @@ int calculate_pos(int threshold = 300){
   if(on_count>8){
     //Serial2.print("On count: ");
     //Serial2.println(on_count);
-   
-    md.setBrakes(300,300);
+    bool LEFT_TRACKER_1=digitalRead(LEFT_TRACKER);
+    bool RIGHT_TRACKER_1=digitalRead(RIGHT_TRACKER);
+  
       
-    if ((sensorValues[0]>300 && sensorValues[15]>300)|| on_count>12 ){      //Color is in FOV, or ALL sensors on!
+    if ((LEFT_TRACKER_1==1 && RIGHT_TRACKER_1==1) && threshold==300 ){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
@@ -57,21 +58,35 @@ int calculate_pos(int threshold = 300){
       Serial2.print(" threshold: ");
       Serial2.println(threshold);
     }
-    else if (sensorValues[0]<300 && sensorValues[15]>300 && threshold==300){    //sensorValues[0]<threshold && sensorValues[14]>threshold
+    else if (LEFT_TRACKER_1==0 && RIGHT_TRACKER_1==1 && threshold==300){    //sensorValues[0]<threshold && sensorValues[14]>threshold
       move_fixed_distance(900);
-      delay(200);
       make_90_degree_anticlockwise(180,210);
       md.setBrakes(300, 300);
       delay(200);
+      
+      
+      
     }
-    else if (sensorValues[0]>300 && sensorValues[15]<300 && threshold==300){
+    else if (LEFT_TRACKER_1==1 && RIGHT_TRACKER_1==0 && threshold==300){
+      
       move_fixed_distance(900);
-      delay(200);
       make_90_degree_clockwise(180,210);
       md.setBrakes(300, 300);
-      delay(500);
+      delay(200);
+      
+      
     }
-  
+    else if (threshold==720 && on_count>12){
+      md.setBrakes(300,300);
+      flag = 1;
+      flag_count += 1;
+      Serial2.print("| flag_count :");
+      Serial2.print(flag_count);
+      Serial2.print(" on_sensor_count: ");
+      Serial2.print(on_count);
+      Serial2.print(" threshold: ");
+      Serial2.println(threshold);
+    }
   }
 
 
@@ -307,7 +322,7 @@ void coin_collect() {
   md.setBrakes(300,300);
   Serial2.println("| Going to Pick Coin");
   Serial2.println("|   Reversed 4.5cm");
-  move_fixed_distance(700,-default_m2_speed,-default_m1_speed);//4.5 cm reverse 
+  move_fixed_distance(700,-default_m2_speed,-default_m1_speed);//4.5 cm reverse 700
 
   Serial2.println("|   Reading Color for 15s....");
   coin_colour = read_colour();
@@ -318,15 +333,17 @@ void coin_collect() {
   Serial2.println("|   Moving forward to pick!");
   line_follow(300,500);
   delay(1000);
-  move_fixed_distance(1200,170,170);
-  delay(1000);
+  move_fixed_distance(600,170,170);
+  delay(3000);
+  line_follow(300,500);
+  delay(5000);
 }
 
 void start_square(){
     // ####### START SQUARE! ######
  
   
-  move_fixed_distance(2500);
+  move_fixed_distance(1500);
   // #######        ######
 
 }
