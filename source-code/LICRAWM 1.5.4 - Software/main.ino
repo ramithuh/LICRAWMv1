@@ -42,7 +42,7 @@ VL53L0X Sensor4;
 VL53L0X Sensor5;
 
 QTRSensors linearray;
-const uint8_t SensorCount = 15;
+const uint8_t SensorCount = 16;
 uint16_t sensorValues[SensorCount];
 
 DualVNH5019MotorShield md(39,38,5,40,A1,35,36,4,37,A0); ///remove current sense pins in future!
@@ -52,25 +52,28 @@ Servo coin_servo;
 
 unsigned long O_Serial=micros();
 
+int error_weights[]={-160, -140, -120, -100, -80, -60, -40, -20,  20, 40,  60, 80, 100, 120, 140, 160};
+
 String out;
 #include "libraries/LICRAWM-functions.h"
 #include "libraries/LICRAWM-boot.h"
 #include "libraries/LICRAWM-tasks.h"
 
-int error_weights[]={-110, -90, -70, -50, -35, -20, -10, 0, 10, 20,  35, 50, 70, 90, 110};
+
 
 void setup() {
  
   arm_servo.attach(arm_servo_pin);     //setting up servos (arm and coin)
   coin_servo.attach(coin_servo_pin);
 
+  //coin_place();
   coin_pick();  //coin pick position to the servo
   
   arm_servo.writeMicroseconds(2050);
   delay(1000);
 
   linearray.setTypeAnalog();
-  linearray.setSensorPins((const uint8_t[]){A8, A1, A9, A2, A10, A3, A11, A4, A12, A5, A13, A6, A14, A7, A15}, SensorCount);
+  linearray.setSensorPins((const uint8_t[]){A0, A8, A1, A9, A2, A10, A3, A11, A4, A12, A5, A13, A6, A14, A7, A15}, SensorCount);
   linearray.setEmitterPin(LINE_ARRAY_EVEN_EMITTER_PIN);
   linearray.setEmitterPin(LINE_ARRAY_ODD_EMITTER_PIN);
 
@@ -92,24 +95,25 @@ void setup() {
   delay(2000);
 
   //move_fixed_distance(2500);
-//  start_square();
+  start_square();
   delay(2000);
   
 }
 
 void loop(){
   
- // _input_check();   ///takes 4us
+  _input_check();   ///takes 4us
 //line_follow();
 //align_left();
 //line_follow();
-FOLLOW_WALL();
+//FOLLOW_WALL();
 //out="";
+//get_line_array();
 //get_tof_reading();
 //align_right();
-/*
 
 
+ /*
   line_follow();
   //picking up the coin
   coin_collect();

@@ -23,9 +23,10 @@ float calculate_pos(int threshold = 300){
 
   int pos=0;
   int on_count=0;
-  for(int i=0;i<15;i++){
+  for(int i=0;i<16;i++){
       if(sensorValues[i]<threshold){
-          pos+=(i-7)*10;
+          //pos+=(i-8)*10;
+          pos+=error_weights[i];
           on_count+=1;
       }
   }
@@ -37,13 +38,13 @@ float calculate_pos(int threshold = 300){
 
   Serial2.println(out);
 */
-  if(on_count>10){
+  if(on_count>7){
     //Serial2.print("On count: ");
     //Serial2.println(on_count);
    
     md.setBrakes(300,300);
       
-    if (digitalRead(LEFT_TRACKER)==1 && digitalRead(RIGHT_TRACKER)==1){      //Color is in FOV, or ALL sensors on!
+    if ( (sensorValues[0]>300 && sensorValues[15]>300)|| on_count>12 ){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
@@ -54,14 +55,14 @@ float calculate_pos(int threshold = 300){
       Serial2.print(" threshold: ");
       Serial2.println(threshold);
     }
-    else if (digitalRead(LEFT_TRACKER)==0 && digitalRead(RIGHT_TRACKER)==1 && threshold==300){    //sensorValues[0]<threshold && sensorValues[14]>threshold
+    else if (sensorValues[0]<300 && sensorValues[15]>300 && threshold==300){    //sensorValues[0]<threshold && sensorValues[14]>threshold
       move_fixed_distance(900);
       delay(200);
       make_90_degree_anticlockwise(180,210);
       md.setBrakes(300, 300);
       delay(200);
     }
-    else if (digitalRead(LEFT_TRACKER)==1 && digitalRead(RIGHT_TRACKER)==0 && threshold==300){
+    else if (sensorValues[0]>300 && sensorValues[15]<300 && threshold==300){
       move_fixed_distance(900);
       delay(200);
       make_90_degree_clockwise(180,210);
@@ -319,7 +320,7 @@ void start_square(){
     // ####### START SQUARE! ######
  
   
-  move_fixed_distance(1000);
+  move_fixed_distance(2500);
   // #######        ######
 
 }

@@ -261,21 +261,25 @@ void move_fixed_distance_with_tof(int distance ,int speed1=default_m1_speed,int 
   interrupts();
   int m1=0;
   int m2=0;
+  int oldm1=0;
+  int oldm2=0;
 
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+    //oldm1=M1count;
+    //oldm2=M2count;
     M1count=0;
     M2count=0;
   }
 
-  while((abs(m1)<distance || abs(m2)<distance)&&(Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80)){
+  while((abs(m1-oldm1)<distance || abs(m2-oldm2)<distance)&&(Sensor1.readRangeContinuousMillimeters()+offset_TOF1>80)){
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
         m1=M1count;
         m2=M2count;
     }
 
-    if(abs(m1)>distance)md.setM1Brake(400);
+    if(abs(m1-oldm1)>distance)md.setM1Brake(400);
     else md.setM1Speed(speed1);
-    if(abs(m2)>distance)md.setM2Brake(400);
+    if(abs(m2-oldm2)>distance)md.setM2Brake(400);
     else md.setM2Speed(speed2);
     
   }
@@ -443,8 +447,20 @@ void move_fixed_distance_with_walls(int distance){
           align_right();
           
         }else{
+          int temp1=0;
+          int temp2=0;
           //md.setBrakes(400,400);
-          move_fixed_distance_with_tof(100);
+          ATOMIC_BLOCK(ATOMIC_RESTORESTATE){    
+            temp1=M1count;
+            temp2=M2count;
+          }
+
+          move_fixed_distance_with_tof(200);
+
+          ATOMIC_BLOCK(ATOMIC_RESTORESTATE){    
+            M1count=temp1+200;
+            M2count=temp2+200;
+          }
         }
         
         
