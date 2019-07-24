@@ -35,14 +35,14 @@ float offset_distance=80;      //keep this distance from the wall
 
 int coin_colour=2;
 
-int no_of_sensors=15;
-float KP =6.5;   //80     /*was 20*/               //set Kp accordingly
-float KI =0;// 3;//was 3                       //set Ki accordingly
-float KD = 45;//180      //240              //set Kd accordingly
-float KW = 46; //46
+int no_of_sensors=16;
+int KP =10;   //80     /*was 20*/               //set Kp accordingly
+int KI =0;//3;// 3;//was 3                       //set Ki accordingly
+int KD = 0;//40;//180      //240              //set Kd accordingly
+int KW = 46; //46
 int mid_val = 1000*(no_of_sensors-1)/2; //position of the middle of the line
 int last_error = 0;
-float _last_position=0;
+int _last_position=0;
 
 #define WRITE_EVERY_MS 20
 

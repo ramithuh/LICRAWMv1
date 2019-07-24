@@ -1,4 +1,4 @@
-float calculate_pos(int threshold = 300){      
+int calculate_pos(int threshold = 300){      
     /*
 
     Args:
@@ -13,13 +13,15 @@ float calculate_pos(int threshold = 300){
   else {LED2.off();}
 */
   linearray.readLineWhite(sensorValues);
-  /*out="T1:0:T2:0:T3:0:T4:0:T5:0:Z:0:Y:0:X:0:M1:0:M2:0";
+
+
+ /* out="T1:0:T2:0:T3:0:T4:0:T5:0:Z:0:Y:0:X:0:M1:0:M2:0";
 
   out+=":L:";
   for (uint8_t i = 0; i < SensorCount; i++){
     out+=sensorValues[i];
     out+=":";
-  }*/
+  } */
 
   int pos=0;
   int on_count=0;
@@ -30,21 +32,21 @@ float calculate_pos(int threshold = 300){
           on_count+=1;
       }
   }
-
-  /* out+=":POS:";
+/*
+  out+=":POS:";
   out+=pos;
   out+=":T:";
-  out+=threshold;
+  out+=threshold; */
 
-  Serial2.println(out);
-*/
-  if(on_count>7){
+//  Serial2.println(out);
+
+  if(on_count>8){
     //Serial2.print("On count: ");
     //Serial2.println(on_count);
    
     md.setBrakes(300,300);
       
-    if ( (sensorValues[0]>300 && sensorValues[15]>300)|| on_count>12 ){      //Color is in FOV, or ALL sensors on!
+    if ((sensorValues[0]>300 && sensorValues[15]>300)|| on_count>12 ){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
@@ -74,12 +76,13 @@ float calculate_pos(int threshold = 300){
 
 
   if(on_count==0){
+    /*
     if (Sensor3.readRangeContinuousMillimeters()+offset_TOF3<80||Sensor4.readRangeContinuousMillimeters()+offset_TOF4<80 || Sensor1.readRangeContinuousMillimeters()+offset_TOF1<80){
       flag_count += 1;
     }
-    else{
+    else{ */
     return _last_position;
-    }
+    //}
   }
   _last_position=pos/on_count;
   return _last_position;
@@ -92,8 +95,11 @@ void line_follow(int threshold=300,int distance=0){
      */
   m1_global_speed=default_m1_speed;
   m2_global_speed=default_m2_speed;
+
+
   _LED_all_off();
   LED1.on();
+
   if (distance==0){
     while(1){
       md.setM1Speed(m1_global_speed);
@@ -116,7 +122,7 @@ void line_follow(int threshold=300,int distance=0){
       int error = position ;
 
       //PID controlling
-      float motor_speed = KP*error + KI*(error + last_error) + KD*(error - last_error);
+      int motor_speed = KP*error + KI*(error + last_error) + KD*(error - last_error);
       // Serial2.print(" :motor_speed_before_mapping:");
       // Serial2.print(motor_speed);
 
@@ -131,8 +137,8 @@ void line_follow(int threshold=300,int distance=0){
       else if (m1_global_speed<47){
           m1_global_speed = 47;
       }
-      if (m2_global_speed>243){
-          m2_global_speed = 243;
+      if (m2_global_speed>230){
+          m2_global_speed = 230;
       }
       else if (m2_global_speed<60){
           m2_global_speed = 60;
@@ -158,7 +164,7 @@ void line_follow(int threshold=300,int distance=0){
       int error = position ;
 
       //PID controlling
-      float motor_speed = KP*error + KI*(error + last_error) + KD*(error - last_error);
+      int motor_speed = KP*error + KI*(error + last_error) + KD*(error - last_error);
       // Serial2.print(" :motor_speed_before_mapping:");
       // Serial2.print(motor_speed);
 

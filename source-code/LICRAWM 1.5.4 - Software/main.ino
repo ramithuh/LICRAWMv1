@@ -52,7 +52,7 @@ Servo coin_servo;
 
 unsigned long O_Serial=micros();
 
-int error_weights[]={-160, -140, -120, -100, -80, -60, -40, -20,  20, 40,  60, 80, 100, 120, 140, 160};
+int error_weights[]={-160, -140, -120, -100, -80, -60, -25, -20, 20, 25,  60, 80, 100, 120, 140, 160};
 
 String out;
 #include "libraries/LICRAWM-functions.h"
@@ -102,8 +102,13 @@ void setup() {
 
 void loop(){
   
-  _input_check();   ///takes 4us
-//line_follow();
+  //_input_check();   ///takes 4us
+ // if(flag_count==0){
+line_follow();
+ // }else{
+   //  md.setBrakes(400,400);
+  }
+
 //align_left();
 //line_follow();
 //FOLLOW_WALL();
@@ -112,8 +117,8 @@ void loop(){
 //get_tof_reading();
 //align_right();
 
-
- /*
+/*
+ 
   line_follow();
   //picking up the coin
   coin_collect();
