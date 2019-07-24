@@ -232,11 +232,11 @@ while(1){
     out+=":T5:";
     out+=tof5;*/
     
-    if (tof4>150 && tof5>150){  // can I turn Left ??
+    if (tof4>160 && tof5>160){  // can I turn Left ??
 
             Serial2.println("#no wall in left");
-            md.setBrakes(400,400);
-            move_fixed_distance_with_tof(1200);
+           
+            //move_fixed_distance_with_tof(1200);
             md.setBrakes(400,400);
             delay(2000);
 
@@ -245,19 +245,19 @@ while(1){
             LED3.off();
             
             delay(1000);  
-            move_fixed_distance_with_walls(2500);
+            move_fixed_distance_with_walls(2750);
             delay(1000);
             
-    }else if (tof1>150){
+    }else if (tof1>160){
             Serial2.println("#wall in left & NO wall in FRONT");
 
             _LED_all_off();
             md.setBrakes(400,400);
-            move_fixed_distance_with_walls(2500);
+            move_fixed_distance_with_walls(2750);
             
             delay(1000);
 
-    }else if (tof3>150){
+    }else if (tof3>160){
             Serial2.println("#wall in left & front NOT in RIGHT");
 
             md.setBrakes(400,400);
@@ -267,7 +267,7 @@ while(1){
             LED5.off();
 
             delay(1000);
-            move_fixed_distance_with_walls(2500);   
+            move_fixed_distance_with_walls(2750);   
             delay(1000);
 
     }else{
@@ -279,11 +279,13 @@ while(1){
             delay(1000);
             LED2.on();
 
-            move_fixed_distance_with_walls(2500);
+            move_fixed_distance_with_walls(2750);
             
             delay(1000);
     }
 }
+
+
 }
 
 void water_transfer(){

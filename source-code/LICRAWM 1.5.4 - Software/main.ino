@@ -98,13 +98,15 @@ void setup() {
   delay(2000);
 
   //move_fixed_distance(2500);
-  start_square();
+  //start_square();
+ 
   delay(2000);
   
 }
 
 void loop(){
-  
+   //move_fixed_distance_with_walls(2750);
+   //delay(10000);
   //_input_check();   ///takes 4us
  // if(flag_count==0){
   
@@ -114,14 +116,13 @@ void loop(){
 
 //align_left();
 //line_follow();
-//FOLLOW_WALL();
+FOLLOW_WALL();
 //out="";
 //get_line_array();
 //get_tof_reading();
 //align_right();
 
-
- 
+/*
   line_follow();
   //picking up the coin
   coin_collect();
