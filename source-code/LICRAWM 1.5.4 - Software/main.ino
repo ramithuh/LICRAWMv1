@@ -52,7 +52,9 @@ Servo coin_servo;
 
 unsigned long O_Serial=micros();
 
-int error_weights[]={-160, -140, -120, -100, -80, -60, -25, -20, 20, 25,  60, 80, 100, 120, 140, 160};
+//int error_weights[]={-160, -140, -120, -100, -80, -60, -25, -20, 20, 25,  60, 80, 100, 120, 140, 160};
+int error_weights[]={-150,-120, -90, -70, -50, -35, -20, -10, 10, 20,  35, 50, 70, 90, 120,150};
+
 
 String out;
 #include "libraries/LICRAWM-functions.h"
@@ -107,7 +109,7 @@ void loop(){
 line_follow();
  // }else{
    //  md.setBrakes(400,400);
-  }
+  
 
 //align_left();
 //line_follow();
@@ -163,10 +165,10 @@ line_follow();
 
   line_follow();*/ 
 
-  if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
+  /* if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
     Serial2.println(out);
     O_Serial=micros();
-  } 
+  } */
 
 }
 
