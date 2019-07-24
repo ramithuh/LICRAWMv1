@@ -53,7 +53,8 @@ Servo coin_servo;
 unsigned long O_Serial=micros();
 
 //int error_weights[]={-160, -140, -120, -100, -80, -60, -25, -20, 20, 25,  60, 80, 100, 120, 140, 160};
-int error_weights[]={-150,-120, -90, -70, -50, -35, -20, -10, 10, 20,  35, 50, 70, 90, 120,150};
+//int error_weights[]={-150,-120, -90, -70, -50, -35, -20, -10, 10, 20,  35, 50, 70, 90, 120,150};
+int error_weights[]={-205, -175, -145, -115, -90, -65, -40, -20, 20, 40,  65, 90, 115, 145, 175, 205};
 
 
 String out;
@@ -106,10 +107,10 @@ void loop(){
   
   //_input_check();   ///takes 4us
  // if(flag_count==0){
-line_follow();
+  
  // }else{
    //  md.setBrakes(400,400);
-  
+
 
 //align_left();
 //line_follow();
@@ -119,7 +120,7 @@ line_follow();
 //get_tof_reading();
 //align_right();
 
-/*
+
  
   line_follow();
   //picking up the coin
@@ -130,9 +131,14 @@ line_follow();
   coin_colour=0;
   //color line following 
   if(coin_colour == 0){ //RED COLOR
-    //move_fixed_distance(500);
+    move_fixed_distance(200);
     make_45_degree_clockwise();
-    move_fixed_distance(500);
+    delay(1000);
+    line_follow(720,2000);
+    delay(1000);
+    make_45_degree_anticlockwise();
+    delay(2000);
+    //move_fixed_distance(500);
   }
   else if (coin_colour == 2){ //BLUE COLOR
     //move_fixed_distance(300);
@@ -143,11 +149,11 @@ line_follow();
     move_fixed_distance(950);
   }
   delay(1000);
-  move_fixed_distance(200,-default_m2_speed,-default_m1_speed);
-  line_follow(700,300);
-  delay(1000);
-  line_follow(700);
-  delay(1000);
+  //move_fixed_distance(200,-default_m2_speed,-default_m1_speed);
+  //line_follow(700,300);
+  //delay(1000);
+  line_follow(720);
+  delay(5000);
   line_follow(700);
   delay(5000);
 /* 
@@ -165,10 +171,10 @@ line_follow();
 
   line_follow();*/ 
 
-  /* if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
+  if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
     Serial2.println(out);
     O_Serial=micros();
-  } */
+  }
 
 }
 
