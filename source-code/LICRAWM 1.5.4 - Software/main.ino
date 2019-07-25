@@ -100,36 +100,14 @@ void setup() {
   //move_fixed_distance(2500);
   start_square();
  
-  delay(2000);
+  delay(4000);
   
 }
 
 void loop(){
-   //move_fixed_distance_with_walls(2750);
-   //delay(10000);
-  //_input_check();   ///takes 4us
- // if(flag_count==0){
-  
- // }else{
-   //  md.setBrakes(400,400);
-
-//out="";
-//get_line_array(); 
-//align_left();
-//line_follow();
-//FOLLOW_WALL();
-//out="";
-//get_line_array();
-//get_tof_reading();
-//align_right();
-//line_follow(650);
-//delay(5000);
-
-  line_follow();
+  /* line_follow();
   //picking up the coin
   coin_collect();
-  //line_follow(300,900);
-  //line_follow(700);
   delay(1000);
 
   coin_colour=1;
@@ -179,25 +157,21 @@ void loop(){
   }
   delay(1000);
   line_follow(300);
-  //move_fixed_distance(200,-default_m2_speed,-default_m1_speed);
-  //line_follow(700,300);
-  //delay(1000);
-  
- 
-/* 
-  line_follow();
-  line_follow();
-
-  //coin place
-  md.setBrakes(300,300);
-  Serial2.println("|Going to place the coin!");
-  move_fixed_distance(500);
-  coin_place();
-  Serial2.println("|Coin placed!");
-  move_fixed_distance(500);
-  coin_pick();
-
-  line_follow();*/ 
+  delay(1000);
+  FOLLOW_WALL();
+  Serial2.println("Wall Following Done!");*/
+  MAZE_SOLVED =1;
+  line_follow(300);
+  delay(1000);
+  water_transfer();
+  line_follow(300);
+  delay(1000);
+  move_fixed_distance(900);
+  make_90_degree_clockwise(180,210);
+  md.setBrakes(300, 300);
+  delay(200);
+  line_follow(300);
+  delay(20000);
 
   if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
     Serial2.println(out);

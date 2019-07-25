@@ -47,7 +47,7 @@ int calculate_pos(int threshold = 300){
     bool RIGHT_TRACKER_1=digitalRead(RIGHT_TRACKER);
   
       
-    if ((LEFT_TRACKER_1==1 && RIGHT_TRACKER_1==1) ){      //Color is in FOV, or ALL sensors on!
+    if ((LEFT_TRACKER_1==1 && RIGHT_TRACKER_1==1) && MAZE_SOLVED==0 ){      //Color is in FOV, or ALL sensors on!
       md.setBrakes(300,300);
       flag = 1;
       flag_count += 1;
@@ -58,7 +58,6 @@ int calculate_pos(int threshold = 300){
       Serial2.print(" threshold: ");
       Serial2.println(threshold);
       
-      ;
     }
     else if (LEFT_TRACKER_1==0 && RIGHT_TRACKER_1==1 ){    //sensorValues[0]<threshold && sensorValues[14]>threshold
       move_fixed_distance(900);
@@ -89,20 +88,35 @@ int calculate_pos(int threshold = 300){
       Serial2.print(" threshold: ");
       Serial2.println(threshold);
     }
+    else if(LEFT_TRACKER_1==0 && RIGHT_TRACKER_1==0){
+      flag_count += 1;
+      Serial2.print("After Wall Follow");
+      Serial2.println(" on_sensor_count: ");
+      Serial2.print(on_count);
+    }
   }
 
 
   if(on_count==0){
-    /*
-    if (Sensor3.readRangeContinuousMillimeters()+offset_TOF3<80||Sensor4.readRangeContinuousMillimeters()+offset_TOF4<80 || Sensor1.readRangeContinuousMillimeters()+offset_TOF1<80){
-      flag_count += 1;
+  bool LEFT_TRACKER_1=digitalRead(LEFT_TRACKER);
+  bool RIGHT_TRACKER_1=digitalRead(RIGHT_TRACKER);
+    /*if (MAZE_SOLVED==1){
+      flag_count +=1;
     }
-    else{ */
-    return _last_position;
-    //}
+    else if (Sensor3.readRangeContinuousMillimeters()+offset_TOF3<80||Sensor4.readRangeContinuousMillimeters()+offset_TOF4<80 || Sensor1.readRangeContinuousMillimeters()+offset_TOF1<80){
+      flag_count += 1;
+    }*/
+    if (RIGHT_TRACKER_1==1 && LEFT_TRACKER_1==1){
+      flag_count+=1;
+      Serial2.println("Water transfer");
+      return;
+    }else{
+      return _last_position;
+    }
   }
   _last_position=pos/on_count;
   return _last_position;
+  
   
 }
 
@@ -222,6 +236,17 @@ while(1){
     float tof3 = Sensor3.readRangeContinuousMillimeters()+offset_TOF3;
     float tof4 = Sensor4.readRangeContinuousMillimeters()+offset_TOF4;
     float tof5 = Sensor5.readRangeContinuousMillimeters()+offset_TOF5;
+
+    linearray.readLineWhite(sensorValues);
+    int on_count=0;
+    for(int i=0;i<16;i++){
+      if(sensorValues[i]<300){
+        on_count+=1;
+      }
+    }
+    if (on_count>0){
+      return;
+    }
     
    /*  out+="T1:";
     out+=tof1;
@@ -252,7 +277,6 @@ while(1){
             
     }else if (tof1>160){
             Serial2.println("#wall in left & NO wall in FRONT");
-
             _LED_all_off();
             md.setBrakes(400,400);
             move_fixed_distance_with_walls(2750);
@@ -295,23 +319,25 @@ void water_transfer(){
      Water transfer
     */
     
-    make_90_degree_clockwise();  //turn 180 degrees to transfer water from the back
-    delay(1000);
-    make_90_degree_clockwise();         
-
+    make_90_degree_anticlockwise();  //turn 180 degrees to transfer water from the back
+    delay(2000);
+    make_90_degree_anticlockwise();         
+    delay(2000);
     //move forward to align with the line
-    line_follow(2000);
+    /* line_follow(300,200);
+    delay(1000);*/
 
     //reverse to the containers
-    move_fixed_distance(1600,-default_m1_speed,-default_m2_speed);
+    move_fixed_distance(600,-default_m2_speed,-default_m1_speed);
+    delay(2000);
 
     //lowering the arm
     lower_water_arm();
 
-    delay(1000);      //delay to transfer water
-    digitalWrite(8,HIGH);//start water transfer
+    delay(2000);      //delay to transfer water
+    digitalWrite(7,HIGH);//start water transfer
     delay(20000);
-    digitalWrite(8,LOW);//finished transfering water
+    digitalWrite(7,LOW);//finished transfering water
 
     //lifting the arm
     lift_water_arm();
