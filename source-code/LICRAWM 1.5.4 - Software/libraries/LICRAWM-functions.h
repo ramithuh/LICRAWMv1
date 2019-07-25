@@ -681,10 +681,22 @@ void lower_water_arm(){
     }
 }
 
-void lift_water_arm(){
+void lift_water_arm(int degree=2000){
   //lifting the arm
-    for (int i = 1475;i<2000;i=i+25){
+    for (int i = 1400;i<degree;i=i+25){
       arm_servo.writeMicroseconds(i);
       delay(100);
+    }
+}
+void shake_water_arm(){
+  //lifting the arm
+    for(int i=0;i<75;i++){
+      if(i%2==0){
+        arm_servo.writeMicroseconds(1675);
+      }else{
+        arm_servo.writeMicroseconds(1625);
+      }
+      delay(50);
+
     }
 }
