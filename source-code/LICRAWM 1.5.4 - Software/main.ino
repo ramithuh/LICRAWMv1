@@ -105,7 +105,7 @@ void setup() {
 }
 
 void loop(){
-  /* line_follow();
+  line_follow();
   //picking up the coin
   coin_collect();
   delay(1000);
@@ -154,7 +154,7 @@ void loop(){
     line_follow(550);
     delay(1000);
     move_fixed_distance(400,180,210);
-  }*/
+  }
   delay(1000);
   line_follow(300);
   delay(1000);
