@@ -154,16 +154,18 @@ void loop(){
     line_follow(550);
     delay(1000);
     move_fixed_distance(400,180,210);
-  }
+  }*/
   delay(1000);
   line_follow(300);
   delay(1000);
+  move_fixed_distance_with_tof(500);
   FOLLOW_WALL();
-  Serial2.println("Wall Following Done!");*/
+  Serial2.println("Wall Following Done!");
   MAZE_SOLVED =1;
   line_follow(300);
   delay(1000);
   water_transfer();
+  WATER_TRANSFERRED=1;
   line_follow(300);
   delay(1000);
   move_fixed_distance(900);
@@ -171,6 +173,7 @@ void loop(){
   md.setBrakes(300, 300);
   delay(200);
   line_follow(300);
+  move_fixed_distance(400);
   delay(20000);
 
   if(VISUALIZE && (micros()-O_Serial)>WRITE_EVERY_MS){
