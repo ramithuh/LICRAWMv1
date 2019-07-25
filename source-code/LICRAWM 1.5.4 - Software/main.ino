@@ -128,16 +128,19 @@ void loop(){
   line_follow();
   //picking up the coin
   coin_collect();
-  line_follow(300,900);
+  //line_follow(300,900);
   //line_follow(700);
   delay(1000);
-  coin_colour=0;
+
+  coin_colour=1;
   //color line following 
   if(coin_colour == 0){ //RED COLOR
-    move_fixed_distance_pid(600,180,210);
+    move_fixed_distance(600);
     make_45_degree_clockwise();
+    move_fixed_distance(500);
+    Serial2.println(" Entered red color line");
     delay(1000);
-    line_follow(550,1800);
+    line_follow(500,1200);
     delay(1000);
     make_45_degree_anticlockwise();
     delay(2000);
@@ -146,11 +149,12 @@ void loop(){
     coin_drop();
     line_follow(550);
     delay(2000);
+    move_fixed_distance(400);
     make_45_degree_clockwise();
     //move_fixed_distance(500);
   }
   else if (coin_colour == 2){ //BLUE COLOR
-    move_fixed_distance_pid(600,180,210);
+    move_fixed_distance(600,180,210);
     make_45_degree_anticlockwise();
     delay(1000);
     line_follow(550,1800);
@@ -171,7 +175,7 @@ void loop(){
     coin_drop();
     line_follow(550);
     delay(1000);
-    move_fixed_distance_pid(400,180,210);
+    move_fixed_distance(400,180,210);
   }
   delay(1000);
   line_follow(300);
