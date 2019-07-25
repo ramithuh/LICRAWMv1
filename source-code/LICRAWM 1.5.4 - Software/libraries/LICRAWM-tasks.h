@@ -327,7 +327,7 @@ void coin_collect() {
   Serial2.println("| Going to Pick Coin");
   Serial2.println("|   Reversed 4.5cm");
   delay(1000);
-  move_fixed_distance(700,-210,-180);
+  move_fixed_distance(600,-210,-180);
   //move_fixed_distance(700,-default_m2_speed,-default_m1_speed);//4.5 cm reverse 700
 
   Serial2.println("|   Reading Color for 15s....");
@@ -337,9 +337,9 @@ void coin_collect() {
   Serial2.println(coin_colour);
 
   Serial2.println("|   Moving forward to pick!");
-  line_follow(300,500);
+  line_follow(300);
   delay(1000);
-  move_fixed_distance_pid(800,170,170);
+  move_fixed_distance(1000,170,170);
   delay(3000);
   line_follow(550);
   delay(5000);
