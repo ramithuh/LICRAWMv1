@@ -10,6 +10,8 @@ void boot(){
     pinMode(openmv_p9, INPUT_PULLUP);
 
 
+    pinMode(7, OUTPUT);
+
     pinMode(RIGHT_TRACKER,INPUT );//right
     pinMode(LEFT_TRACKER ,INPUT );
  

@@ -334,13 +334,19 @@ void water_transfer(){
     //lowering the arm
     lower_water_arm();
 
-    delay(2000);      //delay to transfer water
+    delay(1000);      //delay to transfer water
+    Serial2.println("Starting Water Transfer 7 HIGH");
     digitalWrite(7,HIGH);//start water transfer
-    delay(20000);
+    delay(10000);
+    lift_water_arm(1675);
+    delay(5000);
+    Serial2.println("Ended Water Transfer 7 HIGH");
     digitalWrite(7,LOW);//finished transfering water
-
+    shake_water_arm();
+    delay(1000);
+    arm_servo.writeMicroseconds(1750);
     //lifting the arm
-    lift_water_arm();
+    //lift_water_arm();
 
 
     delay(1000);    //wait till water is drained
