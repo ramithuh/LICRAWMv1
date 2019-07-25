@@ -98,7 +98,7 @@ void setup() {
   delay(2000);
 
   //move_fixed_distance(2500);
-  //start_square();
+  start_square();
  
   delay(2000);
   
@@ -113,16 +113,18 @@ void loop(){
  // }else{
    //  md.setBrakes(400,400);
 
-
+//out="";
+//get_line_array();
 //align_left();
 //line_follow();
-FOLLOW_WALL();
+//FOLLOW_WALL();
 //out="";
 //get_line_array();
 //get_tof_reading();
 //align_right();
+//line_follow(650);
+//delay(5000);
 
-/*
   line_follow();
   //picking up the coin
   coin_collect();
@@ -132,31 +134,52 @@ FOLLOW_WALL();
   coin_colour=0;
   //color line following 
   if(coin_colour == 0){ //RED COLOR
-    move_fixed_distance(200);
+    move_fixed_distance_pid(600,180,210);
     make_45_degree_clockwise();
     delay(1000);
-    line_follow(720,2000);
+    line_follow(550,1800);
     delay(1000);
     make_45_degree_anticlockwise();
     delay(2000);
+    line_follow(550);
+    delay(2000);
+    coin_drop();
+    line_follow(550);
+    delay(2000);
+    make_45_degree_clockwise();
     //move_fixed_distance(500);
   }
   else if (coin_colour == 2){ //BLUE COLOR
-    //move_fixed_distance(300);
+    move_fixed_distance_pid(600,180,210);
     make_45_degree_anticlockwise();
-    move_fixed_distance(500);
+    delay(1000);
+    line_follow(550,1800);
+    delay(1000);
+    make_45_degree_clockwise();
+    delay(2000);
+    line_follow(550);
+    delay(2000);
+    coin_drop();
+    line_follow(550);
+    delay(2000);
+    make_45_degree_anticlockwise();
   } 
   else{//GREEN COLOR (go straight) 
-    move_fixed_distance(950);
+    move_fixed_distance(700,180,210);
+    line_follow(550);
+    delay(1000);
+    coin_drop();
+    line_follow(550);
+    delay(1000);
+    move_fixed_distance_pid(400,180,210);
   }
   delay(1000);
+  line_follow(300);
   //move_fixed_distance(200,-default_m2_speed,-default_m1_speed);
   //line_follow(700,300);
   //delay(1000);
-  line_follow(720);
-  delay(5000);
-  line_follow(700);
-  delay(5000);
+  
+ 
 /* 
   line_follow();
   line_follow();
