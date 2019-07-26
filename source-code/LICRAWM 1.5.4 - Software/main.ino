@@ -156,6 +156,8 @@ void loop(){
     move_fixed_distance(400);
   }
   delay(1000);
+  line_follow(300,15000);
+  Serial2.println("Attempting Ramp");
   line_follow(300);
   delay(1000);
   move_fixed_distance_with_tof(500);
