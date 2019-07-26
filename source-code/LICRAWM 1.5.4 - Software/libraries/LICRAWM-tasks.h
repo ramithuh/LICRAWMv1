@@ -378,6 +378,8 @@ void coin_collect() {
   delay(1000);
   move_fixed_distance(1000,170,170);
   delay(3000);
+  line_follow(300,50);
+  delay(1000);
   line_follow(550);
   delay(5000);
 }
