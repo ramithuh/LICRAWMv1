@@ -59,8 +59,16 @@ int calculate_pos(int threshold = 300){
       Serial2.println(threshold);
       
     }
-    else if (LEFT_TRACKER_1==0 && RIGHT_TRACKER_1==1 ){    //sensorValues[0]<threshold && sensorValues[14]>threshold
+    else if(LEFT_TRACKER_1==0 && RIGHT_TRACKER_1==0 ){
+      flag_count += 1;
+      Serial2.print("After Wall Follow");
+      Serial2.println(" on_sensor_count: ");
+      Serial2.print(on_count);
+    }
+    else if (LEFT_TRACKER_1==0 && RIGHT_TRACKER_1==1 && WATER_TRANSFERRED==0 ){    //sensorValues[0]<threshold && sensorValues[14]>threshold
+      count_90+=1;
       move_fixed_distance(900);
+      
       make_90_degree_anticlockwise(180,210);
       md.setBrakes(300, 300);
       delay(200);
@@ -69,8 +77,9 @@ int calculate_pos(int threshold = 300){
       
     }
     else if (LEFT_TRACKER_1==1 && RIGHT_TRACKER_1==0 ){
-      
+      count_90+=1;
       move_fixed_distance(900);
+      
       make_90_degree_clockwise(180,210);
       md.setBrakes(300, 300);
       delay(200);
@@ -88,27 +97,21 @@ int calculate_pos(int threshold = 300){
       Serial2.print(" threshold: ");
       Serial2.println(threshold);
     }
-    else if(LEFT_TRACKER_1==0 && RIGHT_TRACKER_1==0){
-      flag_count += 1;
-      Serial2.print("After Wall Follow");
-      Serial2.println(" on_sensor_count: ");
-      Serial2.print(on_count);
-    }
   }
 
 
   if(on_count==0){
-  bool LEFT_TRACKER_1=digitalRead(LEFT_TRACKER);
-  bool RIGHT_TRACKER_1=digitalRead(RIGHT_TRACKER);
+    bool LEFT_TRACKER_1=digitalRead(LEFT_TRACKER);
+    bool RIGHT_TRACKER_1=digitalRead(RIGHT_TRACKER);
     /*if (MAZE_SOLVED==1){
       flag_count +=1;
     }
     else if (Sensor3.readRangeContinuousMillimeters()+offset_TOF3<80||Sensor4.readRangeContinuousMillimeters()+offset_TOF4<80 || Sensor1.readRangeContinuousMillimeters()+offset_TOF1<80){
       flag_count += 1;
     }*/
-    if (RIGHT_TRACKER_1==1 && LEFT_TRACKER_1==1){
+    if (RIGHT_TRACKER_1==1 && LEFT_TRACKER_1==1  && count_90>=4 ){
       flag_count+=1;
-      Serial2.println("Water transfer");
+      //Serial2.println("Water transfer/Maze Enter!");
       return;
     }else{
       return _last_position;
@@ -324,11 +327,11 @@ void water_transfer(){
     make_90_degree_anticlockwise();         
     delay(2000);
     //move forward to align with the line
-    /* line_follow(300,200);
-    delay(1000);*/
+    line_follow(300,50);
+    delay(1000);
 
     //reverse to the containers
-    move_fixed_distance(600,-default_m2_speed,-default_m1_speed);
+    move_fixed_distance(650,-default_m2_speed,-default_m1_speed);
     delay(2000);
 
     //lowering the arm
@@ -369,6 +372,8 @@ void coin_collect() {
   Serial2.println(coin_colour);
 
   Serial2.println("|   Moving forward to pick!");
+  line_follow(300,50);
+  delay(1000);
   line_follow(300);
   delay(1000);
   move_fixed_distance(1000,170,170);

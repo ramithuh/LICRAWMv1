@@ -95,12 +95,12 @@ void setup() {
   boot_motors();
   boot_encoders();
   boot_linearray();
-  delay(2000);
+  delay(5000);
 
   //move_fixed_distance(2500);
   start_square();
  
-  delay(4000);
+  //delay(4000);
   
 }
 
@@ -147,13 +147,13 @@ void loop(){
     make_45_degree_anticlockwise();
   } 
   else{//GREEN COLOR (go straight) 
-    move_fixed_distance(700,180,210);
+    move_fixed_distance(700);
     line_follow(550);
     delay(1000);
     coin_drop();
     line_follow(550);
     delay(1000);
-    move_fixed_distance(400,180,210);
+    move_fixed_distance(400);
   }
   delay(1000);
   line_follow(300);

@@ -27,6 +27,9 @@ bool UPDATE_GYRO=0;
 bool UPDATE_TOF=1;
 bool VISUALIZE =0;
 bool MAZE_SOLVED=0;
+bool WATER_TRANSFERRED=0;
+
+int count_90=0;
 
 float tof_error=0;
 float offset_distance=80;      //keep this distance from the wall
