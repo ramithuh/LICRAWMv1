@@ -19,11 +19,10 @@
 <p align="center">
   <tr>
     <td> <img src="img/IMG_5743.jpg" width="40%"/> </td>
-    <td>  <img src="img/IMG_5743.jpg" width="40%"/></td>
+    <td>  <img src="img/WhatsApp Image 2019-07-26 at 16.08.40.jpeg" width="40%"/></td>
    </tr>
  
   <tr>
-    <td> <img src="img/WhatsApp Image 2019-07-26 at 16.08.40.jpeg" width="40%"/> </td>
-    <td>  <img src="img/WhatsApp Image 2019-07-26 at 14.07.43.jpeg" width="40%"/></td>
+    <td>  <img src="img/WhatsApp Image 2019-07-26 at 14.07.43.jpeg" width="60%"/></td>
    </tr>
 </p>
