@@ -27,5 +27,5 @@
    </tr>
    
 </p>
-Team ♥
+<p align="center">Team ♥</p>
 
