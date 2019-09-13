@@ -26,5 +26,6 @@
 
     <td>  <img src="img/WhatsApp Image 2019-07-26 at 14.07.43.jpeg" width="60%"/></td>
    </tr>
-    Team ♥️
+   
 </p>
+ Team ♥️
