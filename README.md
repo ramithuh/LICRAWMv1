@@ -23,32 +23,35 @@
     <td>  <img src="img/WhatsApp Image 2019-07-26 at 16.08.40.jpeg" width="40%"/></td>
    </tr>
  </p>
- ## 3D Printed Parts
+
+## 3D Printed Parts
 <p align="center">
   <tr>
     <td><img src="img/5961dd3d-0169-4989-812a-6c6c191a3147.jpg" width="60%"/></td>
    </tr>
-  
- 
- ## Robot Visualizer (written in javascript) 
+</p>  
+
+## Robot Visualizer (written in javascript) 
 <p align="center">
    <tr>
     <td><img src="img/Screenshot 2019-05-17 at 12.52.51 PM.png" width="40%"/></td>
     <td><img src="img/Screenshot 2019-05-24 at 10.04.55 PM.png" width="40%"/></td>
    </tr>
 </p>  
- ## Testing  
+
+
+## Testing  
  
  <p align="center">
    <tr>
     <td><img src="img/IMG_4811.jpg" width="40%"/></td>
     <td><img src="img/IMG_5389.jpg" width="40%"/></td>
    </tr>
- 
+</p>
+<p align="center">
   <tr>
     <td><img src="img/WhatsApp Image 2019-07-26 at 14.07.43.jpeg" width="60%"/></td>
    </tr>
-   
-</p>
+</p>   
 <p align="center">Team ♥</p>
 
